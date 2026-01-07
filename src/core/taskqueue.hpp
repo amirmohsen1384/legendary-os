@@ -87,6 +87,12 @@ protected:
     }
 
 public:
+    TaskQueue() : maximumSize(0)
+    {}
+
+    TaskQueue(size_t value) : maximumSize(value)
+    {}
+
     bool isEmpty() const
     {
         return size() == 0;
@@ -99,6 +105,10 @@ public:
 
     void insert(ProcessInfo *info)
     {
+        if (maximumSize > 0 && size() > maximumSize)
+        {
+            throw std::out_of_range("The queue is full of tasks.");
+        }
         if (info == nullptr)
         {
             throw std::invalid_argument("Cannot insert null process");
@@ -106,20 +116,20 @@ public:
         container.push_back(info);
         upheap(size() - 1);
     }
-    ProcessInfo* min()
+    ProcessInfo* mostCritical()
     {
         if (isEmpty())
         {
-            throw std::out_of_range("The heap is empty");
+            throw std::out_of_range("The queue is empty");
         }
         return container.front();
     }
 
-    ProcessInfo* removeMin()
+    ProcessInfo* removeMostCritical()
     {
         if (isEmpty())
         {
-            throw std::out_of_range("The heap is empty");
+            throw std::out_of_range("The queue is empty");
         }
         auto result = container.front();
         swap(0, container.size() - 1);
@@ -131,7 +141,22 @@ public:
         return result;
     }
 
+    void setMaximumSize(size_t value)
+    {
+        maximumSize = value;
+        while (size() > maximumSize && maximumSize > 0)
+        {
+            removeMostCritical();
+        }
+    }
+
+    size_t getMaximumSize() const
+    {
+        return maximumSize;
+    }
+
 private:
+    size_t maximumSize = 0;
     std::vector<ProcessInfo*> container;
 };
 
