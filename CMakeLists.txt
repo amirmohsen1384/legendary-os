@@ -13,6 +13,8 @@ qt_add_executable(LegendaryOS
     resources.qrc
     src/core/system.h
     src/core/system.cpp
+    src/models/processinfo.h
+    src/models/processinfo.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
 )
