@@ -90,7 +90,7 @@ void ProcessInfo::setParent(ProcessInfo *value)
 
 void ProcessInfo::addSubprocess(std::unique_ptr<ProcessInfo> process)
 {
-    children.append(std::move(process));
+    children.push_back(std::move(process));
 }
 
 qint64 ProcessInfo::subProcessCount() const
@@ -107,7 +107,7 @@ qint64 ProcessInfo::row() const
 {
     if (parent)
     {
-        auto children = parent->children;
+        const auto &children = parent->children;
         auto iterator = std::find_if(children.cbegin(), children.cend(),
             [this](const std::unique_ptr<ProcessInfo> &value)
             {

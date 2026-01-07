@@ -68,6 +68,8 @@ public:
 
     qint64 row() const;
 
+    qint64 columnCount() const;
+
 private:
     State state;
     Command command;
@@ -78,7 +80,7 @@ private:
     qint64 finishTime;
     qint64 identifier;
     ProcessInfo *parent = nullptr;
-    QList<std::unique_ptr<ProcessInfo>> children;
+    std::vector<std::unique_ptr<ProcessInfo>> children;
 };
 
 #endif // PROCESSINFO_H
