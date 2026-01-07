@@ -3,9 +3,6 @@
         <file>icons/shutdown/clicked.png</file>
         <file>icons/shutdown/hovered.png</file>
         <file>icons/shutdown/normal.png</file>
-        <file>icons/create-file/create-file-clicked.png</file>
-        <file>icons/create-file/create-file-hovered.png</file>
-        <file>icons/create-file/create-file-normal.png</file>
         <file>icons/create-process/clicked.png</file>
         <file>icons/create-process/hovered.png</file>
         <file>icons/create-process/normal.png</file>
@@ -15,5 +12,8 @@
         <file>icons/delete-process/clicked.png</file>
         <file>icons/delete-process/hovered.png</file>
         <file>icons/delete-process/normal.png</file>
+        <file>icons/create-file/clicked.png</file>
+        <file>icons/create-file/hovered.png</file>
+        <file>icons/create-file/normal.png</file>
     </qresource>
 </RCC>
