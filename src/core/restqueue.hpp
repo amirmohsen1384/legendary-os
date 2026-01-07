@@ -6,10 +6,10 @@
 #include <stdexcept>
 
 template<typename T>
-class RestQueue
+class Queue
 {
 public:
-    RestQueue()
+    Queue()
     {
         _data = nullptr;
         _capacity = 0;
@@ -18,12 +18,12 @@ public:
         _back = 0;
     }
 
-    explicit RestQueue(size_t reserveCount) : RestQueue()
+    explicit Queue(size_t reserveCount) : Queue()
     {
         reserve(reserveCount);
     }
 
-    RestQueue(const RestQueue &other) : RestQueue()
+    Queue(const Queue &other) : Queue()
     {
         reserve(other._capacity);
         for (size_t i = 0; i < other._size; ++i)
@@ -35,7 +35,7 @@ public:
         _back = _size % _capacity;
     }
 
-    RestQueue(RestQueue &&other) noexcept :
+    Queue(Queue &&other) noexcept :
         _data(other._data),
         _size(other._size),
         _capacity(other._capacity),
@@ -49,12 +49,12 @@ public:
         other._back = 0;
     }
 
-    ~RestQueue()
+    ~Queue()
     {
         delete[] _data;
     }
 
-    RestQueue& operator=(const RestQueue &other)
+    Queue& operator=(const Queue &other)
     {
         if (this != &other)
         {
@@ -73,7 +73,7 @@ public:
         return *this;
     }
 
-    RestQueue& operator=(RestQueue &&other) noexcept
+    Queue& operator=(Queue &&other) noexcept
     {
         if (this != &other)
         {
@@ -202,5 +202,9 @@ private:
     size_t _front;
     size_t _capacity;
 };
+
+#include "models/processinfo.h"
+
+using RestQueue = Queue<ProcessInfo*>;
 
 #endif // RESTQUEUE_HPP
