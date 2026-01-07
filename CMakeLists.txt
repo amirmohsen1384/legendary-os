@@ -3,6 +3,8 @@ project(LegendaryOS LANGUAGES CXX)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets StateMachine)
 
+set(CMAKE_AUTORCC ON)
+
 qt_standard_project_setup()
 
 qt_add_executable(LegendaryOS
@@ -10,6 +12,7 @@ qt_add_executable(LegendaryOS
     main.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
+    resources.qrc
 )
 
 target_link_libraries(LegendaryOS
