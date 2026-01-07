@@ -10,9 +10,11 @@ qt_standard_project_setup()
 qt_add_executable(LegendaryOS
     WIN32 MACOSX_BUNDLE
     main.cpp
+    resources.qrc
+    src/core/system.h
+    src/core/system.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
-    resources.qrc
 )
 
 target_link_libraries(LegendaryOS
