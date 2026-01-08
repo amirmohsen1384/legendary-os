@@ -19,7 +19,8 @@ qt_add_executable(LegendaryOS
     src/elements/fluidbutton.cpp
     src/core/taskqueue.hpp
     src/core/restqueue.hpp
-
+    src/models/processmodel.h
+    src/models/processmodel.cpp
 )
 
 target_link_libraries(LegendaryOS
