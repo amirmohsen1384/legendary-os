@@ -13,9 +13,14 @@ void ProcessInfo::setIdentifier(qint64 value)
     identifier = value;
 }
 
-void ProcessInfo::setCommand(Command value)
+QString ProcessInfo::getName() const
 {
-    command = value;
+    return name;
+}
+
+void ProcessInfo::setName(const QString &value)
+{
+    name = value;
 }
 
 qint64 ProcessInfo::getPriority() const
@@ -155,9 +160,4 @@ qint64 ProcessInfo::columnCount() const
 ProcessInfo::State ProcessInfo::getState() const
 {
     return state;
-}
-
-ProcessInfo::Command ProcessInfo::getCommand() const
-{
-    return command;
 }

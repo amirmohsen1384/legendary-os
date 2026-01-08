@@ -8,15 +8,6 @@
 class ProcessInfo
 {
 public:
-    enum class Command
-    {
-        CreateProcess,
-        DeleteProcess,
-        CreateFile,
-        DeleteFile,
-        Shutdown
-    };
-
     enum class State {Running, Ready, WaitingForFile, WaitingForLimit};
 
 public:
@@ -26,9 +17,9 @@ public:
 
     void setIdentifier(qint64 value);
 
-    Command getCommand() const;
+    QString getName() const;
 
-    void setCommand(Command value);
+    void setName(const QString &value);
 
     qint64 getPriority() const;
 
@@ -72,7 +63,7 @@ public:
 
 private:
     State state;
-    Command command;
+    QString name;
     qint64 priority;
     QString fileName;
     qint64 burstTime;
