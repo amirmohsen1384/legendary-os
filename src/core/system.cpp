@@ -11,7 +11,6 @@ const auto readyLimit = "readyLimit";
 const auto configName = "config.json";
 const auto workspaceName = "workspace";
 const auto inputLimit = "inputCommandLimit";
-const auto queueLimit = "waitingQueueLimit";
 const auto cycle = "executionQuantumsPerCycle";
 
 const char* Exception::ConfigNotFound::what() const noexcept
@@ -87,16 +86,6 @@ Config::Container Config::load()
     }
     result[Info::ExecutionPerCycle] = body[cycle].toInteger();
 
-
-    if (!body.contains(queueLimit) || !body[queueLimit].isDouble())
-    {
-        Exception::ConfigCorruption exception;
-        exception.error = QString("%1 is not available in the file").arg(queueLimit);
-        throw exception;
-    }
-    result[Info::WaitingQueueLimit] = body[queueLimit].toInteger();
-
-
     if (!body.contains(inputLimit) || !body[inputLimit].isDouble())
     {
         Exception::ConfigCorruption exception;
@@ -140,12 +129,6 @@ bool Config::save(const Config::Container &value)
         return false;
     }
     body[cycle] = value[Info:: ExecutionPerCycle];
-
-    if (!value.contains(Info::WaitingQueueLimit))
-    {
-        return false;
-    }
-    body[queueLimit] = value[Info::WaitingQueueLimit];
 
     if (!value.contains(Info::InputLimit))
     {

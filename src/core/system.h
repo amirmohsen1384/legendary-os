@@ -33,8 +33,7 @@ namespace Config
         QuantumSize = 0,
         ExecutionPerCycle = 2,
         InputLimit = 1,
-        ReadyQueueLimit = 3,
-        WaitingQueueLimit = 4
+        ReadyQueueLimit = 3
     };
 
     using Container = QMap<Info, qint64>;
