@@ -85,11 +85,11 @@ QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) 
         root.get();
 
     if(!ancestor) {
-        return {};
+        ancestor = root;
     }
 
     auto result = ancestor->getChild(row);
-    return !result ? QModelIndex() : createIndex(row, column, result);
+    return !result ? QModelIndex() : createIndex(row, 0, result);
 }
 
 QModelIndex ProcessModel::parent(const QModelIndex &index) const
@@ -110,13 +110,13 @@ QModelIndex ProcessModel::parent(const QModelIndex &index) const
 int ProcessModel::rowCount(const QModelIndex &parent) const
 {
     auto item = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
-    return !item ? item->childCount() : 0;
+    return item ? item->childCount() : 0;
 }
 
 int ProcessModel::columnCount(const QModelIndex &parent) const
 {
     auto item = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
-    return !item ? item->columnCount() : 0;
+    return item ? item->columnCount() : 0;
 }
 
 QVariant ProcessModel::data(const QModelIndex &index, int role) const
