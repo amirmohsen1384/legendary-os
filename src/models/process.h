@@ -78,10 +78,15 @@ public:
 
     void setIdentifier(qint64 value);
 
+    qint64 getRemainingTime() const;
+
+    void setRemainingTime(qint64 value);
+
 private:
     qint64 identifier;
     qint64 startTime = 0;
     qint64 finishTime = 0;
+    qint64 remainingTime = 0;
     Process *parent = nullptr;
     State state = State::Unknown;
     std::vector<std::unique_ptr<Process>> children;

@@ -68,6 +68,16 @@ void Process::setIdentifier(qint64 value)
     identifier = value;
 }
 
+qint64 Process::getRemainingTime() const
+{
+    return remainingTime;
+}
+
+void Process::setRemainingTime(qint64 value)
+{
+    remainingTime = value;
+}
+
 qint64 Process::getStartTime() const
 {
     return startTime;
