@@ -2,7 +2,7 @@
 #define PROCESSMODEL_H
 
 #include <QAbstractItemModel>
-#include "processinfo.h"
+#include "process.h"
 
 class ProcessModel : public QAbstractItemModel
 {
@@ -14,6 +14,8 @@ class ProcessModel : public QAbstractItemModel
         Priority = 3,
         PID = 4
     };
+
+    Process *createProcess(const ProcessInfo &info, Process *parent);
 
 public:
     explicit ProcessModel(QObject *parent = nullptr);
@@ -28,8 +30,10 @@ public:
 
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
 
+    bool addProcess(const ProcessInfo &info, const QModelIndex &parent);
+
 private:
-    std::unique_ptr<ProcessInfo> root;
+    std::unique_ptr<Process> root;
 };
 
 #endif // PROCESSMODEL_H
