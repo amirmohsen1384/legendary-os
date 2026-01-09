@@ -48,6 +48,15 @@ void ProcessInfo::setFileName(const QString &value)
 Process::Process(Process *parent) : parent(parent)
 {}
 
+Process::~Process()
+{
+    const auto stamp = getFinishTime();
+    for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
+    {
+        iterator->get()->setFinishTime(stamp);
+    }
+}
+
 void Process::setState(State value)
 {
     state = value;

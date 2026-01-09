@@ -47,6 +47,7 @@ public:
 
 public:
     Process(Process *parent = nullptr);
+    ~Process();
 
     State getState() const;
 
