@@ -203,7 +203,7 @@ private:
     size_t _capacity;
 };
 
-#include "models/processinfo.h"
+#include "models/process.h"
 
 using RestQueue = Queue<ProcessInfo*>;
 

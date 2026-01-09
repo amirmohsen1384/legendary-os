@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <algorithm>
-#include "models/processinfo.h"
+#include "models/process.h"
 
 class TaskQueue
 {
