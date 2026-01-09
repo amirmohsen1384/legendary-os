@@ -274,6 +274,20 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
     return changed;
 }
 
+QModelIndex ProcessModel::index(qint64 value, const QModelIndex &parent)
+{
+    auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
+    if (!ancestor) {
+        return {};
+    }
+    auto item = ancestor->find(value);
+    if (!item) {
+        return {};
+    } else {
+        return createIndex(item->row(), 0, item);
+    }
+}
+
 bool ProcessModel::addProcess(const ProcessInfo &info, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
