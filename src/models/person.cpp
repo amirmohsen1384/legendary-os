@@ -53,6 +53,41 @@ QDate Person::getBirthday() const
     return birthday;
 }
 
+qint64 Person::childCount() const
+{
+    return children.size();
+}
+
+qint64 Person::getRow() const
+{
+    if (!parent) {
+        return 0;
+    }
+    else
+    {
+        const auto &container = parent->children;
+        auto result = std::find_if(container.cbegin(), container.cend(),
+            [&](std::unique_ptr<Person> item)
+            {
+                if (item.get() == this)
+                {
+                    return true;
+                }
+                return false;
+            }
+        );
+        if (result != container.cend())
+        {
+            return std::distance(container.cbegin(), result);
+        }
+        else
+        {
+            Q_ASSERT(false);
+            return -1;
+        }
+    }
+}
+
 Person *Person::getParent()
 {
     return parent;

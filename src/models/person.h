@@ -42,6 +42,10 @@ public:
 
     QDate getBirthday() const;
 
+    qint64 childCount() const;
+
+    qint64 getRow() const;
+
     Person* getParent();
 
 public:
