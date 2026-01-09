@@ -90,7 +90,7 @@ void ProcessPanel::setParent(const QModelIndex &parent)
 
 ProcessModel *ProcessPanel::getModel()
 {
-    return ui->locationView->model();
+    return static_cast<ProcessModel*>(ui->locationView->model());
 }
 
 void ProcessPanel::setModel(ProcessModel *model)

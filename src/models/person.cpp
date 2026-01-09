@@ -110,5 +110,5 @@ void Person::removeChild(int row)
     if (row < 0 || row >= children.size()) {
         return;
     }
-    return children.erase(children.begin() + row);
+    children.erase(children.begin() + row);
 }
