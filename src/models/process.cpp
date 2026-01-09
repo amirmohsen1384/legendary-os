@@ -1,17 +1,4 @@
-#include "processinfo.h"
-
-ProcessInfo::ProcessInfo(ProcessInfo *parent) : parent(parent)
-{}
-
-qint64 ProcessInfo::getIdentifier() const
-{
-    return identifier;
-}
-
-void ProcessInfo::setIdentifier(qint64 value)
-{
-    identifier = value;
-}
+#include "process.h"
 
 QString ProcessInfo::getName() const
 {
@@ -43,11 +30,6 @@ void ProcessInfo::setBurstTime(qint64 value)
     burstTime = value;
 }
 
-void ProcessInfo::setState(State value)
-{
-    state = value;
-}
-
 bool ProcessInfo::needsFile() const
 {
     return !getFileName().isEmpty();
@@ -63,58 +45,81 @@ void ProcessInfo::setFileName(const QString &value)
     fileName = value;
 }
 
-qint64 ProcessInfo::getStartTime() const
+Process::Process(Process *parent) : parent(parent)
+{}
+
+void Process::setState(State value)
+{
+    state = value;
+}
+
+Process::State Process::getState() const
+{
+    return state;
+}
+
+qint64 Process::getIdentifier() const
+{
+    return identifier;
+}
+
+void Process::setIdentifier(qint64 value)
+{
+    identifier = value;
+}
+
+qint64 Process::getStartTime() const
 {
     return startTime;
 }
 
-void ProcessInfo::setStartTime(qint64 value)
+void Process::setStartTime(qint64 value)
 {
     startTime = value;
 }
 
-qint64 ProcessInfo::getFinishTime() const
+qint64 Process::getFinishTime() const
 {
     return finishTime;
 }
 
-void ProcessInfo::setFinishTime(qint64 value)
+void Process::setFinishTime(qint64 value)
 {
     finishTime = value;
 }
 
-ProcessInfo *ProcessInfo::getParent() const
+Process* Process::getParent() const
 {
     return parent;
 }
 
-void ProcessInfo::setParent(ProcessInfo *value)
+void Process::setParent(Process *value)
 {
     parent = value;
 }
 
-void ProcessInfo::addSubprocess(std::unique_ptr<ProcessInfo> process)
+void Process::addChild(std::unique_ptr<Process> process)
 {
     children.push_back(std::move(process));
 }
 
-qint64 ProcessInfo::subProcessCount() const
+qint64 Process::childCount() const
 {
     return children.size();
 }
 
-ProcessInfo *ProcessInfo::subProcess(int row)
+Process *Process::getChild(int row)
 {
     return row >= 0 && row < children.size() ? children.at(row).get() : nullptr;
 }
 
-qint64 ProcessInfo::row() const
+qint64 Process::row() const
 {
     if (parent)
     {
         const auto &children = parent->children;
         auto iterator = std::find_if(children.cbegin(), children.cend(),
-            [this](const std::unique_ptr<ProcessInfo> &value)
+            [this](const std::unique_ptr<Process> &value)
             {
                 if (value.get() == this)
                 {
@@ -135,7 +140,7 @@ qint64 ProcessInfo::row() const
     }
 }
 
-qint64 ProcessInfo::columnCount() const
+qint64 Process::columnCount() const
 {
     auto count = 0;
 
@@ -155,9 +160,4 @@ qint64 ProcessInfo::columnCount() const
     count++;
 
     return count;
-}
-
-ProcessInfo::State ProcessInfo::getState() const
-{
-    return state;
 }
