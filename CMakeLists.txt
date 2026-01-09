@@ -28,6 +28,10 @@ qt_add_executable(LegendaryOS
     src/panels/processpanel.h
     src/panels/processpanel.cpp
     ui/panels/processpanel.ui
+    src/models/personmodel.h
+    src/models/personmodel.cpp
+    src/models/person.h
+    src/models/person.cpp
 )
 
 target_link_libraries(LegendaryOS
