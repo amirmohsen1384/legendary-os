@@ -14,7 +14,7 @@ Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
     process->setFileName(info.getFileName());
     process->setBurstTime(info.getBurstTime());
 
-    auto pid = QRandomGenerator64::global()->bounded(0, 10000 - 1);
+    auto pid = QRandomGenerator64::global()->bounded(Process::getMinimumID(), Process::getMaximumID());
     process->setIdentifier(pid);
 
     auto result = process.get();
@@ -231,6 +231,49 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
 }
 
+bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int role)
+{
+    if (!index.isValid()) {
+        return false;
+    }
+    auto item = static_cast<Process*>(index.internalPointer());
+    bool changed = false;
+    switch (role) {
+    case ProcessInfo::Name: {
+        if(value.canConvert<QString>()) {
+            item->setName(value.toString());
+            changed = true;
+        }
+        break;
+    }
+    case ProcessInfo::Priority: {
+        if (value.canConvert<qint64>()) {
+            item->setPriority(value.toLongLong());
+            changed = true;
+        }
+        break;
+    }
+    case ProcessInfo::BurstTime: {
+        if (value.canConvert<qint64>()) {
+            item->setBurstTime(value.toLongLong());
+            changed = true;
+        }
+        break;
+    }
+    case ProcessInfo::FileName: {
+        if (value.canConvert<QString>()) {
+            item->setFileName(value.toString());
+            changed = true;
+        }
+        break;
+    }
+    }
+    if (changed) {
+        emit dataChanged(index, index, {role});
+    }
+    return changed;
+}
+
 bool ProcessModel::addProcess(const ProcessInfo &info, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
@@ -241,4 +284,24 @@ bool ProcessModel::addProcess(const ProcessInfo &info, const QModelIndex &parent
     auto process = createProcess(info, ancestor);
     endInsertRows();
     return process != nullptr;
+}
+
+bool ProcessModel::removeProcess(int row, const QModelIndex &parent)
+{
+    auto ancestor = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
+    if(!ancestor) {
+        return false;
+    }
+
+    if (row < 0 || row >= ancestor->childCount()) {
+        return false;
+    }
+    ancestor->removeChild(row);
+    return true;
+}
+
+void ProcessModel::clear()
+{
+    root.reset(nullptr);
+    root = std::make_unique<Process>(nullptr);
 }
