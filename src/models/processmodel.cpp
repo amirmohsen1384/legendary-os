@@ -267,6 +267,13 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
         }
         break;
     }
+    case ProcessInfo::State: {
+        if (value.canConvert<Process::State>()) {
+            item->setState(qvariant_cast<Process::State>(value));
+            changed = true;
+        }
+        break;
+    }
     }
     if (changed) {
         emit dataChanged(index, index, {role});

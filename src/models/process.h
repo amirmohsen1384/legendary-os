@@ -10,7 +10,8 @@ public:
         Name = Qt::DisplayRole,
         Priority = Qt::UserRole + 1,
         BurstTime = Qt::UserRole + 2,
-        FileName = Qt::UserRole + 3
+        FileName = Qt::UserRole + 3,
+        State = Qt::UserRole + 4
     };
 
     ProcessInfo() {}
