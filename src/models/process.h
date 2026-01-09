@@ -6,6 +6,13 @@
 class ProcessInfo
 {
 public:
+    enum Role {
+        Name = Qt::DisplayRole,
+        Priority = Qt::UserRole + 1,
+        BurstTime = Qt::UserRole + 2,
+        FileName = Qt::UserRole + 3
+    };
+
     ProcessInfo() {}
 
     QString getName() const;
@@ -58,6 +65,8 @@ public:
     void setParent(Process *value);
 
     void addChild(std::unique_ptr<Process> process);
+
+    void removeChild(int row);
 
     qint64 childCount() const;
 

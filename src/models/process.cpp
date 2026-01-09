@@ -122,6 +122,14 @@ void Process::addChild(std::unique_ptr<Process> process)
     children.push_back(std::move(process));
 }
 
+void Process::removeChild(int row)
+{
+    if (row < 0 || row >= children.size()) {
+        return;
+    }
+    children.erase(children.begin() + row);
+}
+
 qint64 Process::childCount() const
 {
     return children.size();
