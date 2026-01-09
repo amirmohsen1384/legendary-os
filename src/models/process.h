@@ -61,7 +61,7 @@ public:
 
     void setState(State value);
 
-    Process* getParent() const;
+    Process* getParent();
 
     void setParent(Process *value);
 

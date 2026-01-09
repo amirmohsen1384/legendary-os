@@ -134,7 +134,7 @@ void Process::setFinishTime(qint64 value)
     finishTime = value;
 }
 
-Process* Process::getParent() const
+Process* Process::getParent()
 {
     return parent;
 }
