@@ -3,6 +3,10 @@ project(LegendaryOS LANGUAGES CXX)
 
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets StateMachine)
 
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/panels
+)
+
 set(CMAKE_AUTORCC ON)
 
 qt_standard_project_setup()
@@ -21,6 +25,9 @@ qt_add_executable(LegendaryOS
     src/core/restqueue.hpp
     src/models/processmodel.h
     src/models/processmodel.cpp
+    src/panels/processpanel.h
+    src/panels/processpanel.cpp
+    ui/panels/processpanel.ui
 )
 
 target_link_libraries(LegendaryOS
