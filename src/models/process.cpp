@@ -87,6 +87,33 @@ void Process::setRemainingTime(qint64 value)
     remainingTime = value;
 }
 
+Process *Process::find(qint64 value)
+{
+    if (value < getMinimumID() && value > getMaximumID()) {
+        return nullptr;
+    }
+    else if(this->identifier == value) {
+        return this;
+    }
+    else {
+        for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
+        {
+            return iterator->get()->find(value);
+        }
+    }
+    return nullptr;
+}
+
+qint64 Process::getMinimumID()
+{
+    return 0;
+}
+
+qint64 Process::getMaximumID()
+{
+    return 10000 - 1;
+}
+
 qint64 Process::getStartTime() const
 {
     return startTime;

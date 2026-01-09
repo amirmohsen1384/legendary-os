@@ -92,6 +92,12 @@ public:
 
     void setRemainingTime(qint64 value);
 
+    Process* find(qint64 value);
+
+    static qint64 getMinimumID();
+
+    static qint64 getMaximumID();
+
 private:
     qint64 identifier;
     qint64 startTime = 0;
