@@ -125,6 +125,7 @@ qint64 Process::row() const
                 {
                     return true;
                 }
+                return false;
             }
         );
         if (iterator == children.cend())
