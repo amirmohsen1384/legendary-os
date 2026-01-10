@@ -16,7 +16,11 @@ int main(int argc, char *argv[])
         if(panel.exec() == QDialog::Accepted)
         {
             auto info = panel.getProcessInfo();
-            model.insert(info);
+            model.insert(info, panel.getParent());
+        }
+        else
+        {
+            return 0;
         }
     }
     return app.exec();
