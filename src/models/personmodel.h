@@ -13,7 +13,7 @@ public:
         Name = 0,
         ID,
         Birthday,
-        Role
+        Job
     };
     explicit PersonModel(QObject *parent = nullptr);
 

@@ -8,7 +8,7 @@
 class Person
 {
 public:
-    enum class Role {
+    enum class Job {
         Unknown = 0,
         CEO,
         Manager,
@@ -21,10 +21,16 @@ public:
         SoftwareDeveloper
     };
 
+    enum Role {
+        FirstNameRole = Qt::UserRole,
+        LastNameRole = ,
+        P
+    };
+
 public:
     Person(Person *parent = nullptr);
 
-    Person::Role getRole() const;
+    Person::Job getJob() const;
 
     qint64 getIdentifier() const;
 
@@ -49,7 +55,7 @@ public:
     Person* getParent();
 
 public:
-    void setRole(Person::Role value);
+    void setJob(Person::Job value);
 
     void setIdentifier(qint64 value);
 
@@ -71,7 +77,7 @@ public:
 
 private:
     std::vector<std::unique_ptr<Person>> children;
-    Person::Role role = Person::Role::Unknown;
+    Person::Job job = Person::Job::Unknown;
     Person* parent = nullptr;
     qint64 identifier;
     QString firstName;

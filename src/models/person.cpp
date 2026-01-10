@@ -5,9 +5,9 @@ Person::Person(Person *parent)
     this->parent = parent;
 }
 
-Person::Role Person::getRole() const
+Person::Job Person::getJob() const
 {
-    return role;
+    return job;
 }
 
 qint64 Person::getIdentifier() const
@@ -93,9 +93,9 @@ Person *Person::getParent()
     return parent;
 }
 
-void Person::setRole(Role value)
+void Person::setJob(Job value)
 {
-    role = value;
+    job = value;
 }
 
 void Person::setIdentifier(qint64 value)
