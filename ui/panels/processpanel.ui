@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>595</width>
+    <width>569</width>
     <height>685</height>
    </rect>
   </property>
@@ -272,6 +272,9 @@
      </property>
      <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
      </property>
      <layout class="QGridLayout" name="fileLayout">
       <property name="leftMargin">
