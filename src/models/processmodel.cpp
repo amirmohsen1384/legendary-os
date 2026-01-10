@@ -4,7 +4,8 @@
 
 Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
 {
-    if (!parent) {
+    if (!parent)
+    {
         return {};
     }
 
@@ -42,34 +43,43 @@ QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int 
         auto group = static_cast<Info>(section);
         switch (group)
         {
-        case Info::PID: {
+        case Info::PID:
+        {
             return QString("PID");
         }
-        case Info::Name: {
+        case Info::Name:
+        {
             return QString("Name");
         }
-        case Info::State: {
+        case Info::State:
+        {
             return QString("State");
         }
-        case Info::Dependency: {
+        case Info::Dependency:
+        {
             return QString("Dependency");
         }
-        case Info::Priority: {
+        case Info::Priority:
+        {
             return QString("Priority");
         }
-        default: {
+        default:
+        {
             return {};
         }
         }
         break;
     }
-    case Qt::BackgroundRole: {
-        return QColor(220, 220, 220); // Light Gray
+    case Qt::BackgroundRole:
+    {
+        return QColor(220, 220, 220);
     }
-    case Qt::TextAlignmentRole: {
+    case Qt::TextAlignmentRole:
+    {
         return Qt::AlignCenter;
     }
-    default: {
+    default:
+    {
         return {};
     }
     }
@@ -77,31 +87,35 @@ QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int 
 
 QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) const
 {
-    if(!hasIndex(row, column, parent)) {
+    if(!hasIndex(row, column, parent))
+    {
         return {};
     }
-
-    auto ancestor = parent.isValid() ?
-        static_cast<Process*>(parent.internalPointer()) :
-        root.get();
-
-    if(!ancestor) {
+    auto ancestor = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
+    if(!ancestor)
+    {
         ancestor = root;
     }
-
     auto result = ancestor->getChild(row);
     return !result ? QModelIndex() : createIndex(row, 0, result);
 }
 
 QModelIndex ProcessModel::parent(const QModelIndex &index) const
 {
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         return {};
-
-    } else {
+    }
+    else
+    {
         auto item = static_cast<Process*>(index.internalPointer());
+        if (!item)
+        {
+            item = root;
+        }
         auto parent = item->getParent();
-        if (parent == nullptr || parent == root.get()) {
+        if (parent == nullptr || parent == root.get())
+        {
             return {};
         }
         return createIndex(item->row(), 0, parent);
@@ -122,108 +136,153 @@ int ProcessModel::columnCount(const QModelIndex &parent) const
 
 QVariant ProcessModel::data(const QModelIndex &index, int role) const
 {
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         return {};
     }
 
     auto item = static_cast<Process*>(index.internalPointer());
-    if(!item) {
+    if(!item)
+    {
         return {};
     }
 
-    switch (role) {
-    case Qt::DisplayRole: {
+    switch (role)
+    {
+    case Qt::DisplayRole:
+    {
         auto group = static_cast<Info>(index.column());
         switch (group)
         {
-        case Info::Name: {
+        case Info::Name:
+        {
             return item->getName();
         }
-        case Info::Dependency: {
+        case Info::Dependency:
+        {
             if (item->needsFile())
             {
-                const auto &data = item->getFileName();
-                if (data.size() > 16) {
-                    return QString("%1...").arg(data.first(16));
-                } else {
-                    return data;
-                }
+                const auto &fileName = item->getFileName();
+                return fileName.size() <= 16 ? fileName : QString("%1...").arg(fileName.first(16));
             }
             else
             {
-                return "No Dependency";
+                return QString("No Dependency");
             }
         }
-        case Info::PID: {
+        case Info::PID:
+        {
             return item->getIdentifier();
         }
-        case Info::Priority: {
+        case Info::Priority:
+        {
             return item->getPriority();
         }
-        case Info::State: {
-            switch (item->getState()) {
-            case Process::State::Running: {
+        case Info::State:
+        {
+            switch (item->getState())
+            {
+            case Process::State::Running:
+            {
                 return "Running";
             }
-            case Process::State::Ready: {
+            case Process::State::Ready:
+            {
                 return "Ready";
             }
             case Process::State::WaitingForFile:
-            case Process::State::WaitingForLimit: {
+            case Process::State::WaitingForLimit:
+            {
                 return "Waiting";
             }
             }
         }
-        default: {
+        default:
+        {
             return {};
         }
         }
         break;
     }
-    case Qt::TextAlignmentRole: {
+    case Qt::TextAlignmentRole:
+    {
         return Qt::AlignCenter;
     }
-    case Qt::BackgroundRole: {
+    case Qt::BackgroundRole:
+    {
         auto group = static_cast<Info>(index.column());
-        switch (group) {
-        case Info::State: {
-            switch (item->getState()) {
-            case Process::State::Running: {
+        switch (group)
+        {
+        case Info::State:
+        {
+            switch (item->getState())
+            {
+            case Process::State::Running:
+            {
                 return QColor(150, 255, 180); // Light Green
             }
-            case Process::State::Ready: {
+            case Process::State::Ready:
+            {
                 return QColor(230, 255, 150); // Light Yellow
             }
             case Process::State::WaitingForFile:
-            case Process::State::WaitingForLimit: {
+            case Process::State::WaitingForLimit:
+            {
                 return QColor(170, 230, 255); // Light Blue
             }
             }
-        }
-        default: {
-            return {};
-        }
-        }
-    }
-    case Qt::ForegroundRole: {
-        auto group = static_cast<Info>(index.column());
-        switch(group) {
-        case Info::Dependency: {
-            if (!item->needsFile()) {
-                return QColor(Qt::red);
-            }
-            else {
+            default:
+            {
                 return {};
             }
         }
-        default: {
+        default:
+        {
             return {};
         }
         }
     }
-    case Qt::UserRole:
+    case Qt::ForegroundRole:
     {
-        return QVariant::fromValue(item);
+        auto group = static_cast<Info>(index.column());
+        switch(group)
+        {
+        case Info::Dependency:
+        {
+            if (!item->needsFile())
+            {
+                return QColor(Qt::red);
+            }
+            else
+            {
+                return {};
+            }
+        }
+        default:
+        {
+            return {};
+        }
+        }
+    }
+    case ProcessInfo::Name:
+    {
+        return item->getName();
+    }
+    case ProcessInfo::Priority:
+    {
+        return item->getPriority();
+    }
+    case ProcessInfo::BurstTime:
+    {
+        return item->getBurstTime();
+    }
+    case ProcessInfo::FileName:
+    {
+        return item->getFileName();
+    }
+    case ProcessInfo::State:
+    {
+        return item->getState();
     }
     default:
     {
@@ -240,7 +299,8 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
         return changed;
     }
     auto item = static_cast<Process*>(index.internalPointer());
-    switch (role) {
+    switch (role)
+    {
     case ProcessInfo::Name:
     {
         if(value.canConvert<QString>())
@@ -297,21 +357,19 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
 QModelIndex ProcessModel::index(qint64 value, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
-    if (!ancestor) {
+    if (!ancestor)
+    {
         return {};
     }
     auto item = ancestor->find(value);
-    if (!item) {
-        return {};
-    } else {
-        return createIndex(item->row(), 0, item);
-    }
+    return !item ? QModelIndex() : createIndex(item->row(), 0, item);
 }
 
-bool ProcessModel::addProcess(const ProcessInfo &info, const QModelIndex &parent)
+bool ProcessModel::insert(const ProcessInfo &info, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
-    if(!ancestor) {
+    if(!ancestor)
+    {
         return false;
     }
     beginInsertRows(parent, ancestor->childCount() + 1, ancestor->childCount() + 1);
@@ -320,22 +378,27 @@ bool ProcessModel::addProcess(const ProcessInfo &info, const QModelIndex &parent
     return process != nullptr;
 }
 
-bool ProcessModel::removeProcess(int row, const QModelIndex &parent)
+bool ProcessModel::remove(const QModelIndex &index)
 {
-    auto ancestor = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
-    if(!ancestor) {
+    if (!index.isValid())
+    {
         return false;
     }
-
-    if (row < 0 || row >= ancestor->childCount()) {
+    auto ancestor = static_cast<Process*>(index.parent().internalPointer());
+    if(!ancestor || index.row() < 0 || index.row() >= ancestor->childCount())
+    {
         return false;
     }
-    ancestor->removeChild(row);
+    beginRemoveRows(index.parent(), index.row(), index.row());
+    ancestor->removeChild(index.row());
+    endRemoveRows();
     return true;
 }
 
 void ProcessModel::clear()
 {
+    beginResetModel();
     root.reset(nullptr);
     root = std::make_unique<Process>(nullptr);
+    endResetModel();
 }

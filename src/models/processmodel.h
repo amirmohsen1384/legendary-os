@@ -32,8 +32,8 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    virtual bool addProcess(const ProcessInfo &info, const QModelIndex &parent);
-    virtual bool removeProcess(int row, const QModelIndex &parent);
+    virtual bool insert(const ProcessInfo &info, const QModelIndex &parent);
+    virtual bool remove(const QModelIndex &index);
 
 public slots:
     void clear();
