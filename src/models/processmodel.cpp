@@ -13,6 +13,7 @@ Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
     process->setPriority(info.getPriority());
     process->setFileName(info.getFileName());
     process->setBurstTime(info.getBurstTime());
+    process->setRemainingTime(info.getBurstTime());
 
     auto pid = QRandomGenerator64::global()->bounded(Process::getMinimumID(), Process::getMaximumID());
     process->setIdentifier(pid);
