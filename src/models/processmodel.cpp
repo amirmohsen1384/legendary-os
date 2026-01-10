@@ -97,7 +97,7 @@ QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) 
         ancestor = root.get();
     }
     auto result = ancestor->getChild(row);
-    return !result ? QModelIndex() : createIndex(row, 0, result);
+    return !result ? QModelIndex() : createIndex(row, column, result);
 }
 
 QModelIndex ProcessModel::parent(const QModelIndex &index) const
@@ -182,6 +182,10 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
         {
             switch (item->getState())
             {
+            case Process::State::Unknown:
+            {
+                return "Unknown";
+            }
             case Process::State::Running:
             {
                 return "Running";
@@ -231,6 +235,10 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
                 return QColor(170, 230, 255); // Light Blue
             }
             }
+        }
+        default:
+        {
+            return {};
         }
         }
     }
@@ -364,7 +372,7 @@ bool ProcessModel::insert(const ProcessInfo &info, const QModelIndex &parent)
     {
         return false;
     }
-    beginInsertRows(parent, ancestor->childCount() + 1, ancestor->childCount() + 1);
+    beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
     auto process = createProcess(info, ancestor);
     endInsertRows();
     return process != nullptr;
