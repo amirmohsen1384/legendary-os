@@ -93,6 +93,18 @@ Person *Person::getParent()
     return parent;
 }
 
+Person *Person::find(const QString &name)
+{
+    for(const auto &child : children)
+    {
+        if (child->getFullName() == name)
+        {
+            return child.get();
+        }
+    }
+    return nullptr;
+}
+
 void PersonInfo::setFirstName(const QString &value)
 {
     firstName = value;

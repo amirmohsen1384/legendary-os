@@ -59,6 +59,8 @@ public:
 
     Person* getParent();
 
+    Person* find(const QString &name);
+
 public:
     void addChild(std::unique_ptr<Person> item);
 
