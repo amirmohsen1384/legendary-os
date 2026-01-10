@@ -146,6 +146,7 @@ void Process::setParent(Process *value)
 
 void Process::addChild(std::unique_ptr<Process> process)
 {
+    process->setParent(this);
     children.push_back(std::move(process));
 }
 
