@@ -9,11 +9,11 @@ class ProcessModel : public QAbstractItemModel
     Q_OBJECT
 protected:
     enum class Info {
-        Name = 0,
-        State = 1,
-        Dependency = 2,
+        Name = 1,
+        State = 2,
+        Dependency = 4,
         Priority = 3,
-        PID = 4
+        PID = 0
     };
 
     Process *createProcess(const ProcessInfo &info, Process *parent);
@@ -32,7 +32,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    virtual bool insert(const ProcessInfo &info, const QModelIndex &parent);
+    virtual bool insert(const ProcessInfo &info, const QModelIndex &parent = QModelIndex());
     virtual bool remove(const QModelIndex &index);
 
 public slots:
