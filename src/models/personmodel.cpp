@@ -1,6 +1,6 @@
 #include "personmodel.h"
 
-std::unique_ptr<Person> PersonModel::createPerson(const PersonInfo &info, Person *parent)
+Person* PersonModel::createPerson(const PersonInfo &info, Person *parent)
 {
     if (!parent)
     {
@@ -36,6 +36,32 @@ QModelIndex PersonModel::index(int row, int column, const QModelIndex &parent) c
     }
     auto item = ancestor->getChild(row);
     return !item ? QModelIndex() : createIndex(row, 0, item);
+}
+
+QModelIndex PersonModel::index(const QString &path) const
+{
+    QStringList tokens = path.split('/');
+    QStringListIterator iterator(tokens);
+    if (!iterator.hasNext())
+    {
+        return {};
+    }
+    else if (!iterator.next().isEmpty())
+    {
+        return {};
+    }
+    auto target = root.get();
+    while (iterator.hasNext())
+    {
+        const QString &name = iterator.next();
+        auto result = target->find(name);
+        if (!result)
+        {
+            return {};
+        }
+        target = result;
+    }
+    return createIndex(target->getRow(), 0, target);
 }
 
 QModelIndex PersonModel::parent(const QModelIndex &index) const
@@ -229,7 +255,7 @@ bool PersonModel::setData(const QModelIndex &index, const QVariant &value, int r
     return changed;
 }
 
-void PersonModel::insert(const PersonInfo &data, const QModelIndex &parent)
+bool PersonModel::insert(const PersonInfo &data, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Person*>(parent.internalPointer());
     if(!ancestor)
@@ -237,12 +263,12 @@ void PersonModel::insert(const PersonInfo &data, const QModelIndex &parent)
         return false;
     }
     beginInsertRows(parent, ancestor->childCount() + 1, ancestor->childCount() + 1);
-    auto person = createPerson(info, ancestor);
+    auto person = createPerson(data, ancestor);
     endInsertRows();
     return person != nullptr;
 }
 
-void PersonModel::remove(const QModelIndex &index)
+bool PersonModel::remove(const QModelIndex &index)
 {
     if (!index.isValid())
     {
@@ -257,4 +283,16 @@ void PersonModel::remove(const QModelIndex &index)
     ancestor->removeChild(index.row());
     endRemoveRows();
     return true;
+}
+
+QString PersonModel::toString(const QModelIndex &index)
+{
+    if (!index.isValid())
+    {
+        return QString();
+    }
+    return QString("%1/%2").arg(
+        toString(index.parent()),
+        index.data(Person::NameRole).toString()
+    );
 }
