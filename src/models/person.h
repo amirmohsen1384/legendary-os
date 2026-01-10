@@ -34,6 +34,8 @@ public:
 
     qint64 childCount() const;
 
+    qint64 getColumn() const;
+
     qint64 getRow() const;
 
     Person* getParent();

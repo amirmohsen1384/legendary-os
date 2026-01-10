@@ -39,6 +39,19 @@ qint64 Person::childCount() const
     return children.size();
 }
 
+qint64 Person::getColumn() const
+{
+    int count = 0;
+
+    // Name
+    count++;
+
+    // Birthday
+    count++;
+
+    return count;
+}
+
 QString Person::getBiography() const
 {
     return biography;
