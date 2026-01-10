@@ -6,14 +6,14 @@
 class ProcessInfo
 {
 public:
-    enum Role {
-        Name = Qt::DisplayRole,
+    enum Role
+    {
+        Name = Qt::UserRole,
         Priority = Qt::UserRole + 1,
         BurstTime = Qt::UserRole + 2,
         FileName = Qt::UserRole + 3,
         State = Qt::UserRole + 4
     };
-
     ProcessInfo() {}
 
     QString getName() const;

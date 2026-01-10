@@ -10,11 +10,11 @@ class Person
 public:
     enum Role
     {
-        NameRole = Qt::DisplayRole,
-        FirstNameRole = Qt::UserRole,
-        LastNameRole = Qt::UserRole + 1,
-        BirthdayRole = Qt::UserRole + 2,
-        BiographyRole = Qt::UserRole + 3
+        NameRole = Qt::UserRole,
+        FirstNameRole = Qt::UserRole + 1,
+        LastNameRole = Qt::UserRole + 2,
+        BirthdayRole = Qt::UserRole + 3,
+        BiographyRole = Qt::UserRole + 4
     };
 
 public:
