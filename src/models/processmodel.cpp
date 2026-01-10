@@ -27,7 +27,7 @@ Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
 
 ProcessModel::ProcessModel(QObject *parent) : QAbstractItemModel(parent)
 {
-    root = std::make_unique<Process>(nullptr);
+    root = std::make_unique<Process>();
 }
 
 QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -94,7 +94,7 @@ QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) 
     auto ancestor = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
     if(!ancestor)
     {
-        ancestor = root;
+        ancestor = root.get();
     }
     auto result = ancestor->getChild(row);
     return !result ? QModelIndex() : createIndex(row, 0, result);
@@ -111,7 +111,7 @@ QModelIndex ProcessModel::parent(const QModelIndex &index) const
         auto item = static_cast<Process*>(index.internalPointer());
         if (!item)
         {
-            item = root;
+            item = root.get();
         }
         auto parent = item->getParent();
         if (parent == nullptr || parent == root.get())
@@ -231,14 +231,6 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
                 return QColor(170, 230, 255); // Light Blue
             }
             }
-            default:
-            {
-                return {};
-            }
-        }
-        default:
-        {
-            return {};
         }
         }
     }
@@ -282,7 +274,7 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
     case ProcessInfo::State:
     {
-        return item->getState();
+        return QVariant::fromValue(item->getState());
     }
     default:
     {
