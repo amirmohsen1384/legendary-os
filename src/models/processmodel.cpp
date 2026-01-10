@@ -28,6 +28,7 @@ Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
 ProcessModel::ProcessModel(QObject *parent) : QAbstractItemModel(parent)
 {
     root = std::make_unique<Process>();
+    root->setName("Root Node");
 }
 
 QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -384,13 +385,10 @@ bool ProcessModel::remove(const QModelIndex &index)
     {
         return false;
     }
-    auto ancestor = static_cast<Process*>(index.parent().internalPointer());
-    if(!ancestor || index.row() < 0 || index.row() >= ancestor->childCount())
-    {
-        return false;
-    }
-    beginRemoveRows(index.parent(), index.row(), index.row());
-    ancestor->removeChild(index.row());
+    const auto item = index.parent();
+    auto parent = !item.isValid() ? root.get() : static_cast<Process*>(item.internalPointer());
+    beginRemoveRows(item, index.row(), index.row());
+    parent->removeChild(index.row());
     endRemoveRows();
     return true;
 }
