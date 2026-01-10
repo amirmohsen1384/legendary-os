@@ -234,50 +234,62 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
 
 bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
-    if (!index.isValid()) {
-        return false;
+    bool changed = false;
+    if (!index.isValid())
+    {
+        return changed;
     }
     auto item = static_cast<Process*>(index.internalPointer());
-    bool changed = false;
     switch (role) {
-    case ProcessInfo::Name: {
-        if(value.canConvert<QString>()) {
+    case ProcessInfo::Name:
+    {
+        if(value.canConvert<QString>())
+        {
             item->setName(value.toString());
             changed = true;
         }
         break;
     }
-    case ProcessInfo::Priority: {
-        if (value.canConvert<qint64>()) {
+    case ProcessInfo::Priority:
+    {
+        if (value.canConvert<qint64>())
+        {
             item->setPriority(value.toLongLong());
             changed = true;
         }
         break;
     }
-    case ProcessInfo::BurstTime: {
-        if (value.canConvert<qint64>()) {
+    case ProcessInfo::BurstTime:
+    {
+        if (value.canConvert<qint64>())
+        {
             item->setBurstTime(value.toLongLong());
             changed = true;
         }
         break;
     }
-    case ProcessInfo::FileName: {
-        if (value.canConvert<QString>()) {
+    case ProcessInfo::FileName:
+    {
+        if (value.canConvert<QString>())
+        {
             item->setFileName(value.toString());
             changed = true;
         }
         break;
     }
-    case ProcessInfo::State: {
-        if (value.canConvert<Process::State>()) {
+    case ProcessInfo::State:
+    {
+        if (value.canConvert<Process::State>())
+        {
             item->setState(qvariant_cast<Process::State>(value));
             changed = true;
         }
         break;
     }
     }
-    if (changed) {
-        emit dataChanged(index, index, {role});
+    if (changed)
+    {
+        emit dataChanged(index, index, {role, Qt::DisplayRole, Qt::BackgroundRole, Qt::ForegroundRole});
     }
     return changed;
 }
