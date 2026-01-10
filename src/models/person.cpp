@@ -5,17 +5,17 @@ Person::Person(Person *parent)
     this->parent = parent;
 }
 
-QString Person::getFirstName() const
+QString PersonInfo::getFirstName() const
 {
     return firstName;
 }
 
-QString Person::getLastName() const
+QString PersonInfo::getLastName() const
 {
     return lastName;
 }
 
-QString Person::getFullName() const
+QString PersonInfo::getFullName() const
 {
     return QString("%1 %2").arg(firstName, lastName);
 }
@@ -29,7 +29,7 @@ Person *Person::getChild(int row)
     return children.at(row).get();
 }
 
-QDate Person::getBirthday() const
+QDate PersonInfo::getBirthday() const
 {
     return birthday;
 }
@@ -39,7 +39,7 @@ qint64 Person::childCount() const
     return children.size();
 }
 
-qint64 Person::getColumn() const
+qint64 Person::columnCount() const
 {
     int count = 0;
 
@@ -52,7 +52,7 @@ qint64 Person::getColumn() const
     return count;
 }
 
-QString Person::getBiography() const
+QString PersonInfo::getBiography() const
 {
     return biography;
 }
@@ -67,7 +67,7 @@ qint64 Person::getRow() const
     {
         const auto &container = parent->children;
         auto result = std::find_if(container.cbegin(), container.cend(),
-            [&](std::unique_ptr<Person> item)
+            [&](const std::unique_ptr<Person> &item)
             {
                 if (item.get() == this)
                 {
@@ -93,17 +93,17 @@ Person *Person::getParent()
     return parent;
 }
 
-void Person::setFirstName(const QString &value)
+void PersonInfo::setFirstName(const QString &value)
 {
     firstName = value;
 }
 
-void Person::setLastName(const QString &value)
+void PersonInfo::setLastName(const QString &value)
 {
     lastName = value;
 }
 
-void Person::setBirthday(const QDate &value)
+void PersonInfo::setBirthday(const QDate &value)
 {
     birthday = value;
 }
@@ -113,7 +113,7 @@ void Person::setParent(Person *value)
     parent = value;
 }
 
-void Person::setBiography(const QString &value)
+void PersonInfo::setBiography(const QString &value)
 {
     biography = value;
 }

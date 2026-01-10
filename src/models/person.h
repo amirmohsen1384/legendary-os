@@ -5,7 +5,7 @@
 #include <QPixmap>
 #include <QDate>
 
-class Person
+class PersonInfo
 {
 public:
     enum Role
@@ -17,9 +17,6 @@ public:
         BiographyRole = Qt::UserRole + 4
     };
 
-public:
-    Person(Person *parent = nullptr);
-
     QString getBiography() const;
 
     QString getFirstName() const;
@@ -30,19 +27,7 @@ public:
 
     QDate getBirthday() const;
 
-    Person* getChild(int row);
-
-    qint64 childCount() const;
-
-    qint64 getColumn() const;
-
-    qint64 getRow() const;
-
-    Person* getParent();
-
 public:
-    void addChild(std::unique_ptr<Person> item);
-
     void setBiography(const QString &value);
 
     void setFirstName(const QString &value);
@@ -51,6 +36,32 @@ public:
 
     void setBirthday(const QDate &value);
 
+private:
+    QString biography;
+    QString firstName;
+    QString lastName;
+    QDate birthday;
+};
+
+class Person : public PersonInfo
+{
+public:
+    Q_DISABLE_COPY_MOVE(Person)
+    Person(Person *parent = nullptr);
+
+    Person* getChild(int row);
+
+    qint64 childCount() const;
+
+    qint64 columnCount() const;
+
+    qint64 getRow() const;
+
+    Person* getParent();
+
+public:
+    void addChild(std::unique_ptr<Person> item);
+
     void setParent(Person* value);
 
     void removeChild(int row);
@@ -58,10 +69,6 @@ public:
 private:
     std::vector<std::unique_ptr<Person>> children;
     Person* parent = nullptr;
-    QString biography;
-    QString firstName;
-    QString lastName;
-    QDate birthday;
 };
 
 #endif // PERSON_H
