@@ -8,31 +8,19 @@
 class Person
 {
 public:
-    enum class Job {
-        Unknown = 0,
-        CEO,
-        Manager,
-        Supervisor,
-        Accountant,
-        ProductOwner,
-        ProductManager,
-        ContentCreator,
-        PromptEngineer,
-        SoftwareDeveloper
-    };
-
-    enum Role {
+    enum Role
+    {
+        NameRole = Qt::DisplayRole,
         FirstNameRole = Qt::UserRole,
-        LastNameRole = ,
-        P
+        LastNameRole = Qt::UserRole + 1,
+        BirthdayRole = Qt::UserRole + 2,
+        BiographyRole = Qt::UserRole + 3
     };
 
 public:
     Person(Person *parent = nullptr);
 
-    Person::Job getJob() const;
-
-    qint64 getIdentifier() const;
+    QString getBiography() const;
 
     QString getFirstName() const;
 
@@ -40,13 +28,9 @@ public:
 
     QString getFullName() const;
 
-    Person* getChild(int row);
-
-    QPixmap getPhoto() const;
-
-    qint64 getSalary() const;
-
     QDate getBirthday() const;
+
+    Person* getChild(int row);
 
     qint64 childCount() const;
 
@@ -55,36 +39,27 @@ public:
     Person* getParent();
 
 public:
-    void setJob(Person::Job value);
+    void addChild(std::unique_ptr<Person> item);
 
-    void setIdentifier(qint64 value);
+    void setBiography(const QString &value);
 
     void setFirstName(const QString &value);
 
     void setLastName(const QString &value);
 
-    void setPhoto(const QPixmap &value);
-
-    void setSalary(qint64 value);
-
     void setBirthday(const QDate &value);
 
     void setParent(Person* value);
-
-    void addChild(std::unique_ptr<Person> item);
 
     void removeChild(int row);
 
 private:
     std::vector<std::unique_ptr<Person>> children;
-    Person::Job job = Person::Job::Unknown;
     Person* parent = nullptr;
-    qint64 identifier;
+    QString biography;
     QString firstName;
     QString lastName;
     QDate birthday;
-    qint64 salary;
-    QPixmap photo;
 };
 
 #endif // PERSON_H

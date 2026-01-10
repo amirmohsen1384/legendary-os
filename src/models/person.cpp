@@ -5,16 +5,6 @@ Person::Person(Person *parent)
     this->parent = parent;
 }
 
-Person::Job Person::getJob() const
-{
-    return job;
-}
-
-qint64 Person::getIdentifier() const
-{
-    return identifier;
-}
-
 QString Person::getFirstName() const
 {
     return firstName;
@@ -32,20 +22,11 @@ QString Person::getFullName() const
 
 Person *Person::getChild(int row)
 {
-    if (row < 0 || row >= children.size()) {
+    if (row < 0 || row >= children.size())
+    {
         return nullptr;
     }
     return children.at(row).get();
-}
-
-QPixmap Person::getPhoto() const
-{
-    return photo;
-}
-
-qint64 Person::getSalary() const
-{
-    return salary;
 }
 
 QDate Person::getBirthday() const
@@ -58,9 +39,15 @@ qint64 Person::childCount() const
     return children.size();
 }
 
+QString Person::getBiography() const
+{
+    return biography;
+}
+
 qint64 Person::getRow() const
 {
-    if (!parent) {
+    if (!parent)
+    {
         return 0;
     }
     else
@@ -93,16 +80,6 @@ Person *Person::getParent()
     return parent;
 }
 
-void Person::setJob(Job value)
-{
-    job = value;
-}
-
-void Person::setIdentifier(qint64 value)
-{
-    identifier = value;
-}
-
 void Person::setFirstName(const QString &value)
 {
     firstName = value;
@@ -111,16 +88,6 @@ void Person::setFirstName(const QString &value)
 void Person::setLastName(const QString &value)
 {
     lastName = value;
-}
-
-void Person::setPhoto(const QPixmap &value)
-{
-    photo = value;
-}
-
-void Person::setSalary(qint64 value)
-{
-    salary = value;
 }
 
 void Person::setBirthday(const QDate &value)
@@ -133,16 +100,23 @@ void Person::setParent(Person *value)
     parent = value;
 }
 
+void Person::setBiography(const QString &value)
+{
+    biography = value;
+}
+
 void Person::addChild(std::unique_ptr<Person> item)
 {
-    if (item) {
+    if (item)
+    {
         children.push_back(std::move(item));
     }
 }
 
 void Person::removeChild(int row)
 {
-    if (row < 0 || row >= children.size()) {
+    if (row < 0 || row >= children.size())
+    {
         return;
     }
     children.erase(children.begin() + row);
