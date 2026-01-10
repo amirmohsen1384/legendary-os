@@ -54,6 +54,7 @@ public:
     };
 
 public:
+    Q_DISABLE_COPY_MOVE(Process)
     Process(Process *parent = nullptr);
     ~Process();
 
