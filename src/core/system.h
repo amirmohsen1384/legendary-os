@@ -1,8 +1,7 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <QDir>
-#include <QMap>
+#include <QtGlobal>
 
 namespace Exception
 {
@@ -20,27 +19,19 @@ namespace Exception
     };
 }
 
-namespace Storage
-{
-    void initialize();
-    QDir workspace();
-}
-
 namespace Config
 {
-    enum class Info
+    struct Info
     {
-        QuantumSize = 0,
-        ExecutionPerCycle = 2,
-        InputLimit = 1,
-        ReadyQueueLimit = 3
+        qint64 quantumSize;
+        qint64 executionCycle;
+        qint64 readyQueueLimit;
+        qint64 inputCommandLimit;
     };
 
-    using Container = QMap<Info, qint64>;
-
-    bool exists();
-    Config::Container load();
-    bool save(const Config::Container &value);
+    void initialize();
+    Config::Info load();
+    void save(const Config::Info &info);
 }
 
 #endif // SYSTEM_H
