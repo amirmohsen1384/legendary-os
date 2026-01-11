@@ -17,17 +17,17 @@ qt_add_executable(LegendaryOS
     resources.qrc
     src/core/system.h
     src/core/system.cpp
-    src/models/process.h
-    src/models/process.cpp
+    src/models/task.h
+    src/models/task.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
     src/core/taskqueue.hpp
     src/core/restqueue.hpp
-    src/models/processmodel.h
-    src/models/processmodel.cpp
-    src/panels/processpanel.h
-    src/panels/processpanel.cpp
-    ui/panels/processpanel.ui
+    src/models/taskmodel.h
+    src/models/taskmodel.cpp
+    src/panels/taskedit.h
+    src/panels/taskedit.cpp
+    ui/panels/taskedit.ui
     src/models/personmodel.h
     src/models/personmodel.cpp
     src/models/person.h
