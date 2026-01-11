@@ -177,7 +177,23 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
         }
         case Info::Priority:
         {
-            return item->getPriority();
+            auto priority = item->getPriority();
+            if (priority < 20)
+            {
+                return "Low";
+            }
+            else if (priority >= 20 && priority < 50)
+            {
+                return "Medium";
+            }
+            else if (priority >= 50 && priority < 80)
+            {
+                return "Fairly High";
+            }
+            else if (priority >= 80)
+            {
+                return "High";
+            }
         }
         case Info::State:
         {
@@ -258,6 +274,45 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
             {
                 return {};
             }
+        }
+        case Info::Priority:
+        {
+            auto priority = item->getPriority();
+            if (priority < 20)
+            {
+                return QColor(200, 0, 0);
+            }
+            else if (priority >= 20 && priority < 50)
+            {
+                return QColor(200, 200, 40);
+            }
+            else if (priority >= 50 && priority < 80)
+            {
+                return QColor(90, 200, 90);
+            }
+            else if (priority >= 80)
+            {
+                return QColor(90, 200, 200);
+            }
+        }
+        default:
+        {
+            return {};
+        }
+        }
+    }
+    case Qt::ToolTipRole:
+    {
+        auto group = static_cast<Info>(index.column());
+        switch(group)
+        {
+        case Info::Dependency:
+        {
+            return item->getFileName();
+        }
+        case Info::Priority:
+        {
+            return QString("Priority: %1%").arg(item->getPriority());
         }
         default:
         {
