@@ -96,4 +96,7 @@ ProcessModel *ProcessPanel::getModel()
 void ProcessPanel::setModel(ProcessModel *model)
 {
     ui->locationView->setModel(model);
+    auto visible = model->rowCount() > 0;
+    ui->emptyLabel->setVisible(!visible);
+    ui->locationView->setVisible(visible);
 }
