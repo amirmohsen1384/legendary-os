@@ -1,54 +1,56 @@
-#include "process.h"
+#include "task.h"
 
-QString ProcessInfo::getName() const
+QString TaskInfo::getName() const
 {
     return name;
 }
 
-void ProcessInfo::setName(const QString &value)
+void TaskInfo::setName(const QString &value)
 {
     name = value;
 }
 
-qint64 ProcessInfo::getPriority() const
+qint64 TaskInfo::getPriority() const
 {
     return priority;
 }
 
-void ProcessInfo::setPriority(qint64 value)
+void TaskInfo::setPriority(qint64 value)
 {
     priority = value;
 }
 
-qint64 ProcessInfo::getBurstTime() const
+qint64 TaskInfo::getBurstTime() const
 {
     return burstTime;
 }
 
-void ProcessInfo::setBurstTime(qint64 value)
+void TaskInfo::setBurstTime(qint64 value)
 {
     burstTime = value;
 }
 
-bool ProcessInfo::needsFile() const
+bool TaskInfo::depends() const
 {
-    return !getFileName().isEmpty();
+    return !getResource().isEmpty();
 }
 
-QString ProcessInfo::getFileName() const
+QString TaskInfo::getResource() const
 {
-    return fileName;
+    return resource;
 }
 
-void ProcessInfo::setFileName(const QString &value)
+void TaskInfo::setResource(const QString &value)
 {
-    fileName = value;
+    resource = value;
 }
 
-Process::Process(Process *parent) : parent(parent)
-{}
+Task::Task(Task *parent)
+{
+    this->parent = parent;
+}
 
-Process::~Process()
+Task::~Task()
 {
     const auto stamp = getFinishTime();
     for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
@@ -57,37 +59,37 @@ Process::~Process()
     }
 }
 
-void Process::setState(State value)
+void Task::setState(State value)
 {
     state = value;
 }
 
-Process::State Process::getState() const
+Task::State Task::getState() const
 {
     return state;
 }
 
-qint64 Process::getIdentifier() const
+qint64 Task::getIdentifier() const
 {
     return identifier;
 }
 
-void Process::setIdentifier(qint64 value)
+void Task::setIdentifier(qint64 value)
 {
     identifier = value;
 }
 
-qint64 Process::getRemainingTime() const
+qint64 Task::getRemainingTime() const
 {
     return remainingTime;
 }
 
-void Process::setRemainingTime(qint64 value)
+void Task::setRemainingTime(qint64 value)
 {
     remainingTime = value;
 }
 
-Process *Process::find(qint64 value)
+Task *Task::find(qint64 value)
 {
     if (value < getMinimumID() && value > getMaximumID()) {
         return nullptr;
@@ -104,56 +106,56 @@ Process *Process::find(qint64 value)
     return nullptr;
 }
 
-qint64 Process::getMinimumID()
+qint64 Task::getMinimumID()
 {
     return 0;
 }
 
-qint64 Process::getMaximumID()
+qint64 Task::getMaximumID()
 {
     return 10000 - 1;
 }
 
-qint64 Process::getStartTime() const
+qint64 Task::getStartTime() const
 {
     return startTime;
 }
 
-void Process::setStartTime(qint64 value)
+void Task::setStartTime(qint64 value)
 {
     startTime = value;
 }
 
-qint64 Process::getFinishTime() const
+qint64 Task::getFinishTime() const
 {
     return finishTime;
 }
 
-void Process::setFinishTime(qint64 value)
+void Task::setFinishTime(qint64 value)
 {
     finishTime = value;
 }
 
-Process* Process::getParent()
+Task* Task::getParent()
 {
     return parent;
 }
 
-void Process::setParent(Process *value)
+void Task::setParent(Task *value)
 {
     parent = value;
 }
 
-void Process::addChild(std::unique_ptr<Process> process)
+void Task::addChild(std::unique_ptr<Task> item)
 {
-    if (!process)
+    if (!item)
     {
-        process->setParent(this);
-        children.push_back(std::move(process));
+        item->setParent(this);
+        children.push_back(std::move(item));
     }
 }
 
-void Process::removeChild(int row)
+void Task::removeChild(int row)
 {
     if (row < 0 || row >= children.size())
     {
@@ -162,23 +164,23 @@ void Process::removeChild(int row)
     children.erase(children.begin() + row);
 }
 
-qint64 Process::childCount() const
+qint64 Task::childCount() const
 {
     return children.size();
 }
 
-Process *Process::getChild(int row)
+Task *Task::getChild(int row)
 {
     return row >= 0 && row < children.size() ? children.at(row).get() : nullptr;
 }
 
-qint64 Process::row() const
+qint64 Task::row() const
 {
     if (parent)
     {
         const auto &children = parent->children;
         auto iterator = std::find_if(children.cbegin(), children.cend(),
-            [this](const std::unique_ptr<Process> &value)
+            [this](const std::unique_ptr<Task> &value)
             {
                 if (value.get() == this)
                 {
@@ -200,7 +202,7 @@ qint64 Process::row() const
     }
 }
 
-qint64 Process::columnCount() const
+qint64 Task::columnCount() const
 {
     auto count = 0;
 
@@ -210,10 +212,7 @@ qint64 Process::columnCount() const
     // State
     count++;
 
-    // Needs File
-    count++;
-
-    // Identifier
+    // Resources
     count++;
 
     // Priority

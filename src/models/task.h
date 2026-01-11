@@ -1,20 +1,20 @@
-#ifndef PROCESS_H
-#define PROCESS_H
+#ifndef TASK_H
+#define TASK_H
 
 #include <QString>
 
-class ProcessInfo
+class TaskInfo
 {
 public:
     enum Role
     {
         Name = Qt::UserRole,
+        State = Qt::UserRole + 4,
         Priority = Qt::UserRole + 1,
         BurstTime = Qt::UserRole + 2,
-        FileName = Qt::UserRole + 3,
-        State = Qt::UserRole + 4
+        Resources = Qt::UserRole + 3
     };
-    ProcessInfo() {}
+    TaskInfo() {}
 
     QString getName() const;
 
@@ -28,20 +28,20 @@ public:
 
     void setBurstTime(qint64 value);
 
-    bool needsFile() const;
+    bool depends() const;
 
-    QString getFileName() const;
+    QString getResource() const;
 
-    void setFileName(const QString &value);
+    void setResource(const QString &value);
 
 private:
     QString name;
     qint64 priority;
-    QString fileName;
     qint64 burstTime;
+    QString resource;
 };
 
-class Process : public ProcessInfo
+class Task : public TaskInfo
 {
 public:
     enum class State
@@ -49,30 +49,30 @@ public:
         Unknown,
         Running,
         Ready,
-        WaitingForFile,
-        WaitingForLimit
+        WaitingForLimit,
+        WaitingForResources
     };
 
 public:
-    Q_DISABLE_COPY_MOVE(Process)
-    Process(Process *parent = nullptr);
-    ~Process();
+    Q_DISABLE_COPY_MOVE(Task)
+    Task(Task *parent = nullptr);
+    ~Task();
 
     State getState() const;
 
     void setState(State value);
 
-    Process* getParent();
+    Task* getParent();
 
-    void setParent(Process *value);
+    void setParent(Task *value);
 
-    void addChild(std::unique_ptr<Process> process);
+    void addChild(std::unique_ptr<Task> item);
 
     void removeChild(int row);
 
     qint64 childCount() const;
 
-    Process* getChild(int row);
+    Task* getChild(int row);
 
     qint64 row() const;
 
@@ -94,7 +94,7 @@ public:
 
     void setRemainingTime(qint64 value);
 
-    Process* find(qint64 value);
+    Task* find(qint64 value);
 
     static qint64 getMinimumID();
 
@@ -105,9 +105,9 @@ private:
     qint64 startTime = 0;
     qint64 finishTime = 0;
     qint64 remainingTime = 0;
-    Process *parent = nullptr;
+    Task *parent = nullptr;
     State state = State::Unknown;
-    std::vector<std::unique_ptr<Process>> children;
+    std::vector<std::unique_ptr<Task>> children;
 };
 
-#endif // PROCESS_H
+#endif // TASK_H
