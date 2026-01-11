@@ -442,7 +442,7 @@ bool ProcessModel::remove(const QModelIndex &index)
     }
     const auto item = index.parent();
     auto parent = !item.isValid() ? root.get() : static_cast<Process*>(item.internalPointer());
-    beginRemoveRows(item, index.row(), index.row());
+    beginRemoveRows(item, index.row(), index.row()); // This causes some problems.
     parent->removeChild(index.row());
     endRemoveRows();
     return true;
