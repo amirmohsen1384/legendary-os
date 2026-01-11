@@ -1,37 +1,33 @@
-#include <QRandomGenerator64>
-#include "processmodel.h"
+#include "taskmodel.h"
 #include <QColor>
 
-Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
+Task* TaskModel::createTask(const TaskInfo &info, Task *parent)
 {
     if (!parent)
     {
         return {};
     }
 
-    auto process = std::make_unique<Process>(parent);
-    process->setName(info.getName());
-    process->setPriority(info.getPriority());
-    process->setFileName(info.getFileName());
-    process->setBurstTime(info.getBurstTime());
-    process->setRemainingTime(info.getBurstTime());
+    auto task = std::make_unique<Task>(parent);
+    task->setName(info.getName());
+    task->setPriority(info.getPriority());
+    task->setResource(info.getResource());
+    task->setBurstTime(info.getBurstTime());
+    task->setRemainingTime(info.getBurstTime());
 
-    auto pid = QRandomGenerator64::global()->bounded(Process::getMinimumID(), Process::getMaximumID());
-    process->setIdentifier(pid);
-
-    auto result = process.get();
-    parent->addChild(std::move(process));
+    auto result = task.get();
+    parent->addChild(std::move(task));
 
     return result;
 }
 
-ProcessModel::ProcessModel(QObject *parent) : QAbstractItemModel(parent)
+TaskModel::TaskModel(QObject *parent) : QAbstractItemModel(parent)
 {
-    root = std::make_unique<Process>();
+    root = std::make_unique<Task>();
     root->setName("Root");
 }
 
-QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant TaskModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     if (orientation != Qt::Horizontal)
     {
@@ -41,26 +37,22 @@ QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int 
     {
     case Qt::DisplayRole:
     {
-        auto group = static_cast<Info>(section);
+        auto group = static_cast<Header>(section);
         switch (group)
         {
-        case Info::PID:
-        {
-            return QString("PID");
-        }
-        case Info::Name:
+        case Header::Name:
         {
             return QString("Name");
         }
-        case Info::State:
+        case Header::State:
         {
             return QString("State");
         }
-        case Info::Dependency:
+        case Header::Resource:
         {
-            return QString("Dependency");
+            return QString("Resource");
         }
-        case Info::Priority:
+        case Header::Priority:
         {
             return QString("Priority");
         }
@@ -86,13 +78,13 @@ QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int 
     }
 }
 
-QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex TaskModel::index(int row, int column, const QModelIndex &parent) const
 {
     if(!hasIndex(row, column, parent))
     {
         return {};
     }
-    auto ancestor = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
+    auto ancestor = parent.isValid() ? static_cast<Task*>(parent.internalPointer()) : root.get();
     if(!ancestor)
     {
         ancestor = root.get();
@@ -101,7 +93,7 @@ QModelIndex ProcessModel::index(int row, int column, const QModelIndex &parent) 
     return !result ? QModelIndex() : createIndex(row, column, result);
 }
 
-QModelIndex ProcessModel::parent(const QModelIndex &index) const
+QModelIndex TaskModel::parent(const QModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -109,7 +101,7 @@ QModelIndex ProcessModel::parent(const QModelIndex &index) const
     }
     else
     {
-        auto item = static_cast<Process*>(index.internalPointer());
+        auto item = static_cast<Task*>(index.internalPointer());
         if (!item)
         {
             item = root.get();
@@ -123,26 +115,26 @@ QModelIndex ProcessModel::parent(const QModelIndex &index) const
     }
 }
 
-int ProcessModel::rowCount(const QModelIndex &parent) const
+int TaskModel::rowCount(const QModelIndex &parent) const
 {
-    auto item = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
+    auto item = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
     return item ? item->childCount() : 0;
 }
 
-int ProcessModel::columnCount(const QModelIndex &parent) const
+int TaskModel::columnCount(const QModelIndex &parent) const
 {
-    auto item = parent.isValid() ? static_cast<Process*>(parent.internalPointer()) : root.get();
+    auto item = parent.isValid() ? static_cast<Task*>(parent.internalPointer()) : root.get();
     return item ? item->columnCount() : 0;
 }
 
-QVariant ProcessModel::data(const QModelIndex &index, int role) const
+QVariant TaskModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
         return {};
     }
 
-    auto item = static_cast<Process*>(index.internalPointer());
+    auto item = static_cast<Task*>(index.internalPointer());
     if(!item)
     {
         return {};
@@ -152,30 +144,26 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     {
-        auto group = static_cast<Info>(index.column());
+        auto group = static_cast<Header>(index.column());
         switch (group)
         {
-        case Info::Name:
+        case Header::Name:
         {
             return item->getName();
         }
-        case Info::Dependency:
+        case Header::Resource:
         {
-            if (item->needsFile())
+            if (item->depends())
             {
-                const auto &fileName = item->getFileName();
-                return fileName.size() <= 16 ? fileName : QString("%1...").arg(fileName.first(16));
+                const auto &resource = item->getResource();
+                return resource.size() <= 16 ? resource : QString("%1...").arg(resource.first(16));
             }
             else
             {
                 return QString("No Dependency");
             }
         }
-        case Info::PID:
-        {
-            return item->getIdentifier();
-        }
-        case Info::Priority:
+        case Header::Priority:
         {
             auto priority = item->getPriority();
             if (priority < 20)
@@ -195,24 +183,24 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
                 return "High";
             }
         }
-        case Info::State:
+        case Header::State:
         {
             switch (item->getState())
             {
-            case Process::State::Unknown:
+            case Task::State::Unknown:
             {
                 return "Unknown";
             }
-            case Process::State::Running:
+            case Task::State::Running:
             {
                 return "Running";
             }
-            case Process::State::Ready:
+            case Task::State::Ready:
             {
                 return "Ready";
             }
-            case Process::State::WaitingForFile:
-            case Process::State::WaitingForLimit:
+            case Task::State::WaitingForLimit:
+            case Task::State::WaitingForResource:
             {
                 return "Waiting";
             }
@@ -231,23 +219,23 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
     case Qt::BackgroundRole:
     {
-        auto group = static_cast<Info>(index.column());
+        auto group = static_cast<Header>(index.column());
         switch (group)
         {
-        case Info::State:
+        case Header::State:
         {
             switch (item->getState())
             {
-            case Process::State::Running:
+            case Task::State::Running:
             {
                 return QColor(150, 255, 180); // Light Green
             }
-            case Process::State::Ready:
+            case Task::State::Ready:
             {
                 return QColor(230, 255, 150); // Light Yellow
             }
-            case Process::State::WaitingForFile:
-            case Process::State::WaitingForLimit:
+            case Task::State::WaitingForLimit:
+            case Task::State::WaitingForResource:
             {
                 return QColor(170, 230, 255); // Light Blue
             }
@@ -261,12 +249,12 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
     case Qt::ForegroundRole:
     {
-        auto group = static_cast<Info>(index.column());
+        auto group = static_cast<Header>(index.column());
         switch(group)
         {
-        case Info::Dependency:
+        case Header::Resource:
         {
-            if (!item->needsFile())
+            if (!item->depends())
             {
                 return QColor(Qt::red);
             }
@@ -275,7 +263,7 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
                 return {};
             }
         }
-        case Info::Priority:
+        case Header::Priority:
         {
             auto priority = item->getPriority();
             if (priority < 20)
@@ -303,14 +291,14 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
     case Qt::ToolTipRole:
     {
-        auto group = static_cast<Info>(index.column());
+        auto group = static_cast<Header>(index.column());
         switch(group)
         {
-        case Info::Dependency:
+        case Header::Resource:
         {
-            return item->getFileName();
+            return item->getResource();
         }
-        case Info::Priority:
+        case Header::Priority:
         {
             return QString("Priority: %1%").arg(item->getPriority());
         }
@@ -320,23 +308,23 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
         }
         }
     }
-    case ProcessInfo::Name:
+    case TaskInfo::Name:
     {
         return item->getName();
     }
-    case ProcessInfo::Priority:
+    case TaskInfo::Priority:
     {
         return item->getPriority();
     }
-    case ProcessInfo::BurstTime:
+    case TaskInfo::BurstTime:
     {
         return item->getBurstTime();
     }
-    case ProcessInfo::FileName:
+    case TaskInfo::Resource:
     {
-        return item->getFileName();
+        return item->getResource();
     }
-    case ProcessInfo::State:
+    case TaskInfo::State:
     {
         return QVariant::fromValue(item->getState());
     }
@@ -347,17 +335,17 @@ QVariant ProcessModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int role)
+bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {
     bool changed = false;
     if (!index.isValid())
     {
         return changed;
     }
-    auto item = static_cast<Process*>(index.internalPointer());
+    auto item = static_cast<Task*>(index.internalPointer());
     switch (role)
     {
-    case ProcessInfo::Name:
+    case TaskInfo::Name:
     {
         if(value.canConvert<QString>())
         {
@@ -366,7 +354,7 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
         }
         break;
     }
-    case ProcessInfo::Priority:
+    case TaskInfo::Priority:
     {
         if (value.canConvert<qint64>())
         {
@@ -375,7 +363,7 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
         }
         break;
     }
-    case ProcessInfo::BurstTime:
+    case TaskInfo::BurstTime:
     {
         if (value.canConvert<qint64>())
         {
@@ -384,20 +372,20 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
         }
         break;
     }
-    case ProcessInfo::FileName:
+    case TaskInfo::Resource:
     {
         if (value.canConvert<QString>())
         {
-            item->setFileName(value.toString());
+            item->setResource(value.toString());
             changed = true;
         }
         break;
     }
-    case ProcessInfo::State:
+    case TaskInfo::State:
     {
-        if (value.canConvert<Process::State>())
+        if (value.canConvert<Task::State>())
         {
-            item->setState(qvariant_cast<Process::State>(value));
+            item->setState(qvariant_cast<Task::State>(value));
             changed = true;
         }
         break;
@@ -410,9 +398,9 @@ bool ProcessModel::setData(const QModelIndex &index, const QVariant &value, int 
     return changed;
 }
 
-QModelIndex ProcessModel::index(qint64 value, const QModelIndex &parent)
+QModelIndex TaskModel::index(qint64 value, const QModelIndex &parent)
 {
-    auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
+    auto ancestor = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
     if (!ancestor)
     {
         return {};
@@ -421,38 +409,38 @@ QModelIndex ProcessModel::index(qint64 value, const QModelIndex &parent)
     return !item ? QModelIndex() : createIndex(item->row(), 0, item);
 }
 
-bool ProcessModel::insert(const ProcessInfo &info, const QModelIndex &parent)
+bool TaskModel::insert(const TaskInfo &info, const QModelIndex &parent)
 {
-    auto ancestor = !parent.isValid() ? root.get() : static_cast<Process*>(parent.internalPointer());
+    auto ancestor = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
     if(!ancestor)
     {
         return false;
     }
     beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
-    auto process = createProcess(info, ancestor);
+    auto task = createTask(info, ancestor);
     endInsertRows();
-    return process != nullptr;
+    return task != nullptr;
 }
 
-bool ProcessModel::remove(const QModelIndex &index)
+bool TaskModel::remove(const QModelIndex &index)
 {
     if (!index.isValid())
     {
         return false;
     }
     const auto item = index.parent();
-    auto parent = !item.isValid() ? root.get() : static_cast<Process*>(item.internalPointer());
+    auto parent = !item.isValid() ? root.get() : static_cast<Task*>(item.internalPointer());
     beginRemoveRows(item, index.row(), index.row()); // This causes some problems.
     parent->removeChild(index.row());
     endRemoveRows();
     return true;
 }
 
-void ProcessModel::clear()
+void TaskModel::clear()
 {
     beginResetModel();
     root.reset(nullptr);
-    root = std::make_unique<Process>(nullptr);
+    root = std::make_unique<Task>(nullptr);
     root->setName("Root");
     endResetModel();
 }
