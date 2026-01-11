@@ -1,5 +1,6 @@
 #include "processpanel.h"
 #include "ui_processpanel.h"
+#include <QMessageBox>
 
 ProcessPanel::ProcessPanel(ProcessModel *model, QWidget *parent) : QDialog(parent)
 {
@@ -104,4 +105,34 @@ void ProcessPanel::setModel(ProcessModel *model)
 void ProcessPanel::expandFrom(const QModelIndex &index)
 {
     ui->locationView->expand(index);
+}
+
+void ProcessPanel::accept()
+{
+    if (getName().isEmpty())
+    {
+        QMessageBox::warning(
+            this, "No name provided",
+            "You have entered the name of the process."
+        );
+        return;
+    }
+    else if (getPriority() <= 0)
+    {
+        QMessageBox::warning(
+            this, "No priority is set",
+            "You have set the priority.\n\n"
+            "The prority should be at least 1 and at most 100."
+        );
+        return;
+    }
+    else if (getBurstTime() <= 0)
+    {
+        QMessageBox::warning(
+            this, "No burst time is set",
+            "You have set the burst time.\n\n"
+            "The burst time should be at least 1 and at most 100.");
+        return;
+    }
+    QDialog::accept();
 }

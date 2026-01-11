@@ -42,6 +42,9 @@ public:
 
     void expandFrom(const QModelIndex &index);
 
+public:
+    virtual void accept();
+
 private:
     std::unique_ptr<Ui::ProcessPanel> ui;
 };
