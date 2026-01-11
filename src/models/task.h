@@ -12,28 +12,27 @@ public:
         PID = Qt::UserRole + 5,
         Agent = Qt::UserRole + 3,
         State = Qt::UserRole + 4,
+        Quantum = Qt::UserRole + 9,
         Priority = Qt::UserRole + 1,
         BurstTime = Qt::UserRole + 2,
+        StartTime = Qt::UserRole + 6,
+        FinishTime = Qt::UserRole + 7,
+        RemainingTime = Qt::UserRole + 8
     };
     TaskInfo() {}
 
+public:
+    bool depends() const;
     QString getName() const;
-
-    void setName(const QString &value);
-
+    QString getAgent() const;
     qint64 getPriority() const;
-
-    void setPriority(qint64 value);
-
     qint64 getBurstTime() const;
 
-    void setBurstTime(qint64 value);
-
-    bool depends() const;
-
-    QString getAgent() const;
-
-    void setAgent(const QString &value);
+public:
+    virtual void setAgent(const QString &value);
+    virtual void setName(const QString &value);
+    virtual void setBurstTime(qint64 value);
+    virtual void setPriority(qint64 value);
 
 private:
     QString name;
@@ -47,64 +46,55 @@ class Task : public TaskInfo
 public:
     enum class State
     {
-        Unknown,
-        Running,
-        Ready,
         WaitingForLimit,
-        WaitingForAgent
+        WaitingForAgent,
+        Running,
+        Unknown,
+        Timeout,
+        Ready
     };
 
 public:
-    Q_DISABLE_COPY_MOVE(Task)
     Task(Task *parent = nullptr);
+    Q_DISABLE_COPY_MOVE(Task)
     ~Task();
 
-    State getState() const;
-
-    void setState(State value);
-
-    Task* getParent();
-
-    void setParent(Task *value);
-
-    void addChild(std::unique_ptr<Task> item);
-
-    void removeChild(int row);
-
-    qint64 childCount() const;
-
-    Task* getChild(int row);
-
-    qint64 row() const;
-
-    qint64 columnCount() const;
-
-    qint64 getStartTime() const;
-
-    void setStartTime(qint64 value);
-
+    qint64 getRemainingTime() const;
     qint64 getFinishTime() const;
-
-    void setFinishTime(qint64 value);
+    qint64 getStartTime() const;
+    qint64 getQuantum() const;
 
     qint64 getIdentifier() const;
 
-    qint64 getRemainingTime() const;
+    qint64 columnCount() const;
+    qint64 childCount() const;
+    bool finished() const;
 
-    void setRemainingTime(qint64 value);
+    Task* getChild(int row);
+    State getState() const;
 
-    Task* find(qint64 value);
+    qint64 row() const;
+    Task* getParent();
 
-    static qint64 getMinimumID();
+public:
+    void removeChild(int row);
+    void setState(State value);
+    void setParent(Task *value);
+    void addChild(std::unique_ptr<Task> item);
+    virtual void setBurstTime(qint64 value) override;
 
-    static qint64 getMaximumID();
+public:
+    void beginToProceed(qint64 timestamp);
+    void endToProceed(qint64 timestamp);
+    qint64 proceed(qint64 value);
 
 private:
+    qint64 quantum;
     qint64 identifier;
-    qint64 startTime = 0;
-    qint64 finishTime = 0;
-    qint64 remainingTime = 0;
+    qint64 startTime = -1;
+    qint64 finishTime = -1;
     Task *parent = nullptr;
+    qint64 remainingTime = 0;
     State state = State::Unknown;
     std::vector<std::unique_ptr<Task>> children;
 };

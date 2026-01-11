@@ -49,7 +49,7 @@ void TaskInfo::setAgent(const QString &value)
 Task::Task(Task *parent)
 {
     this->parent = parent;
-    auto pid = QRandomGenerator64::global()->bounded(Task::getMinimumID(), Task::getMaximumID());
+    auto pid = QRandomGenerator64::global()->bounded(1, 10000 - 1);
     identifier = pid;
 }
 
@@ -82,36 +82,67 @@ qint64 Task::getRemainingTime() const
     return remainingTime;
 }
 
-void Task::setRemainingTime(qint64 value)
+void Task::setBurstTime(qint64 value)
 {
     remainingTime = value;
+    TaskInfo::setBurstTime(value);
 }
 
-Task *Task::find(qint64 value)
+void Task::beginToProceed(qint64 timestamp)
 {
-    if (value < getMinimumID() && value > getMaximumID()) {
-        return nullptr;
+    if (finished())
+    {
+        return;
     }
-    else if(this->identifier == value) {
-        return this;
+    if (startTime < 0)
+    {
+        startTime = timestamp;
     }
-    else {
-        for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
-        {
-            return iterator->get()->find(value);
-        }
-    }
-    return nullptr;
+    state = State::Running;
 }
 
-qint64 Task::getMinimumID()
+void Task::endToProceed(qint64 timestamp)
 {
-    return 0;
+    if (state != State::Running)
+    {
+        return;
+    }
+    if (finished())
+    {
+        finishTime = timestamp;
+        state = State::Ready;
+    }
+    else
+    {
+        priority = priority / (1 + 0.5 * quantum);
+        state = State::Timeout;
+    }
 }
 
-qint64 Task::getMaximumID()
+qint64 Task::proceed(qint64 value)
 {
-    return 10000 - 1;
+    if (state != State::Running || finished())
+    {
+        return;
+    }
+    qint64 spent = 0;
+    if (remainingTime >= value)
+    {
+        remainingTime -= value;
+        spent = value;
+    }
+    else
+    {
+        spent = remainingTime;
+        remainingTime = 0;
+    }
+    quantum += spent;
+    return spent;
+}
+
+bool Task::finished() const
+{
+    return remainingTime == 0;
 }
 
 qint64 Task::getStartTime() const
@@ -119,19 +150,14 @@ qint64 Task::getStartTime() const
     return startTime;
 }
 
-void Task::setStartTime(qint64 value)
+qint64 Task::getQuantum() const
 {
-    startTime = value;
+    return quantum;
 }
 
 qint64 Task::getFinishTime() const
 {
     return finishTime;
-}
-
-void Task::setFinishTime(qint64 value)
-{
-    finishTime = value;
 }
 
 Task* Task::getParent()
