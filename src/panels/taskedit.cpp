@@ -100,6 +100,7 @@ void TaskEdit::setModel(TaskModel *model)
     auto visible = model->rowCount() > 0;
     ui->emptyLabel->setVisible(!visible);
     ui->locationView->setVisible(visible);
+    ui->locationDescriptionLabel->setVisible(visible);
 }
 
 void TaskEdit::expandFrom(const QModelIndex &index)
