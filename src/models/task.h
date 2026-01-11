@@ -9,6 +9,7 @@ public:
     enum Role
     {
         Name = Qt::UserRole,
+        PID = Qt::UserRole + 5,
         Agent = Qt::UserRole + 3,
         State = Qt::UserRole + 4,
         Priority = Qt::UserRole + 1,

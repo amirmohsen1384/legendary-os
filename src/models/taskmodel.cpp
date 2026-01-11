@@ -328,6 +328,10 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
     {
         return QVariant::fromValue(item->getState());
     }
+    case TaskInfo::PID:
+    {
+        return item->getIdentifier();
+    }
     default:
     {
         return {};
