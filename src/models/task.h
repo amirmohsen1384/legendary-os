@@ -11,8 +11,8 @@ public:
         Name = Qt::UserRole,
         State = Qt::UserRole + 4,
         Priority = Qt::UserRole + 1,
+        Resource = Qt::UserRole + 3,
         BurstTime = Qt::UserRole + 2,
-        Resources = Qt::UserRole + 3
     };
     TaskInfo() {}
 
@@ -50,7 +50,7 @@ public:
         Running,
         Ready,
         WaitingForLimit,
-        WaitingForResources
+        WaitingForResource
     };
 
 public:
@@ -87,8 +87,6 @@ public:
     void setFinishTime(qint64 value);
 
     qint64 getIdentifier() const;
-
-    void setIdentifier(qint64 value);
 
     qint64 getRemainingTime() const;
 

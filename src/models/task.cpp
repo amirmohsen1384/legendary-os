@@ -1,4 +1,5 @@
 #include "task.h"
+#include <QRandomGenerator64>
 
 QString TaskInfo::getName() const
 {
@@ -48,6 +49,8 @@ void TaskInfo::setResource(const QString &value)
 Task::Task(Task *parent)
 {
     this->parent = parent;
+    auto pid = QRandomGenerator64::global()->bounded(Task::getMinimumID(), Task::getMaximumID());
+    identifier = pid;
 }
 
 Task::~Task()
@@ -72,11 +75,6 @@ Task::State Task::getState() const
 qint64 Task::getIdentifier() const
 {
     return identifier;
-}
-
-void Task::setIdentifier(qint64 value)
-{
-    identifier = value;
 }
 
 qint64 Task::getRemainingTime() const
