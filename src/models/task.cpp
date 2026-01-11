@@ -33,17 +33,17 @@ void TaskInfo::setBurstTime(qint64 value)
 
 bool TaskInfo::depends() const
 {
-    return !getResource().isEmpty();
+    return !getAgent().isEmpty();
 }
 
-QString TaskInfo::getResource() const
+QString TaskInfo::getAgent() const
 {
-    return resource;
+    return agent;
 }
 
-void TaskInfo::setResource(const QString &value)
+void TaskInfo::setAgent(const QString &value)
 {
-    resource = value;
+    agent = value;
 }
 
 Task::Task(Task *parent)
@@ -210,7 +210,7 @@ qint64 Task::columnCount() const
     // State
     count++;
 
-    // Resources
+    // Agent
     count++;
 
     // Priority

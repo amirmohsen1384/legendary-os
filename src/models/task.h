@@ -9,9 +9,9 @@ public:
     enum Role
     {
         Name = Qt::UserRole,
+        Agent = Qt::UserRole + 3,
         State = Qt::UserRole + 4,
         Priority = Qt::UserRole + 1,
-        Resource = Qt::UserRole + 3,
         BurstTime = Qt::UserRole + 2,
     };
     TaskInfo() {}
@@ -30,15 +30,15 @@ public:
 
     bool depends() const;
 
-    QString getResource() const;
+    QString getAgent() const;
 
-    void setResource(const QString &value);
+    void setAgent(const QString &value);
 
 private:
     QString name;
+    QString agent;
     qint64 priority;
     qint64 burstTime;
-    QString resource;
 };
 
 class Task : public TaskInfo
@@ -50,7 +50,7 @@ public:
         Running,
         Ready,
         WaitingForLimit,
-        WaitingForResource
+        WaitingForAgent
     };
 
 public:
