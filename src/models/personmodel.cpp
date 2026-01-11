@@ -300,7 +300,7 @@ void PersonModel::clear()
 {
     beginResetModel();
     root.reset(nullptr);
-    root = std::make_unique<Process>(nullptr);
+    root = std::make_unique<Person>(nullptr);
     root->setFirstName("Main");
     root->setLastName("Root");
     endResetModel();
