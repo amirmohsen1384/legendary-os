@@ -131,7 +131,17 @@ void ProcessPanel::accept()
         QMessageBox::warning(
             this, "No burst time is set",
             "You have set the burst time.\n\n"
-            "The burst time should be at least 1 and at most 100.");
+            "The burst time should be at least 1 and at most 100."
+        );
+        return;
+    }
+    else if (dependsOnFile() && getFileName().isEmpty())
+    {
+        QMessageBox::warning(
+            this, "No file name is set",
+            "You have set the file name.\n\n"
+            "You need to set a file name as you enable file dependency."
+        );
         return;
     }
     QDialog::accept();
