@@ -10,15 +10,17 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    QModelIndex index;
     ProcessModel model;
-
     while (true)
     {
         ProcessPanel panel(&model);
+        panel.expandFrom(index);
         if(panel.exec() == QDialog::Accepted)
         {
             auto info = panel.getProcessInfo();
             model.insert(info, panel.getParent());
+            index = panel.getParent();
         }
         else
         {
