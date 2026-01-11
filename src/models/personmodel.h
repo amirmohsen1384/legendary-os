@@ -33,6 +33,9 @@ public:
 public:
     QString toString(const QModelIndex &index);
 
+public slots:
+    void clear();
+
 private:
     std::unique_ptr<Person> root;
 };

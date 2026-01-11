@@ -134,6 +134,7 @@ void Person::addChild(std::unique_ptr<Person> item)
 {
     if (item)
     {
+        item->setParent(this);
         children.push_back(std::move(item));
     }
 }

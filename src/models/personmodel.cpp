@@ -6,14 +6,14 @@ Person* PersonModel::createPerson(const PersonInfo &info, Person *parent)
     {
         return {};
     }
-    auto process = std::make_unique<Person>(parent);
-    process->setFirstName(info.getFirstName());
-    process->setBiography(info.getBiography());
-    process->setLastName(info.getLastName());
-    process->setBirthday(info.getBirthday());
+    auto person = std::make_unique<Person>(parent);
+    person->setFirstName(info.getFirstName());
+    person->setBiography(info.getBiography());
+    person->setLastName(info.getLastName());
+    person->setBirthday(info.getBirthday());
 
-    auto result = process.get();
-    parent->addChild(std::move(process));
+    auto result = person.get();
+    parent->addChild(std::move(person));
 
     return result;
 }
@@ -21,6 +21,8 @@ Person* PersonModel::createPerson(const PersonInfo &info, Person *parent)
 PersonModel::PersonModel(QObject *parent) : QAbstractItemModel(parent)
 {
     root = std::make_unique<Person>();
+    root->setFirstName("Main");
+    root->setLastName("Root");
 }
 
 QModelIndex PersonModel::index(int row, int column, const QModelIndex &parent) const
@@ -35,7 +37,7 @@ QModelIndex PersonModel::index(int row, int column, const QModelIndex &parent) c
         ancestor = root.get();
     }
     auto item = ancestor->getChild(row);
-    return !item ? QModelIndex() : createIndex(row, 0, item);
+    return !item ? QModelIndex() : createIndex(row, column, item);
 }
 
 QModelIndex PersonModel::index(const QString &path) const
@@ -262,7 +264,7 @@ bool PersonModel::insert(const PersonInfo &data, const QModelIndex &parent)
     {
         return false;
     }
-    beginInsertRows(parent, ancestor->childCount() + 1, ancestor->childCount() + 1);
+    beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
     auto person = createPerson(data, ancestor);
     endInsertRows();
     return person != nullptr;
@@ -274,13 +276,10 @@ bool PersonModel::remove(const QModelIndex &index)
     {
         return false;
     }
-    auto ancestor = static_cast<Person*>(index.parent().internalPointer());
-    if(!ancestor || index.row() < 0 || index.row() >= ancestor->childCount())
-    {
-        return false;
-    }
-    beginRemoveRows(index.parent(), index.row(), index.row());
-    ancestor->removeChild(index.row());
+    const auto item = index.parent();
+    auto parent = !item.isValid() ? root.get() : static_cast<Person*>(item.internalPointer());
+    beginRemoveRows(item, index.row(), index.row()); // This causes some problems.
+    parent->removeChild(index.row());
     endRemoveRows();
     return true;
 }
@@ -295,4 +294,14 @@ QString PersonModel::toString(const QModelIndex &index)
         toString(index.parent()),
         index.data(Person::NameRole).toString()
     );
+}
+
+void PersonModel::clear()
+{
+    beginResetModel();
+    root.reset(nullptr);
+    root = std::make_unique<Process>(nullptr);
+    root->setFirstName("Main");
+    root->setLastName("Root");
+    endResetModel();
 }
