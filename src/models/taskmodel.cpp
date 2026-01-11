@@ -11,7 +11,7 @@ Task* TaskModel::createTask(const TaskInfo &info, Task *parent)
     auto task = std::make_unique<Task>(parent);
     task->setName(info.getName());
     task->setPriority(info.getPriority());
-    task->setResource(info.getResource());
+    task->setAgent(info.getAgent());
     task->setBurstTime(info.getBurstTime());
     task->setRemainingTime(info.getBurstTime());
 
@@ -48,9 +48,9 @@ QVariant TaskModel::headerData(int section, Qt::Orientation orientation, int rol
         {
             return QString("State");
         }
-        case Header::Resource:
+        case Header::Agent:
         {
-            return QString("Resource");
+            return QString("Agent");
         }
         case Header::Priority:
         {
@@ -151,16 +151,16 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         {
             return item->getName();
         }
-        case Header::Resource:
+        case Header::Agent:
         {
             if (item->depends())
             {
-                const auto &resource = item->getResource();
-                return resource.size() <= 16 ? resource : QString("%1...").arg(resource.first(16));
+                const auto &agent = item->getAgent();
+                return agent.size() <= 16 ? agent : QString("%1...").arg(agent.first(16));
             }
             else
             {
-                return QString("No Dependency");
+                return QString("Independent");
             }
         }
         case Header::Priority:
@@ -200,7 +200,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
                 return "Ready";
             }
             case Task::State::WaitingForLimit:
-            case Task::State::WaitingForResource:
+            case Task::State::WaitingForAgent:
             {
                 return "Waiting";
             }
@@ -235,7 +235,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
                 return QColor(230, 255, 150); // Light Yellow
             }
             case Task::State::WaitingForLimit:
-            case Task::State::WaitingForResource:
+            case Task::State::WaitingForAgent:
             {
                 return QColor(170, 230, 255); // Light Blue
             }
@@ -252,7 +252,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         auto group = static_cast<Header>(index.column());
         switch(group)
         {
-        case Header::Resource:
+        case Header::Agent:
         {
             if (!item->depends())
             {
@@ -294,9 +294,9 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         auto group = static_cast<Header>(index.column());
         switch(group)
         {
-        case Header::Resource:
+        case Header::Agent:
         {
-            return item->getResource();
+            return item->getAgent();
         }
         case Header::Priority:
         {
@@ -320,9 +320,9 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
     {
         return item->getBurstTime();
     }
-    case TaskInfo::Resource:
+    case TaskInfo::Agent:
     {
-        return item->getResource();
+        return item->getAgent();
     }
     case TaskInfo::State:
     {
@@ -372,11 +372,11 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
         break;
     }
-    case TaskInfo::Resource:
+    case TaskInfo::Agent:
     {
         if (value.canConvert<QString>())
         {
-            item->setResource(value.toString());
+            item->setAgent(value.toString());
             changed = true;
         }
         break;

@@ -41,24 +41,24 @@ void TaskEdit::setBurstTime(qint64 value)
     ui->burstEdit->setValue(value);
 }
 
-QString TaskEdit::getResource() const
+QString TaskEdit::getAgent() const
 {
-    return ui->resourceEdit->text();
+    return ui->agentEdit->text();
 }
 
-void TaskEdit::setResource(const QString &value)
+void TaskEdit::setAgent(const QString &value)
 {
-    ui->resourceEdit->setText(value);
+    ui->agentEdit->setText(value);
 }
 
 bool TaskEdit::dependency() const
 {
-    return ui->resourceGroup->isChecked();
+    return ui->agentGroup->isChecked();
 }
 
 void TaskEdit::setDependency(bool value)
 {
-    ui->resourceGroup->setChecked(value);
+    ui->agentGroup->setChecked(value);
 }
 
 TaskInfo TaskEdit::getTaskInfo() const
@@ -67,15 +67,15 @@ TaskInfo TaskEdit::getTaskInfo() const
     info.setName(getName());
     info.setPriority(getPriority());
     info.setBurstTime(getBurstTime());
-    info.setResource(getResource());
+    info.setAgent(getAgent());
     return info;
 }
 
 void TaskEdit::setTaskInfo(const TaskInfo &info)
 {
     setName(info.getName());
+    setAgent(info.getAgent());
     setPriority(info.getPriority());
-    setResource(info.getResource());
     setBurstTime(info.getBurstTime());
 }
 
@@ -136,7 +136,7 @@ void TaskEdit::accept()
         );
         return;
     }
-    else if (dependency() && getResource().isEmpty())
+    else if (dependency() && getAgent().isEmpty())
     {
         QMessageBox::warning(
             this, "No file name is set",

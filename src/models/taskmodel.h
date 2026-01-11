@@ -8,7 +8,7 @@ class TaskModel : public QAbstractItemModel
 {
     Q_OBJECT
 protected:
-    enum class Header {Name = 0, State = 1, Resource = 3, Priority = 2};
+    enum class Header {Name = 0, State = 1, Agent = 3, Priority = 2};
     Task *createTask(const TaskInfo &info, Task *parent);
 
 public:

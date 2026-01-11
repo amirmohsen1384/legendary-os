@@ -25,8 +25,8 @@ public:
     qint64 getBurstTime() const;
     void setBurstTime(qint64 value);
 
-    QString getResource() const;
-    void setResource(const QString &value);
+    QString getAgent() const;
+    void setAgent(const QString &value);
 
     bool dependency() const;
     void setDependency(bool value);

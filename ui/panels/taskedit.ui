@@ -345,7 +345,7 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="resourceGroup">
+    <widget class="QGroupBox" name="agentGroup">
      <property name="font">
       <font>
        <pointsize>9</pointsize>
@@ -378,7 +378,7 @@
        <number>0</number>
       </property>
       <item row="1" column="2">
-       <widget class="QPushButton" name="resourceBrowseButton">
+       <widget class="QPushButton" name="agentBrowseButton">
         <property name="font">
          <font>
           <pointsize>9</pointsize>
@@ -394,7 +394,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="resourceEdit">
+       <widget class="QLineEdit" name="agentEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -413,7 +413,7 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="resourceLabel">
+       <widget class="QLabel" name="agentLabel">
         <property name="font">
          <font>
           <pointsize>9</pointsize>
@@ -421,7 +421,7 @@
          </font>
         </property>
         <property name="text">
-         <string>Resource:</string>
+         <string>Agent:</string>
         </property>
        </widget>
       </item>
