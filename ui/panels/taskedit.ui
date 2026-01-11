@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ProcessPanel</class>
- <widget class="QDialog" name="ProcessPanel">
+ <class>TaskEdit</class>
+ <widget class="QDialog" name="TaskEdit">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -56,6 +56,11 @@
     </disabled>
    </palette>
   </property>
+  <property name="font">
+   <font>
+    <pointsize>9</pointsize>
+   </font>
+  </property>
   <property name="windowTitle">
    <string>Create a new process</string>
   </property>
@@ -74,7 +79,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Create Process</string>
+        <string>Create a new task</string>
        </property>
       </widget>
      </item>
@@ -86,7 +91,7 @@
         </font>
        </property>
        <property name="text">
-        <string>Fill in the following blanks and create the process.</string>
+        <string>Fill out the following fields to create a task.</string>
        </property>
       </widget>
      </item>
@@ -96,6 +101,7 @@
     <widget class="QGroupBox" name="generalGroup">
      <property name="font">
       <font>
+       <pointsize>9</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -122,6 +128,7 @@
        <widget class="QLabel" name="priorityLabel">
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -147,6 +154,7 @@
        <widget class="QLabel" name="nameLabel">
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -162,11 +170,12 @@
        <widget class="QLabel" name="burstLabel">
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
         <property name="text">
-         <string>Burst: </string>
+         <string>Burst Time: </string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -242,6 +251,7 @@
     <widget class="QDialogButtonBox" name="controlButton">
      <property name="font">
       <font>
+       <pointsize>9</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -295,10 +305,23 @@
          </font>
         </property>
         <property name="text">
-         <string>No processes found.</string>
+         <string>No tasks found.</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="locationDescriptionLabel">
+        <property name="font">
+         <font>
+          <pointsize>9</pointsize>
+          <bold>false</bold>
+         </font>
+        </property>
+        <property name="text">
+         <string>Select the location where you want to add your task:</string>
         </property>
        </widget>
       </item>
@@ -322,14 +345,15 @@
     </widget>
    </item>
    <item row="2" column="0" colspan="2">
-    <widget class="QGroupBox" name="fileGroup">
+    <widget class="QGroupBox" name="resourceGroup">
      <property name="font">
       <font>
+       <pointsize>9</pointsize>
        <bold>true</bold>
       </font>
      </property>
      <property name="title">
-      <string>File Dependency</string>
+      <string>Dependency</string>
      </property>
      <property name="flat">
       <bool>true</bool>
@@ -354,9 +378,10 @@
        <number>0</number>
       </property>
       <item row="1" column="2">
-       <widget class="QPushButton" name="fileBrowseButton">
+       <widget class="QPushButton" name="resourceBrowseButton">
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -369,7 +394,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QLineEdit" name="fileEdit">
+       <widget class="QLineEdit" name="resourceEdit">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -378,6 +403,7 @@
         </property>
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -387,14 +413,15 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="fileLabel">
+       <widget class="QLabel" name="resourceLabel">
         <property name="font">
          <font>
+          <pointsize>9</pointsize>
           <bold>true</bold>
          </font>
         </property>
         <property name="text">
-         <string>File Name:</string>
+         <string>Resource:</string>
         </property>
        </widget>
       </item>
@@ -408,7 +435,7 @@
   <connection>
    <sender>controlButton</sender>
    <signal>accepted()</signal>
-   <receiver>ProcessPanel</receiver>
+   <receiver>TaskEdit</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -424,7 +451,7 @@
   <connection>
    <sender>controlButton</sender>
    <signal>rejected()</signal>
-   <receiver>ProcessPanel</receiver>
+   <receiver>TaskEdit</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

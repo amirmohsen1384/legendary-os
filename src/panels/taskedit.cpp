@@ -1,100 +1,100 @@
-#include "processpanel.h"
-#include "ui_processpanel.h"
+#include "taskedit.h"
 #include <QMessageBox>
+#include "ui_taskedit.h"
 
-ProcessPanel::ProcessPanel(ProcessModel *model, QWidget *parent) : QDialog(parent)
+TaskEdit::TaskEdit(TaskModel *model, QWidget *parent) : QDialog(parent)
 {
-    ui = std::make_unique<Ui::ProcessPanel>();
+    ui = std::make_unique<Ui::TaskEdit>();
     ui->setupUi(this);
     setModel(model);
 }
 
-ProcessPanel::~ProcessPanel() {}
+TaskEdit::~TaskEdit() {}
 
-QString ProcessPanel::getName() const
+QString TaskEdit::getName() const
 {
     return ui->nameEdit->text();
 }
 
-void ProcessPanel::setName(const QString &value)
+void TaskEdit::setName(const QString &value)
 {
     ui->nameEdit->setText(value);
 }
 
-qint64 ProcessPanel::getPriority() const
+qint64 TaskEdit::getPriority() const
 {
     return ui->priorityEdit->value();
 }
 
-void ProcessPanel::setPriority(qint64 value)
+void TaskEdit::setPriority(qint64 value)
 {
     ui->priorityEdit->setValue(value);
 }
 
-qint64 ProcessPanel::getBurstTime() const
+qint64 TaskEdit::getBurstTime() const
 {
     return ui->burstEdit->value();
 }
 
-void ProcessPanel::setBurstTime(qint64 value)
+void TaskEdit::setBurstTime(qint64 value)
 {
     ui->burstEdit->setValue(value);
 }
 
-QString ProcessPanel::getFileName() const
+QString TaskEdit::getResource() const
 {
-    return ui->fileEdit->text();
+    return ui->resourceEdit->text();
 }
 
-void ProcessPanel::setFileName(const QString &value)
+void TaskEdit::setResource(const QString &value)
 {
-    ui->fileEdit->setText(value);
+    ui->resourceEdit->setText(value);
 }
 
-bool ProcessPanel::dependsOnFile() const
+bool TaskEdit::dependency() const
 {
-    return ui->fileGroup->isChecked();
+    return ui->resourceGroup->isChecked();
 }
 
-void ProcessPanel::setDependsOnFile(bool value)
+void TaskEdit::setDependency(bool value)
 {
-    ui->fileGroup->setChecked(value);
+    ui->resourceGroup->setChecked(value);
 }
 
-ProcessInfo ProcessPanel::getProcessInfo() const
+TaskInfo TaskEdit::getTaskInfo() const
 {
-    ProcessInfo info;
+    TaskInfo info;
     info.setName(getName());
-    info.setFileName(getFileName());
     info.setPriority(getPriority());
     info.setBurstTime(getBurstTime());
+    info.setResource(getResource());
     return info;
 }
 
-void ProcessPanel::setProcessInfo(const ProcessInfo &info)
+void TaskEdit::setTaskInfo(const TaskInfo &info)
 {
     setName(info.getName());
     setPriority(info.getPriority());
-    setFileName(info.getFileName());
+    setResource(info.getResource());
     setBurstTime(info.getBurstTime());
 }
 
-QModelIndex ProcessPanel::getParent() const
+QModelIndex TaskEdit::getParent() const
 {
     return ui->locationView->currentIndex();
 }
 
-void ProcessPanel::setParent(const QModelIndex &parent)
+void TaskEdit::setParent(const QModelIndex &parent)
 {
     ui->locationView->setCurrentIndex(parent);
 }
 
-ProcessModel *ProcessPanel::getModel()
+TaskModel *TaskEdit::getModel()
 {
-    return static_cast<ProcessModel*>(ui->locationView->model());
+    return static_cast<TaskModel*>(ui->locationView->model());
 }
 
-void ProcessPanel::setModel(ProcessModel *model)
+void TaskEdit::setModel(TaskModel *model)
 {
     ui->locationView->setModel(model);
     auto visible = model->rowCount() > 0;
@@ -102,12 +102,12 @@ void ProcessPanel::setModel(ProcessModel *model)
     ui->locationView->setVisible(visible);
 }
 
-void ProcessPanel::expandFrom(const QModelIndex &index)
+void TaskEdit::expandFrom(const QModelIndex &index)
 {
     ui->locationView->expand(index);
 }
 
-void ProcessPanel::accept()
+void TaskEdit::accept()
 {
     if (getName().isEmpty())
     {
@@ -135,7 +135,7 @@ void ProcessPanel::accept()
         );
         return;
     }
-    else if (dependsOnFile() && getFileName().isEmpty())
+    else if (dependency() && getResource().isEmpty())
     {
         QMessageBox::warning(
             this, "No file name is set",
