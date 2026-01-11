@@ -146,13 +146,17 @@ void Process::setParent(Process *value)
 
 void Process::addChild(std::unique_ptr<Process> process)
 {
-    process->setParent(this);
-    children.push_back(std::move(process));
+    if (!process)
+    {
+        process->setParent(this);
+        children.push_back(std::move(process));
+    }
 }
 
 void Process::removeChild(int row)
 {
-    if (row < 0 || row >= children.size()) {
+    if (row < 0 || row >= children.size())
+    {
         return;
     }
     children.erase(children.begin() + row);

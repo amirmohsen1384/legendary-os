@@ -28,7 +28,7 @@ Process* ProcessModel::createProcess(const ProcessInfo &info, Process *parent)
 ProcessModel::ProcessModel(QObject *parent) : QAbstractItemModel(parent)
 {
     root = std::make_unique<Process>();
-    root->setName("Root Node");
+    root->setName("Root");
 }
 
 QVariant ProcessModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -453,5 +453,6 @@ void ProcessModel::clear()
     beginResetModel();
     root.reset(nullptr);
     root = std::make_unique<Process>(nullptr);
+    root->setName("Root");
     endResetModel();
 }
