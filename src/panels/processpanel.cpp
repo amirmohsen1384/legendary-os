@@ -100,3 +100,8 @@ void ProcessPanel::setModel(ProcessModel *model)
     ui->emptyLabel->setVisible(!visible);
     ui->locationView->setVisible(visible);
 }
+
+void ProcessPanel::expandFrom(const QModelIndex &index)
+{
+    ui->locationView->expand(index);
+}

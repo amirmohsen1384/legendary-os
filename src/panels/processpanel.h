@@ -40,6 +40,8 @@ public:
     ProcessModel* getModel();
     void setModel(ProcessModel *model);
 
+    void expandFrom(const QModelIndex &index);
+
 private:
     std::unique_ptr<Ui::ProcessPanel> ui;
 };
