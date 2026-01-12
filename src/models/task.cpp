@@ -58,7 +58,7 @@ Task::~Task()
     const auto stamp = getFinishTime();
     for (auto iterator = children.begin(); iterator != children.end(); ++iterator)
     {
-        iterator->get()->setFinishTime(stamp);
+        iterator->get()->finishTime = stamp;
     }
 }
 

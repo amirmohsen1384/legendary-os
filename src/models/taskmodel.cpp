@@ -490,7 +490,7 @@ qint64 TaskModel::proceed(const QModelIndex &index, qint64 quantum)
 {
     if (!index.isValid())
     {
-        return;
+        return 0;
     }
     auto item = static_cast<Task*>(index.internalPointer());
     auto result = item->proceed(quantum);
