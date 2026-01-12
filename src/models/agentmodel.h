@@ -32,7 +32,7 @@ public:
 
 public:
     QString toString(const QModelIndex &index);
-    void loadFromJSON(const QByteArray &data, const QModelIndex &parent = QModelIndex());
+    bool loadFromJSON(const QByteArray &data, const QModelIndex &parent = QModelIndex());
 
 private:
     std::unique_ptr<Agent> root;

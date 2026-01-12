@@ -1,3 +1,5 @@
+#include <QJsonValue>
+#include <QJsonObject>
 #include "agentmodel.h"
 #include <QJsonDocument>
 
@@ -19,11 +21,11 @@ Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
 
 bool AgentModel::loadFromJSON(const QJsonObject &object, const QModelIndex &parent)
 {
-    for(auto iterator = object.constBegin(); iterator != object.constEnd(); ++iterator)
+    for(auto iterator = object.begin(); iterator != object.end(); ++iterator)
     {
         AgentInfo info;
-        info.setName(iterator->key());
-        const auto major = iterator->value().toObject();
+        info.setName(iterator.key());
+        const auto major = iterator->toObject();
         info.setDescription(major["description"].toString());
         auto index = insert(info, parent);
         if (!loadFromJSON(major["children"].toObject(), index))
