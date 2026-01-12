@@ -7,6 +7,7 @@
 class AgentModel : public QAbstractItemModel
 {
     Q_OBJECT
+    void clear();
     Agent* createAgent(const AgentInfo &info, Agent *parent);
     bool loadFromJSON(const QJsonObject &data, const QModelIndex &parent = QModelIndex());
 

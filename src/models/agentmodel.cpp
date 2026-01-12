@@ -209,7 +209,7 @@ QVariant AgentModel::data(const QModelIndex &index, int role) const
     }
     case Qt::TextAlignmentRole:
     {
-        return Qt::AlignCenter;
+        return Qt::AlignVCenter;
     }
     case Agent::NameRole:
     {
@@ -278,11 +278,7 @@ bool AgentModel::remove(const QModelIndex &index)
 {
     if (!index.isValid())
     {
-        beginResetModel();
-        root.reset(nullptr);
-        root = std::make_unique<Agent>(nullptr);
-        root->setName("Main Root");
-        endResetModel();
+        clear();
         return true;
     }
     const auto item = index.parent();
@@ -307,6 +303,15 @@ bool AgentModel::loadFromJSON(const QByteArray &data, const QModelIndex &parent)
     }
     remove(parent);
     return loadFromJSON(document.object(), parent);
+}
+
+void AgentModel::clear()
+{
+    beginResetModel();
+    root.reset(nullptr);
+    root = std::make_unique<Agent>(nullptr);
+    root->setName("Main Root");
+    endResetModel();
 }
 
 QString AgentModel::toString(const QModelIndex &index)
