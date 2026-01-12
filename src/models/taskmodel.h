@@ -10,6 +10,7 @@ class TaskModel : public QAbstractItemModel
 protected:
     enum class Header {Name = 0, State = 1, Agent = 3, Priority = 2};
     Task *createTask(const TaskInfo &info, Task *parent);
+    void clear();
 
 public:
     explicit TaskModel(QObject *parent = nullptr);
@@ -32,7 +33,6 @@ public slots:
     void beginToProceed(const QModelIndex &index, qint64 timestamp);
     void endToProceed(const QModelIndex &index, qint64 timestamp);
     qint64 proceed(const QModelIndex &index, qint64 quantum);
-    void clear();
 
 private:
     std::unique_ptr<Task> root;

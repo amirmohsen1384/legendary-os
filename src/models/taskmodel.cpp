@@ -450,7 +450,8 @@ bool TaskModel::remove(const QModelIndex &index)
 {
     if (!index.isValid())
     {
-        return false;
+        clear();
+        return true;
     }
     const auto row = index.row();
     const auto item = index.parent();
