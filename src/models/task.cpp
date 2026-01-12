@@ -88,24 +88,25 @@ void Task::setBurstTime(qint64 value)
     TaskInfo::setBurstTime(value);
 }
 
-void Task::beginToProceed(qint64 timestamp)
+bool Task::beginToProceed(qint64 timestamp)
 {
-    if (finished())
+    if (finished() || state == State::Running)
     {
-        return;
+        return false;
     }
     if (startTime < 0)
     {
         startTime = timestamp;
     }
     state = State::Running;
+    return true;
 }
 
-void Task::endToProceed(qint64 timestamp)
+bool Task::endToProceed(qint64 timestamp)
 {
     if (state != State::Running)
     {
-        return;
+        return false;
     }
     if (finished())
     {
@@ -117,13 +118,14 @@ void Task::endToProceed(qint64 timestamp)
         priority = priority / (1 + 0.5 * quantum);
         state = State::Timeout;
     }
+    return true;
 }
 
 qint64 Task::proceed(qint64 value)
 {
     if (state != State::Running || finished())
     {
-        return;
+        return 0;
     }
     qint64 spent = 0;
     if (remainingTime >= value)

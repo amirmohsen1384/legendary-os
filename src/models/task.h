@@ -8,16 +8,16 @@ class TaskInfo
 public:
     enum Role
     {
-        Name = Qt::UserRole,
-        PID = Qt::UserRole + 5,
-        Agent = Qt::UserRole + 3,
-        State = Qt::UserRole + 4,
-        Quantum = Qt::UserRole + 9,
-        Priority = Qt::UserRole + 1,
-        BurstTime = Qt::UserRole + 2,
-        StartTime = Qt::UserRole + 6,
-        FinishTime = Qt::UserRole + 7,
-        RemainingTime = Qt::UserRole + 8
+        NameRole = Qt::UserRole,
+        PIDRole = Qt::UserRole + 5,
+        AgentRole = Qt::UserRole + 3,
+        StateRole = Qt::UserRole + 4,
+        QuantumRole = Qt::UserRole + 9,
+        PriorityRole = Qt::UserRole + 1,
+        BurstTimeRole = Qt::UserRole + 2,
+        StartTimeRole = Qt::UserRole + 6,
+        FinishTimeRole = Qt::UserRole + 7,
+        RemainingTimeRole = Qt::UserRole + 8
     };
     TaskInfo() {}
 
@@ -84,8 +84,8 @@ public:
     virtual void setBurstTime(qint64 value) override;
 
 public:
-    void beginToProceed(qint64 timestamp);
-    void endToProceed(qint64 timestamp);
+    bool beginToProceed(qint64 timestamp);
+    bool endToProceed(qint64 timestamp);
     qint64 proceed(qint64 value);
 
 private:
