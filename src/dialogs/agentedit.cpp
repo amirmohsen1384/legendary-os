@@ -56,6 +56,9 @@ AgentModel *AgentEdit::getModel() const
 void AgentEdit::setModel(AgentModel *model)
 {
     ui->agentView->setModel(model);
+    auto visible = model && model->rowCount() > 0;
+    ui->emptyLabel->setVisible(!visible);
+    ui->agentView->setVisible(visible);
 }
 
 void AgentEdit::expandFrom(const QModelIndex &index)
