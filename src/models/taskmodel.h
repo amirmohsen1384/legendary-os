@@ -15,13 +15,13 @@ public:
     explicit TaskModel(QObject *parent = nullptr);
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
-    virtual QModelIndex index(qint64 value, const QModelIndex &parent = QModelIndex());
     virtual QModelIndex parent(const QModelIndex &index) const override;
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
 
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
@@ -29,6 +29,9 @@ public:
     virtual bool remove(const QModelIndex &index);
 
 public slots:
+    void beginToProceed(const QModelIndex &index, qint64 timestamp);
+    void endToProceed(const QModelIndex &index, qint64 timestamp);
+    qint64 proceed(const QModelIndex &index, qint64 quantum);
     void clear();
 
 private:

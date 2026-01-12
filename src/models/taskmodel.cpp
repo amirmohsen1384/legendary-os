@@ -9,11 +9,10 @@ Task* TaskModel::createTask(const TaskInfo &info, Task *parent)
     }
 
     auto task = std::make_unique<Task>(parent);
-    task->setName(info.getName());
+    task->setBurstTime(info.getBurstTime());
     task->setPriority(info.getPriority());
     task->setAgent(info.getAgent());
-    task->setBurstTime(info.getBurstTime());
-    task->setRemainingTime(info.getBurstTime());
+    task->setName(info.getName());
 
     auto result = task.get();
     parent->addChild(std::move(task));
@@ -199,6 +198,10 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             {
                 return "Ready";
             }
+            case Task::State::Timeout:
+            {
+                return "Timeout";
+            }
             case Task::State::WaitingForLimit:
             case Task::State::WaitingForAgent:
             {
@@ -206,12 +209,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             }
             }
         }
-        default:
-        {
-            return {};
         }
-        }
-        break;
     }
     case Qt::TextAlignmentRole:
     {
@@ -233,6 +231,10 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             case Task::State::Ready:
             {
                 return QColor(230, 255, 150); // Light Yellow
+            }
+            case Task::State::Timeout:
+            {
+                return QColor(200, 230, 120); // Light Lemon
             }
             case Task::State::WaitingForLimit:
             case Task::State::WaitingForAgent:
@@ -256,7 +258,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         {
             if (!item->depends())
             {
-                return QColor(Qt::red);
+                return QColor(Qt::darkRed);
             }
             else
             {
@@ -308,29 +310,45 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         }
         }
     }
-    case TaskInfo::Name:
+    case Task::NameRole:
     {
         return item->getName();
     }
-    case TaskInfo::Priority:
+    case Task::PriorityRole:
     {
         return item->getPriority();
     }
-    case TaskInfo::BurstTime:
+    case Task::BurstTimeRole:
     {
         return item->getBurstTime();
     }
-    case TaskInfo::Agent:
+    case Task::AgentRole:
     {
         return item->getAgent();
     }
-    case TaskInfo::State:
+    case Task::StateRole:
     {
         return QVariant::fromValue(item->getState());
     }
-    case TaskInfo::PID:
+    case Task::PIDRole:
     {
         return item->getIdentifier();
+    }
+    case Task::QuantumRole:
+    {
+        return item->getQuantum();
+    }
+    case Task::StartTimeRole:
+    {
+        return item->getStartTime();
+    }
+    case Task::FinishTimeRole:
+    {
+        return item->getFinishTime();
+    }
+    case Task::RemainingTimeRole:
+    {
+        return item->getRemainingTime();
     }
     default:
     {
@@ -349,7 +367,7 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
     auto item = static_cast<Task*>(index.internalPointer());
     switch (role)
     {
-    case TaskInfo::Name:
+    case TaskInfo::NameRole:
     {
         if(value.canConvert<QString>())
         {
@@ -358,7 +376,7 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
         break;
     }
-    case TaskInfo::Priority:
+    case TaskInfo::PriorityRole:
     {
         if (value.canConvert<qint64>())
         {
@@ -367,7 +385,7 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
         break;
     }
-    case TaskInfo::BurstTime:
+    case TaskInfo::BurstTimeRole:
     {
         if (value.canConvert<qint64>())
         {
@@ -376,7 +394,7 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
         break;
     }
-    case TaskInfo::Agent:
+    case TaskInfo::AgentRole:
     {
         if (value.canConvert<QString>())
         {
@@ -385,7 +403,7 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         }
         break;
     }
-    case TaskInfo::State:
+    case TaskInfo::StateRole:
     {
         if (value.canConvert<Task::State>())
         {
@@ -400,17 +418,6 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         emit dataChanged(index, index, {role, Qt::DisplayRole, Qt::BackgroundRole, Qt::ForegroundRole});
     }
     return changed;
-}
-
-QModelIndex TaskModel::index(qint64 value, const QModelIndex &parent)
-{
-    auto ancestor = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
-    if (!ancestor)
-    {
-        return {};
-    }
-    auto item = ancestor->find(value);
-    return !item ? QModelIndex() : createIndex(item->row(), 0, item);
 }
 
 bool TaskModel::insert(const TaskInfo &info, const QModelIndex &parent)
@@ -438,6 +445,68 @@ bool TaskModel::remove(const QModelIndex &index)
     parent->removeChild(index.row());
     endRemoveRows();
     return true;
+}
+
+void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+    auto item = static_cast<Task*>(index.internalPointer());
+    if(item->beginToProceed(timestamp));
+    {
+        QList<int> roles;
+        roles.append(Task::StateRole);
+        roles.append(Qt::DisplayRole);
+        roles.append(Qt::BackgroundRole);
+        roles.append(Qt::ForegroundRole);
+        roles.append(Task::StartTimeRole);
+        emit dataChanged(index, index, roles);
+    }
+}
+
+void TaskModel::endToProceed(const QModelIndex &index, qint64 timestamp)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+    auto item = static_cast<Task*>(index.internalPointer());
+    if(item->endToProceed(timestamp))
+    {
+        QList<int> roles;
+        roles.append(Task::StateRole);
+        roles.append(Qt::DisplayRole);
+        roles.append(Qt::BackgroundRole);
+        roles.append(Qt::ForegroundRole);
+        roles.append(Task::PriorityRole);
+        roles.append(Task::FinishTimeRole);
+        emit dataChanged(index, index, roles);
+    }
+}
+
+qint64 TaskModel::proceed(const QModelIndex &index, qint64 quantum)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+    auto item = static_cast<Task*>(index.internalPointer());
+    auto result = item->proceed(quantum);
+    if (result > 0)
+    {
+        QList<int> roles;
+        roles.append(Qt::DisplayRole);
+        roles.append(Task::QuantumRole);
+        roles.append(Qt::BackgroundRole);
+        roles.append(Qt::ForegroundRole);
+        roles.append(Task::PriorityRole);
+        roles.append(Task::FinishTimeRole);
+        roles.append(Task::RemainingTimeRole);
+        emit dataChanged(index, index, roles);
+    }
+    return result;
 }
 
 void TaskModel::clear()
