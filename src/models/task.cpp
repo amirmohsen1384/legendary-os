@@ -115,7 +115,6 @@ bool Task::endToProceed(qint64 timestamp)
     }
     else
     {
-        priority = priority / (1 + 0.5 * quantum);
         state = State::Timeout;
     }
     return true;
