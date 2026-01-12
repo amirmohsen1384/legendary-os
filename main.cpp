@@ -1,11 +1,15 @@
 #include <QApplication>
-#include "core/system.h"
+#include "src/panels/mainpanel.h"
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Config::initialize();
 
+    Config::initialize();
     auto config = Config::load();
+
+    MainPanel panel;
+    panel.show();
+
     return app.exec();
 }
