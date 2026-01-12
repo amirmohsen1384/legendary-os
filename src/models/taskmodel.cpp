@@ -456,9 +456,9 @@ bool TaskModel::remove(const QModelIndex &index)
     const auto item = index.parent();
     auto parent = !item.isValid() ? root.get() : static_cast<Task*>(item.internalPointer());
     beginRemoveRows(item, row, row);
-    parent->removeChild(row);
+    auto result = parent->removeChild(row);
     endRemoveRows();
-    return true;
+    return result;
 }
 
 void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
