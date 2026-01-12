@@ -35,6 +35,9 @@ qt_add_executable(LegendaryOS
     src/dialogs/agentedit.h
     src/dialogs/agentedit.cpp
     ui/dialogs/agentedit.ui
+    src/panels/mainpanel.h
+    src/panels/mainpanel.cpp
+    ui/panels/mainpanel.ui
 )
 
 target_link_libraries(LegendaryOS
