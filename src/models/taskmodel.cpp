@@ -439,10 +439,11 @@ bool TaskModel::remove(const QModelIndex &index)
     {
         return false;
     }
+    const auto row = index.row();
     const auto item = index.parent();
     auto parent = !item.isValid() ? root.get() : static_cast<Task*>(item.internalPointer());
-    beginRemoveRows(item, index.row(), index.row()); // This causes some problems.
-    parent->removeChild(index.row());
+    beginRemoveRows(item, row, row);
+    parent->removeChild(row);
     endRemoveRows();
     return true;
 }
