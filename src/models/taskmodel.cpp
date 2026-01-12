@@ -213,7 +213,20 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
     }
     case Qt::TextAlignmentRole:
     {
-        return Qt::AlignCenter;
+        auto group = static_cast<Header>(index.column());
+        switch (group)
+        {
+        case Header::Name:
+        case Header::Agent:
+        {
+            return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
+        }
+        case Header::State:
+        case Header::Priority:
+        {
+            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+        }
+        }
     }
     case Qt::BackgroundRole:
     {
