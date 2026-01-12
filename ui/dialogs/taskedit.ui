@@ -356,6 +356,9 @@
      <property name="frameShadow">
       <enum>QFrame::Shadow::Plain</enum>
      </property>
+     <property name="animated">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
