@@ -77,7 +77,7 @@ public:
     Task* getParent();
 
 public:
-    void removeChild(int row);
+    bool removeChild(int row);
     void setState(State value);
     void setParent(Task *value);
     void addChild(std::unique_ptr<Task> item);

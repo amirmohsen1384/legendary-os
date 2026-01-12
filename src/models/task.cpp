@@ -180,13 +180,14 @@ void Task::addChild(std::unique_ptr<Task> item)
     }
 }
 
-void Task::removeChild(int row)
+bool Task::removeChild(int row)
 {
-    if (row < 0 || row >= children.size())
+    if (row < 0 || row >= qsizetype(children.size()))
     {
-        return;
+        return false;
     }
-    children.erase(children.begin() + row);
+    children.erase(children.cbegin() + row);
+    return true;
 }
 
 qint64 Task::childCount() const
