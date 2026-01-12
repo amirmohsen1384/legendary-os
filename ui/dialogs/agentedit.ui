@@ -99,6 +99,18 @@
      <property name="frameShape">
       <enum>QFrame::Shape::NoFrame</enum>
      </property>
+     <property name="indentation">
+      <number>25</number>
+     </property>
+     <property name="animated">
+      <bool>true</bool>
+     </property>
+     <property name="allColumnsShowFocus">
+      <bool>true</bool>
+     </property>
+     <attribute name="headerStretchLastSection">
+      <bool>true</bool>
+     </attribute>
     </widget>
    </item>
    <item>

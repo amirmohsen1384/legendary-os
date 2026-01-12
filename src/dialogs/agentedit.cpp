@@ -13,10 +13,7 @@ AgentEdit::AgentEdit(QWidget *parent) : QDialog(parent)
     ui->setupUi(this);
 }
 
-AgentEdit::~AgentEdit()
-{
-    delete ui;
-}
+AgentEdit::~AgentEdit() {}
 
 QString AgentEdit::getName() const
 {
@@ -48,9 +45,23 @@ void AgentEdit::setParent(const QModelIndex &index)
     ui->agentView->setCurrentIndex(index);
 }
 
+AgentInfo AgentEdit::getAgentInfo() const
+{
+    AgentInfo info;
+    info.setName(getName());
+    info.setDescription(getDescription());
+    return info;
+}
+
+void AgentEdit::setAgentInfo(const AgentInfo &info)
+{
+    setName(info.getName());
+    setDescription(info.getDescription());
+}
+
 AgentModel *AgentEdit::getModel() const
 {
-    return ui->agentView->model();
+    return static_cast<AgentModel*>(ui->agentView->model());
 }
 
 void AgentEdit::setModel(AgentModel *model)

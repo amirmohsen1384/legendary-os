@@ -27,6 +27,9 @@ public:
     QModelIndex getParent() const;
     void setParent(const QModelIndex &index);
 
+    AgentInfo getAgentInfo() const;
+    void setAgentInfo(const AgentInfo &info);
+
     AgentModel* getModel() const;
     void setModel(AgentModel *model);
 
