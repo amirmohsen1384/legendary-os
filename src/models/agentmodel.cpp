@@ -281,12 +281,13 @@ bool AgentModel::remove(const QModelIndex &index)
         clear();
         return true;
     }
+    const auto row = index.row();
     const auto item = index.parent();
     auto parent = !item.isValid() ? root.get() : static_cast<Agent*>(item.internalPointer());
-    beginRemoveRows(item, index.row(), index.row()); // This causes some problems.
-    parent->removeChild(index.row());
+    beginRemoveRows(item, row, row);
+    auto result = parent->removeChild(row);
     endRemoveRows();
-    return true;
+    return result;
 }
 
 bool AgentModel::loadFromJSON(const QByteArray &data, const QModelIndex &parent)
