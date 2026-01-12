@@ -1,26 +1,16 @@
-#include "person.h"
+#include "agent.h"
 
-Person::Person(Person *parent)
+Agent::Agent(Agent *parent)
 {
     this->parent = parent;
 }
 
-QString PersonInfo::getFirstName() const
+QString AgentInfo::getName() const
 {
-    return firstName;
+    return name;
 }
 
-QString PersonInfo::getLastName() const
-{
-    return lastName;
-}
-
-QString PersonInfo::getFullName() const
-{
-    return QString("%1 %2").arg(firstName, lastName);
-}
-
-Person *Person::getChild(int row)
+Agent *Agent::getChild(int row)
 {
     if (row < 0 || row >= children.size())
     {
@@ -29,35 +19,30 @@ Person *Person::getChild(int row)
     return children.at(row).get();
 }
 
-QDate PersonInfo::getBirthday() const
-{
-    return birthday;
-}
-
-qint64 Person::childCount() const
+qint64 Agent::childCount() const
 {
     return children.size();
 }
 
-qint64 Person::columnCount() const
+qint64 Agent::columnCount() const
 {
     int count = 0;
 
     // Name
     count++;
 
-    // Birthday
+    // Description
     count++;
 
     return count;
 }
 
-QString PersonInfo::getBiography() const
+QString AgentInfo::getDescription() const
 {
-    return biography;
+    return description;
 }
 
-qint64 Person::getRow() const
+qint64 Agent::getRow() const
 {
     if (!parent)
     {
@@ -67,7 +52,7 @@ qint64 Person::getRow() const
     {
         const auto &container = parent->children;
         auto result = std::find_if(container.cbegin(), container.cend(),
-            [&](const std::unique_ptr<Person> &item)
+            [&](const std::unique_ptr<Agent> &item)
             {
                 if (item.get() == this)
                 {
@@ -88,16 +73,16 @@ qint64 Person::getRow() const
     }
 }
 
-Person *Person::getParent()
+Agent *Agent::getParent()
 {
     return parent;
 }
 
-Person *Person::find(const QString &name)
+Agent *Agent::find(const QString &name)
 {
     for(const auto &child : children)
     {
-        if (child->getFullName() == name)
+        if (child->getName() == name)
         {
             return child.get();
         }
@@ -105,32 +90,23 @@ Person *Person::find(const QString &name)
     return nullptr;
 }
 
-void PersonInfo::setFirstName(const QString &value)
+void AgentInfo::setName(const QString &value)
 {
-    firstName = value;
+    name = value;
 }
 
-void PersonInfo::setLastName(const QString &value)
-{
-    lastName = value;
-}
 
-void PersonInfo::setBirthday(const QDate &value)
-{
-    birthday = value;
-}
-
-void Person::setParent(Person *value)
+void Agent::setParent(Agent *value)
 {
     parent = value;
 }
 
-void PersonInfo::setBiography(const QString &value)
+void AgentInfo::setDescription(const QString &value)
 {
-    biography = value;
+    description = value;
 }
 
-void Person::addChild(std::unique_ptr<Person> item)
+void Agent::addChild(std::unique_ptr<Agent> item)
 {
     if (item)
     {
@@ -139,7 +115,7 @@ void Person::addChild(std::unique_ptr<Person> item)
     }
 }
 
-void Person::removeChild(int row)
+void Agent::removeChild(int row)
 {
     if (row < 0 || row >= children.size())
     {

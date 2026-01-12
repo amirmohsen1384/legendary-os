@@ -28,10 +28,10 @@ qt_add_executable(LegendaryOS
     src/panels/taskedit.h
     src/panels/taskedit.cpp
     ui/panels/taskedit.ui
-    src/models/personmodel.h
-    src/models/personmodel.cpp
-    src/models/person.h
-    src/models/person.cpp
+    src/models/agentmodel.h
+    src/models/agentmodel.cpp
+    src/models/agent.h
+    src/models/agent.cpp
 )
 
 target_link_libraries(LegendaryOS

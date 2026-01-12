@@ -1,19 +1,18 @@
-#ifndef PERSONMODEL_H
-#define PERSONMODEL_H
+#ifndef AGENTMODEL_H
+#define AGENTMODEL_H
 
 #include <QAbstractItemModel>
-#include "person.h"
+#include "agent.h"
 
-class PersonModel : public QAbstractItemModel
+class AgentModel : public QAbstractItemModel
 {
     Q_OBJECT
-
-    Person *createPerson(const PersonInfo &info, Person *parent);
+    Agent* createAgent(const AgentInfo &info, Agent *parent);
 
 public:
-    enum class Header {Name = 0, Birthday = 1};
+    enum class Header {Name = 0, Description = 1};
 
-    explicit PersonModel(QObject *parent = nullptr);
+    explicit AgentModel(QObject *parent = nullptr);
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
     virtual QModelIndex index(const QString &path) const;
@@ -27,7 +26,7 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    virtual bool insert(const PersonInfo &data, const QModelIndex &parent);
+    virtual bool insert(const AgentInfo &data, const QModelIndex &parent);
     virtual bool remove(const QModelIndex &index);
 
 public:
@@ -37,7 +36,7 @@ public slots:
     void clear();
 
 private:
-    std::unique_ptr<Person> root;
+    std::unique_ptr<Agent> root;
 };
 
-#endif // PERSONMODEL_H
+#endif // AGENTMODEL_H
