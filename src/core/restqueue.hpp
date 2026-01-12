@@ -203,8 +203,7 @@ private:
     size_t _capacity;
 };
 
-#include "models/task.h"
-
-using RestQueue = Queue<ProcessInfo*>;
+#include <QModelIndex>
+using RestQueue = Queue<QModelIndex>;
 
 #endif // RESTQUEUE_HPP

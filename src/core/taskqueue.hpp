@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <stdexcept>
 #include <algorithm>
+#include <QModelIndex>
 #include "models/task.h"
 
 class TaskQueue
@@ -54,7 +55,9 @@ protected:
         while (currentIndex > 0)
         {
             int64_t parentIndex = parent(currentIndex);
-            if (container[currentIndex]->getPriority() < container[parentIndex]->getPriority())
+            auto parentPriority = container[parentIndex].data(TaskInfo::PriorityRole).toInt();
+            auto currentPriority = container[currentIndex].data(TaskInfo::PriorityRole).toInt();
+            if (currentPriority < parentPriority)
             {
                 break;
             }
@@ -72,12 +75,16 @@ protected:
             if (hasRight(nodeIndex))
             {
                 int64_t rightIndex = right(nodeIndex);
-                if (container[leftIndex]->getPriority() <= container[rightIndex]->getPriority())
+                auto leftPriority = container[leftIndex].data(TaskInfo::PriorityRole).toInt();
+                auto rightPriority = container[rightIndex].data(TaskInfo::PriorityRole).toInt();
+                if (leftPriority <= rightPriority)
                 {
                     smallChildIndex = rightIndex;
                 }
             }
-            if (container[smallChildIndex]->getPriority() <= container[nodeIndex]->getPriority())
+            auto nodePriority = container[nodeIndex].data(TaskInfo::PriorityRole).toInt();
+            auto smallPriority = container[smallChildIndex].data(TaskInfo::PriorityRole).toInt();
+            if (smallPriority <= nodePriority)
             {
                 break;
             }
@@ -116,7 +123,8 @@ public:
         container.push_back(info);
         upheap(size() - 1);
     }
-    ProcessInfo* mostCritical()
+
+    QModelIndex mostCritical()
     {
         if (isEmpty())
         {
@@ -125,7 +133,7 @@ public:
         return container.front();
     }
 
-    ProcessInfo* removeMostCritical()
+    QModelIndex removeMostCritical()
     {
         if (isEmpty())
         {
@@ -157,7 +165,7 @@ public:
 
 private:
     size_t maximumSize = 0;
-    std::vector<ProcessInfo*> container;
+    std::vector<QModelIndex> container;
 };
 
 
