@@ -25,8 +25,8 @@ public:
 
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
-
-    virtual bool insert(const TaskInfo &info, const QModelIndex &parent = QModelIndex());
+    
+    virtual QModelIndex insert(const TaskInfo &info, const QModelIndex &parent = QModelIndex());
     virtual bool remove(const QModelIndex &index);
 
 public slots:

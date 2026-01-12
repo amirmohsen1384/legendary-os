@@ -433,17 +433,17 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
     return changed;
 }
 
-bool TaskModel::insert(const TaskInfo &info, const QModelIndex &parent)
+QModelIndex TaskModel::insert(const TaskInfo &info, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
     if(!ancestor)
     {
-        return false;
+        return QModelIndex();
     }
     beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
     auto task = createTask(info, ancestor);
     endInsertRows();
-    return task != nullptr;
+    return createIndex(ancestor->childCount(), 0, task);
 }
 
 bool TaskModel::remove(const QModelIndex &index)
