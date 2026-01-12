@@ -1,4 +1,5 @@
 #include "agentmodel.h"
+#include <QJsonDocument>
 
 Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
 {
@@ -14,6 +15,23 @@ Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
     parent->addChild(std::move(agent));
 
     return result;
+}
+
+bool AgentModel::loadFromJSON(const QJsonObject &object, const QModelIndex &parent)
+{
+    for(auto iterator = object.constBegin(); iterator != object.constEnd(); ++iterator)
+    {
+        AgentInfo info;
+        info.setName(iterator->key());
+        const auto major = iterator->value().toObject();
+        info.setDescription(major["description"].toString());
+        auto index = insert(info, parent);
+        if (!loadFromJSON(major["children"].toObject(), index))
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 AgentModel::AgentModel(QObject *parent) : QAbstractItemModel(parent)
@@ -241,24 +259,29 @@ bool AgentModel::setData(const QModelIndex &index, const QVariant &value, int ro
     return changed;
 }
 
-bool AgentModel::insert(const AgentInfo &data, const QModelIndex &parent)
+QModelIndex AgentModel::insert(const AgentInfo &data, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Agent*>(parent.internalPointer());
     if(!ancestor)
     {
-        return false;
+        return QModelIndex();
     }
     beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
     auto agent = createAgent(data, ancestor);
     endInsertRows();
-    return agent != nullptr;
+    return createIndex(ancestor->childCount(), 0, agent);
 }
 
 bool AgentModel::remove(const QModelIndex &index)
 {
     if (!index.isValid())
     {
-        return false;
+        beginResetModel();
+        root.reset(nullptr);
+        root = std::make_unique<Agent>(nullptr);
+        root->setName("Main Root");
+        endResetModel();
+        return true;
     }
     const auto item = index.parent();
     auto parent = !item.isValid() ? root.get() : static_cast<Agent*>(item.internalPointer());
@@ -266,6 +289,22 @@ bool AgentModel::remove(const QModelIndex &index)
     parent->removeChild(index.row());
     endRemoveRows();
     return true;
+}
+
+bool AgentModel::loadFromJSON(const QByteArray &data, const QModelIndex &parent)
+{
+    QJsonParseError error;
+    auto document = QJsonDocument::fromJson(data, &error);
+    if (error.error != QJsonParseError::NoError)
+    {
+        return false;
+    }
+    else if (!document.isObject())
+    {
+        return false;
+    }
+    remove(parent);
+    return loadFromJSON(document.object(), parent);
 }
 
 QString AgentModel::toString(const QModelIndex &index)
@@ -278,13 +317,4 @@ QString AgentModel::toString(const QModelIndex &index)
         toString(index.parent()),
         index.data(Agent::NameRole).toString()
     );
-}
-
-void AgentModel::clear()
-{
-    beginResetModel();
-    root.reset(nullptr);
-    root = std::make_unique<Agent>(nullptr);
-    root->setName("Main Root");
-    endResetModel();
 }

@@ -8,6 +8,7 @@ class AgentModel : public QAbstractItemModel
 {
     Q_OBJECT
     Agent* createAgent(const AgentInfo &info, Agent *parent);
+    bool loadFromJSON(const QJsonObject &data, const QModelIndex &parent = QModelIndex());
 
 public:
     enum class Header {Name = 0, Description = 1};
@@ -26,14 +27,12 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
-    virtual bool insert(const AgentInfo &data, const QModelIndex &parent);
+    virtual QModelIndex insert(const AgentInfo &data, const QModelIndex &parent);
     virtual bool remove(const QModelIndex &index);
 
 public:
     QString toString(const QModelIndex &index);
-
-public slots:
-    void clear();
+    void loadFromJSON(const QByteArray &data, const QModelIndex &parent = QModelIndex());
 
 private:
     std::unique_ptr<Agent> root;
