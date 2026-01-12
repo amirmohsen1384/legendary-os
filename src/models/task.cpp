@@ -173,7 +173,7 @@ void Task::setParent(Task *value)
 
 void Task::addChild(std::unique_ptr<Task> item)
 {
-    if (!item)
+    if (item)
     {
         item->setParent(this);
         children.push_back(std::move(item));
