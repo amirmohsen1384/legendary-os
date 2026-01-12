@@ -121,5 +121,5 @@ void Agent::removeChild(int row)
     {
         return;
     }
-    children.erase(children.begin() + row);
+    children.erase(children.cbegin() + row);
 }
