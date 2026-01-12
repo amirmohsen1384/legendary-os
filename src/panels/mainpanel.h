@@ -2,9 +2,15 @@
 #define MAINPANEL_H
 
 #include <QMainWindow>
+#include "core/system.h"
+#include "core/taskqueue.hpp"
+#include "core/restqueue.hpp"
+#include "models/taskmodel.h"
+#include "models/agentmodel.h"
 
-namespace Ui {
-class MainPanel;
+namespace Ui
+{
+    class MainPanel;
 }
 
 class MainPanel : public QMainWindow
@@ -12,11 +18,19 @@ class MainPanel : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainPanel(QWidget *parent = nullptr);
+    explicit MainPanel(const Config::Info &info, QWidget *parent = nullptr);
     ~MainPanel();
 
+    qint64 getElapsedQuantum() const;
+
 private:
-    Ui::MainPanel *ui;
+    TaskModel tasks;
+    AgentModel agents;
+    TaskQueue readyQueue;
+    Config::Info settings;
+    RestQueue waitingQueue;
+    qint64 elapsedQuantum = 0;
+    std::unique_ptr<Ui::MainPanel> ui;
 };
 
 #endif // MAINPANEL_H
