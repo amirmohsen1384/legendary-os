@@ -97,7 +97,7 @@ TaskModel *TaskEdit::getModel()
 void TaskEdit::setModel(TaskModel *model)
 {
     ui->locationView->setModel(model);
-    auto visible = model->rowCount() > 0;
+    auto visible = model && model->rowCount() > 0;
     ui->emptyLabel->setVisible(!visible);
     ui->locationView->setVisible(visible);
 }
