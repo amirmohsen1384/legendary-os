@@ -38,6 +38,8 @@ qt_add_executable(LegendaryOS
     src/panels/mainpanel.h
     src/panels/mainpanel.cpp
     ui/panels/mainpanel.ui
+    src/models/loggingmodel.h
+    src/models/loggingmodel.cpp
 )
 
 target_link_libraries(LegendaryOS
