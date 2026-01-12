@@ -44,7 +44,7 @@ public:
 public:
     void addChild(std::unique_ptr<Agent> item);
     void setParent(Agent* value);
-    void removeChild(int row);
+    bool removeChild(int row);
 
 private:
     std::vector<std::unique_ptr<Agent>> children;

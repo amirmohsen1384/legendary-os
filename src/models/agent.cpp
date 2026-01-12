@@ -115,11 +115,12 @@ void Agent::addChild(std::unique_ptr<Agent> item)
     }
 }
 
-void Agent::removeChild(int row)
+bool Agent::removeChild(int row)
 {
     if (row < 0 || row >= children.size())
     {
-        return;
+        return false;
     }
     children.erase(children.cbegin() + row);
+    return true;
 }
