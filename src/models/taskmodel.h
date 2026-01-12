@@ -35,6 +35,7 @@ public slots:
     qint64 proceed(const QModelIndex &index, qint64 quantum);
 
 private:
+    QModelIndex runningIndex;
     std::unique_ptr<Task> root;
 };
 

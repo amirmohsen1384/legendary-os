@@ -464,7 +464,7 @@ bool TaskModel::remove(const QModelIndex &index)
 
 void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
 {
-    if (!index.isValid())
+    if (!index.isValid() || runningIndex.isValid())
     {
         return;
     }
@@ -472,6 +472,7 @@ void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
     if(item->beginToProceed(timestamp));
     {
         QList<int> roles;
+        runningIndex = index;
         roles.append(Task::StateRole);
         roles.append(Qt::DisplayRole);
         roles.append(Qt::BackgroundRole);
@@ -483,7 +484,7 @@ void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
 
 void TaskModel::endToProceed(const QModelIndex &index, qint64 timestamp)
 {
-    if (!index.isValid())
+    if (!index.isValid() || !runningIndex.isValid() || index != runningIndex)
     {
         return;
     }
