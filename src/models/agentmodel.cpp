@@ -92,7 +92,7 @@ QModelIndex AgentModel::parent(const QModelIndex &index) const
     auto item = static_cast<Agent*>(index.internalPointer());
     if (!item)
     {
-        return {};
+        item = root.get();
     }
     auto parent = item->getParent();
     if (parent == nullptr || parent == root.get())
@@ -261,7 +261,7 @@ bool AgentModel::setData(const QModelIndex &index, const QVariant &value, int ro
     return changed;
 }
 
-QModelIndex AgentModel::insert(const AgentInfo &data, const QModelIndex &parent)
+QModelIndex AgentModel::insert(const AgentInfo &info, const QModelIndex &parent)
 {
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Agent*>(parent.internalPointer());
     if(!ancestor)
@@ -269,7 +269,7 @@ QModelIndex AgentModel::insert(const AgentInfo &data, const QModelIndex &parent)
         return QModelIndex();
     }
     beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
-    auto agent = createAgent(data, ancestor);
+    auto agent = createAgent(info, ancestor);
     endInsertRows();
     return createIndex(ancestor->childCount(), 0, agent);
 }
