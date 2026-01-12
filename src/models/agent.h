@@ -17,6 +17,7 @@ public:
 public:
     QString getDescription() const;
     QString getName() const;
+    bool isValid() const;
 
 public:
     void setDescription(const QString &value);

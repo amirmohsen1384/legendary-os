@@ -31,6 +31,11 @@ void TaskInfo::setBurstTime(qint64 value)
     burstTime = value;
 }
 
+bool TaskInfo::isValid() const
+{
+    return !name.isEmpty();
+}
+
 bool TaskInfo::depends() const
 {
     return !getAgent().isEmpty();

@@ -22,6 +22,7 @@ public:
     TaskInfo() {}
 
 public:
+    bool isValid() const;
     bool depends() const;
     QString getName() const;
     QString getAgent() const;

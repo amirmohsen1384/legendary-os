@@ -10,6 +10,11 @@ QString AgentInfo::getName() const
     return name;
 }
 
+bool AgentInfo::isValid() const
+{
+    return !name.isEmpty();
+}
+
 Agent *Agent::getChild(int row)
 {
     if (row < 0 || row >= children.size())
