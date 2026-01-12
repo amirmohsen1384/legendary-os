@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>569</width>
-    <height>685</height>
+    <width>622</width>
+    <height>638</height>
    </rect>
   </property>
   <property name="palette">
@@ -58,7 +58,7 @@
   </property>
   <property name="font">
    <font>
-    <pointsize>9</pointsize>
+    <pointsize>8</pointsize>
    </font>
   </property>
   <property name="windowTitle">
@@ -68,40 +68,11 @@
    <bool>true</bool>
   </property>
   <layout class="QGridLayout" name="mainLayout">
-   <item row="0" column="0" colspan="2">
-    <layout class="QVBoxLayout" name="titleLayout">
-     <item>
-      <widget class="QLabel" name="title">
-       <property name="font">
-        <font>
-         <pointsize>16</pointsize>
-         <fontweight>Light</fontweight>
-        </font>
-       </property>
-       <property name="text">
-        <string>Create a new task</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="description">
-       <property name="font">
-        <font>
-         <pointsize>10</pointsize>
-        </font>
-       </property>
-       <property name="text">
-        <string>Fill out the following fields to create a task.</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0" colspan="2">
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="generalGroup">
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -128,7 +99,7 @@
        <widget class="QLabel" name="priorityLabel">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -148,13 +119,19 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
        </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="nameLabel">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -170,7 +147,7 @@
        <widget class="QLabel" name="burstLabel">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -189,6 +166,12 @@
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="wrapping">
          <bool>true</bool>
@@ -227,6 +210,12 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <bold>true</bold>
+         </font>
+        </property>
         <property name="wrapping">
          <bool>true</bool>
         </property>
@@ -247,108 +236,11 @@
      </layout>
     </widget>
    </item>
-   <item row="6" column="1">
-    <widget class="QDialogButtonBox" name="controlButton">
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Orientation::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
-     </property>
-    </widget>
-   </item>
    <item row="3" column="0" colspan="2">
-    <widget class="QGroupBox" name="locationGroup">
-     <property name="font">
-      <font>
-       <pointsize>9</pointsize>
-       <bold>true</bold>
-      </font>
-     </property>
-     <property name="title">
-      <string>Location</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-     <layout class="QVBoxLayout" name="locationLayout">
-      <property name="leftMargin">
-       <number>5</number>
-      </property>
-      <property name="topMargin">
-       <number>5</number>
-      </property>
-      <property name="rightMargin">
-       <number>5</number>
-      </property>
-      <property name="bottomMargin">
-       <number>5</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="emptyLabel">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="font">
-         <font>
-          <pointsize>14</pointsize>
-          <fontweight>Light</fontweight>
-         </font>
-        </property>
-        <property name="text">
-         <string>No tasks found.</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignCenter</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="locationDescriptionLabel">
-        <property name="font">
-         <font>
-          <pointsize>9</pointsize>
-          <bold>false</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Select the location where you want to add your task:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QTreeView" name="locationView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="frameShape">
-         <enum>QFrame::Shape::NoFrame</enum>
-        </property>
-        <property name="frameShadow">
-         <enum>QFrame::Shadow::Plain</enum>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="agentGroup">
      <property name="font">
       <font>
-       <pointsize>9</pointsize>
+       <pointsize>8</pointsize>
        <bold>true</bold>
       </font>
      </property>
@@ -381,7 +273,7 @@
        <widget class="QPushButton" name="agentBrowseButton">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -403,7 +295,7 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -416,7 +308,7 @@
        <widget class="QLabel" name="agentLabel">
         <property name="font">
          <font>
-          <pointsize>9</pointsize>
+          <pointsize>8</pointsize>
           <bold>true</bold>
          </font>
         </property>
@@ -426,6 +318,66 @@
        </widget>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QDialogButtonBox" name="controlButton">
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Orientation::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QTreeView" name="locationView">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Plain</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="2">
+    <widget class="QLabel" name="emptyLabel">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>16</pointsize>
+       <fontweight>Light</fontweight>
+      </font>
+     </property>
+     <property name="text">
+      <string>No task is currently available.</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignmentFlag::AlignCenter</set>
+     </property>
     </widget>
    </item>
   </layout>
