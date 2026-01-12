@@ -4,7 +4,7 @@ project(LegendaryOS LANGUAGES CXX)
 find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets StateMachine)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
-    ${CMAKE_CURRENT_SOURCE_DIR}/ui/panels
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogs
 )
 
 set(CMAKE_AUTORCC ON)
@@ -25,13 +25,16 @@ qt_add_executable(LegendaryOS
     src/core/restqueue.hpp
     src/models/taskmodel.h
     src/models/taskmodel.cpp
-    src/panels/taskedit.h
-    src/panels/taskedit.cpp
-    ui/panels/taskedit.ui
+    src/dialogs/taskedit.h
+    src/dialogs/taskedit.cpp
+    ui/dialogs/taskedit.ui
     src/models/agentmodel.h
     src/models/agentmodel.cpp
     src/models/agent.h
     src/models/agent.cpp
+    src/dialogs/agentedit.h
+    src/dialogs/agentedit.cpp
+    ui/dialogs/agentedit.ui
 )
 
 target_link_libraries(LegendaryOS
