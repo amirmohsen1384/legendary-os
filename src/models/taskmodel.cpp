@@ -159,7 +159,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             }
             else
             {
-                return QString("Independent");
+                return QString("No Agent dependency provided");
             }
         }
         case Header::Priority:
