@@ -17,11 +17,12 @@ qt_add_executable(LegendaryOS
     resources.qrc
     src/core/system.h
     src/core/system.cpp
-    src/models/task.h
-    src/models/task.cpp
+    src/core/task.h
+    src/core/task.cpp
+    src/core/agent.h
+    src/core/agent.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
-    src/core/restqueue.hpp
     src/models/taskmodel.h
     src/models/taskmodel.cpp
     src/dialogs/taskedit.h
@@ -29,8 +30,6 @@ qt_add_executable(LegendaryOS
     ui/dialogs/taskedit.ui
     src/models/agentmodel.h
     src/models/agentmodel.cpp
-    src/models/agent.h
-    src/models/agent.cpp
     src/dialogs/agentedit.h
     src/dialogs/agentedit.cpp
     ui/dialogs/agentedit.ui
@@ -43,6 +42,8 @@ qt_add_executable(LegendaryOS
     src/core/kernel.cpp
     src/models/readytaskmodel.h
     src/models/readytaskmodel.cpp
+    src/models/waitingtaskmodel.h
+    src/models/waitingtaskmodel.cpp
 )
 
 target_link_libraries(LegendaryOS
