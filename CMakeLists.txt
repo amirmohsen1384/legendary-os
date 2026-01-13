@@ -21,7 +21,6 @@ qt_add_executable(LegendaryOS
     src/models/task.cpp
     src/elements/fluidbutton.h
     src/elements/fluidbutton.cpp
-    src/core/taskqueue.hpp
     src/core/restqueue.hpp
     src/models/taskmodel.h
     src/models/taskmodel.cpp
