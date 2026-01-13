@@ -2,7 +2,7 @@
 #define TASKMODEL_H
 
 #include <QAbstractItemModel>
-#include "task.h"
+#include "core/task.h"
 
 class TaskModel : public QAbstractItemModel
 {

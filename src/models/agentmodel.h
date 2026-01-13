@@ -2,7 +2,7 @@
 #define AGENTMODEL_H
 
 #include <QAbstractItemModel>
-#include "agent.h"
+#include "core/agent.h"
 
 class AgentModel : public QAbstractItemModel
 {

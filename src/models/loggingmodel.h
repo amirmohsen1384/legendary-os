@@ -2,7 +2,7 @@
 #define LOGGINGMODEL_H
 
 #include <QAbstractTableModel>
-#include "agent.h"
+#include "core/agent.h"
 
 struct LogInfo
 {
