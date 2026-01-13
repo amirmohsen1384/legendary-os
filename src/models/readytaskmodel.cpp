@@ -1,5 +1,5 @@
 #include "readytaskmodel.h"
-#include "task.h"
+#include "core/task.h"
 
 qint64 ReadyTaskModel::left(qint64 node)
 {
@@ -283,6 +283,10 @@ QVariant ReadyTaskModel::data(const QModelIndex &index, int role) const
     case Qt::TextAlignmentRole:
     {
         return Qt::AlignCenter;
+    }
+    case Qt::UserRole:
+    {
+        return QVariant::fromValue(target);
     }
     }
 }
