@@ -11,9 +11,15 @@
 class CentralKernel : public QObject
 {
     Q_OBJECT
+protected:
+    void dispatch(const QPersistentModelIndex &index);
+
 public:
     explicit CentralKernel(const Config::Info &info, QObject *parent = nullptr);
+
     bool isLocked() const;
+    bool hasPrerequisits() const;
+
     TaskModel* taskModel();
     AgentModel* agentModel();
     LoggingModel* loggingModel();
