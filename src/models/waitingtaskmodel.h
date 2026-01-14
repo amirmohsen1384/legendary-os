@@ -18,8 +18,8 @@ public:
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
-    void insert(const QPersistentModelIndex &index);
-    void remove(const QPersistentModelIndex &index);
+    void insertTask(const QPersistentModelIndex &index);
+    void removeTask(const QPersistentModelIndex &index);
 
 private:
     QList<QPersistentModelIndex> container;

@@ -80,14 +80,14 @@ QVariant WaitingTaskModel::headerData(int section, Qt::Orientation orientation, 
     }
 }
 
-void WaitingTaskModel::insert(const QPersistentModelIndex &index)
+void WaitingTaskModel::insertTask(const QPersistentModelIndex &index)
 {
     beginInsertRows(QModelIndex(), container.size(), container.size());
     container.push_back(index);
     endInsertRows();
 }
 
-void WaitingTaskModel::remove(const QPersistentModelIndex &index)
+void WaitingTaskModel::removeTask(const QPersistentModelIndex &index)
 {
     for (auto row = 0; row < container.size(); ++row)
     {
@@ -172,6 +172,10 @@ QVariant WaitingTaskModel::data(const QModelIndex &index, int role) const
     case Qt::UserRole:
     {
         return QVariant::fromValue(target);
+    }
+    default:
+    {
+        return {};
     }
     }
 }
