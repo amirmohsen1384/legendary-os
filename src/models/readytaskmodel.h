@@ -35,11 +35,13 @@ public:
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
+    bool hasCapacity() const;
     qsizetype getMaximumSize() const;
     QPersistentModelIndex getMostCritical() const;
 
 public slots:
     bool insertTask(const QPersistentModelIndex &index);
+    void remove(const QPersistentModelIndex &index);
     void setMaximumSize(qsizetype size);
     void removeMostCritical();
 

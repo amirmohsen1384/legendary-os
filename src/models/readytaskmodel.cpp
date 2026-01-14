@@ -165,6 +165,11 @@ QVariant ReadyTaskModel::headerData(int section, Qt::Orientation orientation, in
     }
 }
 
+bool ReadyTaskModel::hasCapacity() const
+{
+    return container.size() < maximum;
+}
+
 qsizetype ReadyTaskModel::getMaximumSize() const
 {
     return maximum;
@@ -182,6 +187,27 @@ bool ReadyTaskModel::insertTask(const QPersistentModelIndex &index)
     endInsertRows();
     upheap(size);
     return true;
+}
+
+void ReadyTaskModel::remove(const QPersistentModelIndex &index)
+{
+    auto i = 0;
+    while (i < container.size())
+    {
+        if(container.at(i++) == index)
+        {
+            auto size = container.size();
+            beginRemoveRows(QModelIndex(), size - 1, size - 1);
+            auto data = container.takeAt(size - 1);
+            endRemoveRows();
+            if (!container.isEmpty())
+            {
+                container[i] = data;
+                downheap(i);
+            }
+            break;
+        }
+    }
 }
 
 void ReadyTaskModel::removeMostCritical()
