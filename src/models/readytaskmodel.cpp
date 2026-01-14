@@ -238,7 +238,7 @@ void ReadyTaskModel::removeMostCritical()
 
 QPersistentModelIndex ReadyTaskModel::getMostCritical() const
 {
-    return container.front();
+    return !container.isEmpty() ? container.front() : QPersistentModelIndex();
 }
 
 
