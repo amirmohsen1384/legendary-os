@@ -1,10 +1,10 @@
-#ifndef READYTASKMODEL_H
-#define READYTASKMODEL_H
+#ifndef READYMODEL_H
+#define READYMODEL_H
 
 #include <QAbstractItemModel>
 #include <QPersistentModelIndex>
 
-class ReadyTaskModel : public QAbstractTableModel
+class ReadyModel : public QAbstractTableModel
 {
     Q_OBJECT
     enum class Header {PID, Name, Priority, Progress};
@@ -27,7 +27,7 @@ protected:
     void swap(qint64 one, qint64 two);
 
 public:
-    explicit ReadyTaskModel(qsizetype maximum = 0, QObject *parent = nullptr);
+    explicit ReadyModel(qsizetype maximum = 0, QObject *parent = nullptr);
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -51,4 +51,4 @@ private:
     QList<QPersistentModelIndex> container;
 };
 
-#endif // READYTASKMODEL_H
+#endif // READYMODEL_H

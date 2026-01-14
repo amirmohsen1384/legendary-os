@@ -1,33 +1,33 @@
-#include "readytaskmodel.h"
+#include "readymodel.h"
 #include "core/task.h"
 #include <QColor>
 
-qint64 ReadyTaskModel::left(qint64 node)
+qint64 ReadyModel::left(qint64 node)
 {
     return node * 2 + 1;
 }
 
-qint64 ReadyTaskModel::right(qint64 node)
+qint64 ReadyModel::right(qint64 node)
 {
     return node * 2 + 2;
 }
 
-bool ReadyTaskModel::hasLeft(qint64 node)
+bool ReadyModel::hasLeft(qint64 node)
 {
     return left(node) < container.size();
 }
 
-qint64 ReadyTaskModel::ancestor(qint64 node)
+qint64 ReadyModel::ancestor(qint64 node)
 {
     return (node - 1) / 2;
 }
 
-bool ReadyTaskModel::hasRight(qint64 node)
+bool ReadyModel::hasRight(qint64 node)
 {
     return right(node) < container.size();
 }
 
-void ReadyTaskModel::swap(qint64 one, qint64 two)
+void ReadyModel::swap(qint64 one, qint64 two)
 {
     if (one < 0 || one >= container.size())
     {
@@ -45,7 +45,7 @@ void ReadyTaskModel::swap(qint64 one, qint64 two)
     }
 }
 
-void ReadyTaskModel::upheap(qint64 node)
+void ReadyModel::upheap(qint64 node)
 {
     qint64 top = ancestor(node);
     while (top >= 0)
@@ -65,7 +65,7 @@ void ReadyTaskModel::upheap(qint64 node)
     }
 }
 
-void ReadyTaskModel::downheap(qint64 node)
+void ReadyModel::downheap(qint64 node)
 {
     while (hasLeft(node))
     {
@@ -96,12 +96,12 @@ void ReadyTaskModel::downheap(qint64 node)
     }
 }
 
-ReadyTaskModel::ReadyTaskModel(qsizetype maximum, QObject *parent) : QAbstractTableModel(parent)
+ReadyModel::ReadyModel(qsizetype maximum, QObject *parent) : QAbstractTableModel(parent)
 {
     setMaximumSize(maximum);
 }
 
-QVariant ReadyTaskModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant ReadyModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (orientation)
     {
@@ -171,7 +171,7 @@ QVariant ReadyTaskModel::headerData(int section, Qt::Orientation orientation, in
     }
 }
 
-bool ReadyTaskModel::hasCapacity() const
+bool ReadyModel::hasCapacity() const
 {
     if (maximum <= 0)
     {
@@ -180,12 +180,12 @@ bool ReadyTaskModel::hasCapacity() const
     return container.size() < maximum;
 }
 
-qsizetype ReadyTaskModel::getMaximumSize() const
+qsizetype ReadyModel::getMaximumSize() const
 {
     return maximum;
 }
 
-bool ReadyTaskModel::insertTask(const QPersistentModelIndex &index)
+bool ReadyModel::insertTask(const QPersistentModelIndex &index)
 {
     auto size = container.size();
     if (!hasCapacity())
@@ -199,7 +199,7 @@ bool ReadyTaskModel::insertTask(const QPersistentModelIndex &index)
     return true;
 }
 
-void ReadyTaskModel::removeTask(const QPersistentModelIndex &index)
+void ReadyModel::removeTask(const QPersistentModelIndex &index)
 {
     auto i = 0;
     while (i < container.size())
@@ -220,7 +220,7 @@ void ReadyTaskModel::removeTask(const QPersistentModelIndex &index)
     }
 }
 
-void ReadyTaskModel::removeMostCritical()
+void ReadyModel::removeMostCritical()
 {
     if (!container.isEmpty())
     {
@@ -236,19 +236,19 @@ void ReadyTaskModel::removeMostCritical()
     }
 }
 
-QPersistentModelIndex ReadyTaskModel::getMostCritical() const
+QPersistentModelIndex ReadyModel::getMostCritical() const
 {
     return !container.isEmpty() ? container.front() : QPersistentModelIndex();
 }
 
 
-void ReadyTaskModel::setMaximumSize(qsizetype size)
+void ReadyModel::setMaximumSize(qsizetype size)
 {
     maximum = size;
     container.reserve(size);
 }
 
-void ReadyTaskModel::removeTask(qsizetype i)
+void ReadyModel::removeTask(qsizetype i)
 {
     if (i >= 0 && i < container.size())
     {
@@ -258,7 +258,7 @@ void ReadyTaskModel::removeTask(qsizetype i)
     }
 }
 
-int ReadyTaskModel::rowCount(const QModelIndex &parent) const
+int ReadyModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -267,7 +267,7 @@ int ReadyTaskModel::rowCount(const QModelIndex &parent) const
     return container.size();
 }
 
-int ReadyTaskModel::columnCount(const QModelIndex &parent) const
+int ReadyModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -291,7 +291,7 @@ int ReadyTaskModel::columnCount(const QModelIndex &parent) const
     return count;
 }
 
-QVariant ReadyTaskModel::data(const QModelIndex &index, int role) const
+QVariant ReadyModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {
