@@ -39,8 +39,8 @@ qt_add_executable(LegendaryOS
     ui/panels/mainpanel.ui
     src/models/loggingmodel.h
     src/models/loggingmodel.cpp
-    src/core/kernel.h
-    src/core/kernel.cpp
+
+
     src/models/readytaskmodel.h
     src/models/readytaskmodel.cpp
     src/models/waitingtaskmodel.h
