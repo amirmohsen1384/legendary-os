@@ -43,6 +43,7 @@ public slots:
     bool insertTask(const QPersistentModelIndex &index);
     void removeTask(const QPersistentModelIndex &index);
     void setMaximumSize(qsizetype size);
+    void removeTask(qsizetype i);
     void removeMostCritical();
 
 private:

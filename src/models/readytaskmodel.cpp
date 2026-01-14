@@ -164,11 +164,19 @@ QVariant ReadyTaskModel::headerData(int section, Qt::Orientation orientation, in
         }
         }
     }
+    default:
+    {
+        return {};
+    }
     }
 }
 
 bool ReadyTaskModel::hasCapacity() const
 {
+    if (maximum <= 0)
+    {
+        return true;
+    }
     return container.size() < maximum;
 }
 
@@ -180,7 +188,7 @@ qsizetype ReadyTaskModel::getMaximumSize() const
 bool ReadyTaskModel::insertTask(const QPersistentModelIndex &index)
 {
     auto size = container.size();
-    if (size >= maximum)
+    if (!hasCapacity())
     {
         return false;
     }
@@ -240,9 +248,19 @@ void ReadyTaskModel::setMaximumSize(qsizetype size)
     container.reserve(size);
 }
 
+void ReadyTaskModel::removeTask(qsizetype i)
+{
+    if (i >= 0 && i < container.size())
+    {
+        auto data = container.takeLast();
+        container[i] = data;
+        downheap(i);
+    }
+}
+
 int ReadyTaskModel::rowCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if (parent.isValid())
     {
         return 0;
     }
@@ -251,7 +269,7 @@ int ReadyTaskModel::rowCount(const QModelIndex &parent) const
 
 int ReadyTaskModel::columnCount(const QModelIndex &parent) const
 {
-    if (!parent.isValid())
+    if (parent.isValid())
     {
         return 0;
     }
@@ -315,6 +333,10 @@ QVariant ReadyTaskModel::data(const QModelIndex &index, int role) const
     case Qt::UserRole:
     {
         return QVariant::fromValue(target);
+    }
+    default:
+    {
+        return {};
     }
     }
 }
