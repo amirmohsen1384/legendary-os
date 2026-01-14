@@ -41,8 +41,8 @@ qt_add_executable(LegendaryOS
     src/models/loggingmodel.cpp
     src/models/readymodel.h
     src/models/readymodel.cpp
-    src/models/waitingtaskmodel.h
-    src/models/waitingtaskmodel.cpp
+    src/models/restmodel.h
+    src/models/restmodel.cpp
 )
 
 target_link_libraries(LegendaryOS

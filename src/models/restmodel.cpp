@@ -1,11 +1,11 @@
-#include "waitingtaskmodel.h"
+#include "restmodel.h"
 #include "core/task.h"
 #include <QColor>
 
-WaitingTaskModel::WaitingTaskModel(QObject *parent) : QAbstractTableModel(parent)
+RestModel::RestModel(QObject *parent) : QAbstractTableModel(parent)
 {}
 
-int WaitingTaskModel::rowCount(const QModelIndex &parent) const
+int RestModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -14,7 +14,7 @@ int WaitingTaskModel::rowCount(const QModelIndex &parent) const
     return container.size();
 }
 
-QVariant WaitingTaskModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant RestModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (orientation)
     {
@@ -80,14 +80,14 @@ QVariant WaitingTaskModel::headerData(int section, Qt::Orientation orientation, 
     }
 }
 
-void WaitingTaskModel::insertTask(const QPersistentModelIndex &index)
+void RestModel::insertTask(const QPersistentModelIndex &index)
 {
     beginInsertRows(QModelIndex(), container.size(), container.size());
     container.push_back(index);
     endInsertRows();
 }
 
-void WaitingTaskModel::removeTask(const QPersistentModelIndex &index)
+void RestModel::removeTask(const QPersistentModelIndex &index)
 {
     for (auto row = 0; row < container.size(); ++row)
     {
@@ -101,7 +101,7 @@ void WaitingTaskModel::removeTask(const QPersistentModelIndex &index)
     }
 }
 
-int WaitingTaskModel::columnCount(const QModelIndex &parent) const
+int RestModel::columnCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -122,7 +122,7 @@ int WaitingTaskModel::columnCount(const QModelIndex &parent) const
     return count;
 }
 
-QVariant WaitingTaskModel::data(const QModelIndex &index, int role) const
+QVariant RestModel::data(const QModelIndex &index, int role) const
 {
     if (!index.isValid())
     {

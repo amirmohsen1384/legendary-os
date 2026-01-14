@@ -1,16 +1,16 @@
-#ifndef WAITINGTASKMODEL_H
-#define WAITINGTASKMODEL_H
+#ifndef RESTMODEL_H
+#define RESTMODEL_H
 
 #include <QAbstractTableModel>
 #include <QPersistentModelIndex>
 
-class WaitingTaskModel : public QAbstractTableModel
+class RestModel : public QAbstractTableModel
 {
     Q_OBJECT
     enum class Header {PID, Name, Reason};
 
 public:
-    explicit WaitingTaskModel(QObject *parent = nullptr);
+    explicit RestModel(QObject *parent = nullptr);
 
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -25,4 +25,4 @@ private:
     QList<QPersistentModelIndex> container;
 };
 
-#endif // WAITINGTASKMODEL_H
+#endif // RESTMODEL_H
