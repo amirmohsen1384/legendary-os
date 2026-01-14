@@ -159,7 +159,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
             }
             else
             {
-                return QString("No Agent dependency provided");
+                return QString("No Agent provided");
             }
         }
         case Header::Priority:
@@ -217,14 +217,14 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         switch (group)
         {
         case Header::Name:
-        case Header::Agent:
         {
             return QVariant(Qt::AlignLeft | Qt::AlignVCenter);
         }
+        case Header::Agent:
         case Header::State:
         case Header::Priority:
         {
-            return QVariant(Qt::AlignRight | Qt::AlignVCenter);
+            return Qt::AlignCenter;
         }
         }
     }
@@ -267,17 +267,6 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         auto group = static_cast<Header>(index.column());
         switch(group)
         {
-        case Header::Agent:
-        {
-            if (!item->depends())
-            {
-                return QColor(Qt::darkRed);
-            }
-            else
-            {
-                return {};
-            }
-        }
         case Header::Priority:
         {
             auto priority = item->getPriority();
