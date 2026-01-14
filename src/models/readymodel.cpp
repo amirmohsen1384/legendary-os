@@ -250,11 +250,18 @@ void ReadyModel::setMaximumSize(qsizetype size)
 
 void ReadyModel::removeTask(qsizetype i)
 {
-    if (i >= 0 && i < container.size())
+    auto size = container.size();
+    if (i >= 0 && i < size)
     {
+        beginRemoveRows(QModelIndex(), i, i);
         auto data = container.takeLast();
-        container[i] = data;
-        downheap(i);
+        endRemoveRows();
+
+        if (i + 1 < size)
+        {
+            container[i] = data;
+            downheap(i);
+        }
     }
 }
 
