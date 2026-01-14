@@ -1,5 +1,6 @@
 #include "waitingtaskmodel.h"
 #include "core/task.h"
+#include <QColor>
 
 WaitingTaskModel::WaitingTaskModel(QObject *parent) : QAbstractTableModel(parent)
 {}
@@ -132,7 +133,7 @@ QVariant WaitingTaskModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     {
-        auto group = static_cast<Header>(section);
+        auto group = static_cast<Header>(index.column());
         switch (group)
         {
         case Header::PID:

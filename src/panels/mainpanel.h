@@ -2,6 +2,7 @@
 #define MAINPANEL_H
 
 #include <QMainWindow>
+#include "core/system.h"
 
 namespace Ui
 {
@@ -13,7 +14,7 @@ class MainPanel : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainPanel(const Config::Info &info, QWidget *parent = nullptr);
+    explicit MainPanel(QWidget *parent = nullptr);
     ~MainPanel();
 
 private:

@@ -1,5 +1,6 @@
 #include "readytaskmodel.h"
 #include "core/task.h"
+#include <QColor>
 
 qint64 ReadyTaskModel::left(qint64 node)
 {
@@ -95,8 +96,9 @@ void ReadyTaskModel::downheap(qint64 node)
     }
 }
 
-ReadyTaskModel::ReadyTaskModel(qsizetype maximum, QObject *parent) : QAbstractListModel(parent)
+ReadyTaskModel::ReadyTaskModel(qsizetype maximum, QObject *parent) : QAbstractTableModel(parent)
 {
+    setMaximumSize(maximum);
 }
 
 QVariant ReadyTaskModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -189,7 +191,7 @@ bool ReadyTaskModel::insertTask(const QPersistentModelIndex &index)
     return true;
 }
 
-void ReadyTaskModel::remove(const QPersistentModelIndex &index)
+void ReadyTaskModel::removeTask(const QPersistentModelIndex &index)
 {
     auto i = 0;
     while (i < container.size())

@@ -159,7 +159,7 @@ QVariant LoggingModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     {
-        auto group = static_cast<Header>(section);
+        auto group = static_cast<Header>(index.column());
         switch (group)
         {
         case Header::ID:
@@ -199,7 +199,7 @@ QVariant LoggingModel::data(const QModelIndex &index, int role) const
     }
     case Qt::ForegroundRole:
     {
-        auto group = static_cast<Header>(section);
+        auto group = static_cast<Header>(index.column());
         switch (group)
         {
         case Header::Current:

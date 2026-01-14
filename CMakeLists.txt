@@ -5,6 +5,7 @@ find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets StateMachine)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogs
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/panels
 )
 
 set(CMAKE_AUTORCC ON)
