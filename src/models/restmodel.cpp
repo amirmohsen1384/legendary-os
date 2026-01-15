@@ -14,6 +14,18 @@ int RestModel::rowCount(const QModelIndex &parent) const
     return container.size();
 }
 
+bool RestModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    if (parent.isValid() || row < 0 || row + count >= container.size())
+    {
+        return false;
+    }
+    beginRemoveRows(parent, row, row + count);
+    container.remove(row, count);
+    container.squeeze();
+    endRemoveRows();
+}
+
 QVariant RestModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
     switch (orientation)
