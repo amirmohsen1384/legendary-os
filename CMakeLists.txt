@@ -43,6 +43,8 @@ qt_add_executable(LegendaryOS
     src/models/readymodel.cpp
     src/models/restmodel.h
     src/models/restmodel.cpp
+    src/core/kernel.h
+    src/core/kernel.cpp
 )
 
 target_link_libraries(LegendaryOS
