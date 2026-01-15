@@ -17,6 +17,7 @@ public:
         BurstTimeRole = Qt::UserRole + 2,
         StartTimeRole = Qt::UserRole + 6,
         FinishTimeRole = Qt::UserRole + 7,
+        ExecutableRole = Qt::UserRole + 10,
         RemainingTimeRole = Qt::UserRole + 8
     };
     TaskInfo() {}

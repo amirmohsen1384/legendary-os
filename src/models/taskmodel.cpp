@@ -352,6 +352,10 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
     {
         return item->getRemainingTime();
     }
+    case Task::ExecutableRole:
+    {
+        return item->depends();
+    }
     default:
     {
         return {};
