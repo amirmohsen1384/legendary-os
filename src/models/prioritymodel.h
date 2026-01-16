@@ -7,6 +7,8 @@
 class PriorityModel : public QAbstractTableModel
 {
     Q_OBJECT
+    enum Header {PID, Name, Agent, Priority};
+
 protected:
     virtual bool betterThan(const QModelIndex &one, const QModelIndex &two) const;
 
@@ -29,7 +31,9 @@ protected:
 
 public:
     explicit PriorityModel(QObject *parent = nullptr);
+    virtual QVariant data(const QModelIndex &index, int role) const override;
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:

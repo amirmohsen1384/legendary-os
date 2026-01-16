@@ -46,6 +46,58 @@ void PriorityModel::swap(qint64 one, qint64 two)
 
 PriorityModel::PriorityModel(QObject *parent) : QAbstractTableModel{parent} {}
 
+QVariant PriorityModel::data(const QModelIndex &index, int role) const
+{
+    if (!index.isValid()) {
+        return {};
+    }
+
+    auto target = container.at(index.row());
+    switch (role)
+    {
+    case Qt::DisplayRole:
+    {
+        auto column = static_cast<Header>(index.column());
+        switch (column)
+        {
+        case Header::PID:
+        {
+            bool ok = false;
+            auto result = target.data(Task::PIDRole).toLongLong(&ok);
+            return ok ? result : QVariant();
+        }
+        case Header::Name:
+        {
+            return target.data(Task::NameRole).toString();
+        }
+        case Header::Priority:
+        {
+            bool ok = false;
+            auto result = target.data(Task::PriorityRole).toLongLong(&ok);
+            if (ok) {
+                return QString("%1%").arg(result);
+            } else {
+                return {};
+            }
+        }
+        case Header::Agent:
+        {
+            auto result = target.data(Task::AgentRole).toString();
+            return result.isEmpty() ? "No Agent Provided" : result;
+        }
+        }
+    }
+    case Qt::TextAlignmentRole:
+    {
+        return Qt::AlignCenter;
+    }
+    default:
+    {
+        return {};
+    }
+    }
+}
+
 bool PriorityModel::betterThan(const QModelIndex &one, const QModelIndex &two) const
 {
     auto first = one.data(Task::PriorityRole).toLongLong();
@@ -99,6 +151,10 @@ void PriorityModel::downheap(qint64 node)
 
 bool PriorityModel::insertTask(const QModelIndex &index)
 {
+    if (!index.isValid())
+    {
+        return false;
+    }
     auto size = container.size();
     beginInsertRows(QModelIndex(), size, size);
     container.append(QPersistentModelIndex(index));
@@ -130,6 +186,98 @@ int PriorityModel::rowCount(const QModelIndex &parent) const
     return container.size();
 }
 
+int PriorityModel::columnCount(const QModelIndex &parent) const
+{
+    if (parent.isValid())
+    {
+        return 0;
+    }
+    auto count = 0;
+
+    // PID
+    count++;
+
+    // Name
+    count++;
+
+    // Priority
+    count++;
+
+    // Agent
+    count++;
+
+    return count;
+}
+
+QVariant PriorityModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    switch (orientation)
+    {
+    case Qt::Vertical:
+    {
+        switch (role)
+        {
+        case Qt::DisplayRole:
+        {
+            return section + 1;
+        }
+        case Qt::TextAlignmentRole:
+        {
+            return Qt::AlignCenter;
+        }
+        case Qt::BackgroundRole:
+        {
+            return QColor(220, 220, 220);
+        }
+        }
+    }
+    case Qt::Horizontal:
+    {
+        switch (role)
+        {
+        case Qt::DisplayRole:
+        {
+            auto group = static_cast<Header>(section);
+            switch (group)
+            {
+            case Header::PID:
+            {
+                return "PID";
+            }
+            case Header::Name:
+            {
+                return "Name";
+            }
+            case Header::Agent:
+            {
+                return "Agent";
+            }
+            case Header::Priority:
+            {
+                return "Priority";
+            }
+            default:
+            {
+                return {};
+            }
+            }
+        }
+        case Qt::TextAlignmentRole:
+        {
+            return Qt::AlignCenter;
+        }
+        case Qt::BackgroundRole:
+        {
+            return QColor(220, 220, 220);
+        }
+        }
+    }
+    default:
+    {
+        return {};
+    }
+    }
+}
 bool PriorityModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     if (parent.isValid() || row < 0 || row + count > container.size())
