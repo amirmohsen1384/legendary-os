@@ -91,8 +91,8 @@ public:
     qint64 proceed(qint64 value);
 
 private:
-    qint64 quantum;
     qint64 identifier;
+    qint64 quantum = 0;
     qint64 startTime = -1;
     qint64 finishTime = -1;
     Task *parent = nullptr;
