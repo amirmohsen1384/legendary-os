@@ -2,101 +2,7 @@
 #include "core/task.h"
 #include <QColor>
 
-qint64 ReadyModel::left(qint64 node)
-{
-    return node * 2 + 1;
-}
-
-qint64 ReadyModel::right(qint64 node)
-{
-    return node * 2 + 2;
-}
-
-bool ReadyModel::hasLeft(qint64 node)
-{
-    return left(node) < container.size();
-}
-
-qint64 ReadyModel::ancestor(qint64 node)
-{
-    return (node - 1) / 2;
-}
-
-bool ReadyModel::hasRight(qint64 node)
-{
-    return right(node) < container.size();
-}
-
-void ReadyModel::swap(qint64 one, qint64 two)
-{
-    if (one < 0 || one >= container.size())
-    {
-        return;
-    }
-    else if (two < 0 || two >= container.size())
-    {
-        return;
-    }
-    else
-    {
-        std::swap(container[one], container[two]);
-        emit dataChanged(index(one, 0), index(one, columnCount() - 1), {Qt::DisplayRole});
-        emit dataChanged(index(two, 0), index(two, columnCount() - 1), {Qt::DisplayRole});
-    }
-}
-
-void ReadyModel::upheap(qint64 node)
-{
-    qint64 top = ancestor(node);
-    while (top >= 0)
-    {
-        const auto topPriority = container[top].data(Task::PriorityRole).toLongLong();
-        const auto nodePriority = container[node].data(Task::PriorityRole).toLongLong();
-        if (topPriority < nodePriority)
-        {
-            swap(top, node);
-            node = top;
-            top = ancestor(node);
-        }
-        else
-        {
-            break;
-        }
-    }
-}
-
-void ReadyModel::downheap(qint64 node)
-{
-    while (hasLeft(node))
-    {
-        qint64 larger = left(node);
-        if (hasRight(node))
-        {
-            auto rightNode = right(node);
-            const auto rightPriority = container[rightNode].data(Task::PriorityRole).toLongLong();
-            const auto largerPriority = container[larger].data(Task::PriorityRole).toLongLong();
-            if (largerPriority < rightPriority)
-            {
-                larger = rightNode;
-            }
-        }
-        qint64 parent = node;
-        qint64 child = larger;
-        const auto childPriority = container[child].data(Task::PriorityRole).toLongLong();
-        const auto parentPriority = container[parent].data(Task::PriorityRole).toLongLong();
-        if (parentPriority < childPriority)
-        {
-            swap(child, parent);
-            node = larger;
-        }
-        else
-        {
-            break;
-        }
-    }
-}
-
-ReadyModel::ReadyModel(qsizetype maximum, QObject *parent) : QAbstractTableModel(parent)
+ReadyModel::ReadyModel(qsizetype maximum, QObject *parent) : PriorityModel(parent)
 {
     setMaximumSize(maximum);
 }
@@ -180,111 +86,23 @@ bool ReadyModel::hasCapacity() const
     return container.size() < maximum;
 }
 
-qsizetype ReadyModel::getMaximumSize() const
+qsizetype ReadyModel::maximumSize() const
 {
     return maximum;
 }
 
 bool ReadyModel::insertTask(const QModelIndex &index)
 {
-    auto size = container.size();
-    if (!hasCapacity())
-    {
+    if (!hasCapacity()) {
         return false;
     }
-    beginInsertRows(QModelIndex(), size, size);
-    container.append(QPersistentModelIndex(index));
-    endInsertRows();
-    upheap(size);
-    return true;
+    return PriorityModel::insertTask(index);
 }
-
-void ReadyModel::removeTask(const QModelIndex &index)
-{
-    auto i = 0;
-    QPersistentModelIndex target = index;
-    while (i < container.size())
-    {
-        if(container.at(i++) == target)
-        {
-            auto size = container.size();
-            beginRemoveRows(QModelIndex(), size - 1, size - 1);
-            auto data = container.takeAt(size - 1);
-            endRemoveRows();
-            if (!container.isEmpty())
-            {
-                container[i] = data;
-                downheap(i);
-            }
-            break;
-        }
-    }
-}
-
-void ReadyModel::removeMostCritical()
-{
-    if (!container.isEmpty())
-    {
-        auto size = container.size();
-        beginRemoveRows(QModelIndex(), size - 1, size - 1);
-        auto data = container.takeAt(size - 1);
-        endRemoveRows();
-        if (!container.isEmpty())
-        {
-            container[0] = data;
-            downheap(0);
-        }
-    }
-}
-
-QModelIndex ReadyModel::getMostCritical() const
-{
-    return !container.isEmpty() ? container.front() : QPersistentModelIndex();
-}
-
 
 void ReadyModel::setMaximumSize(qsizetype size)
 {
     maximum = size;
     container.reserve(size);
-}
-
-int ReadyModel::rowCount(const QModelIndex &parent) const
-{
-    if (parent.isValid())
-    {
-        return 0;
-    }
-    return container.size();
-}
-
-bool ReadyModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-    if (parent.isValid())
-    {
-        return false;
-    }
-    else if (row < 0 || row + count > container.size())
-    {
-        return false;
-    }
-    auto size = container.size();
-    for (auto i = row; i < row + count; ++i)
-    {
-        container[i] = container[size-- - 1];
-    }
-    size = container.size();
-    beginRemoveRows(parent, size - count, size - 1);
-    container.remove(size - count, count);
-    endRemoveRows();
-    if (!container.isEmpty())
-    {
-        for (auto i = row; i < row + count && i < container.size(); ++i)
-        {
-            downheap(i);
-        }
-    }
-    return true;
 }
 
 int ReadyModel::columnCount(const QModelIndex &parent) const
