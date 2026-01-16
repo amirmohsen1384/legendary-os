@@ -24,6 +24,7 @@ bool RestModel::removeRows(int row, int count, const QModelIndex &parent)
     container.remove(row, count);
     container.squeeze();
     endRemoveRows();
+    return true;
 }
 
 QVariant RestModel::headerData(int section, Qt::Orientation orientation, int role) const
