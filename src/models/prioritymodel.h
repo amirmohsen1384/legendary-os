@@ -1,14 +1,14 @@
-#ifndef PRIORITYTASKMODEL_H
-#define PRIORITYTASKMODEL_H
+#ifndef PRIORITYMODEL_H
+#define PRIORITYMODEL_H
 
 #include <QAbstractItemModel>
 #include <QPersistentModelIndex>
 
-class PriorityTaskModel : public QAbstractTableModel
+class PriorityModel : public QAbstractTableModel
 {
     Q_OBJECT
 protected:
-    virtual bool betterThan(const QModelIndex &one, const QModelIndex &two) const = 0;
+    virtual bool betterThan(const QModelIndex &one, const QModelIndex &two) const;
 
 protected:
     void upheap(qint64 node);
@@ -28,7 +28,7 @@ protected:
     void swap(qint64 one, qint64 two);
 
 public:
-    explicit PriorityTaskModel(qsizetype maximum = 0, QObject *parent = nullptr);
+    explicit PriorityModel(QObject *parent = nullptr);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
@@ -39,8 +39,8 @@ public slots:
     virtual void removeBest();
     virtual bool insertTask(const QModelIndex &index);
 
-private:
+protected:
     QList<QPersistentModelIndex> container;
 };
 
-#endif // PRIORITYTASKMODEL_H
+#endif // PRIORITYMODEL_H

@@ -41,8 +41,8 @@ qt_add_executable(LegendaryOS
     src/models/loggingmodel.cpp
     src/models/readymodel.h
     src/models/readymodel.cpp
-    src/models/prioritytaskmodel.cpp
-    src/models/prioritytaskmodel.h
+    src/models/prioritymodel.cpp
+    src/models/prioritymodel.h
 )
 
 target_link_libraries(LegendaryOS

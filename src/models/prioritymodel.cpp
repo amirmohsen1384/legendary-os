@@ -1,31 +1,32 @@
-#include "prioritytaskmodel.h"
+#include "prioritymodel.h"
+#include "core/task.h"
 
-qint64 PriorityTaskModel::left(qint64 node)
+qint64 PriorityModel::left(qint64 node)
 {
     return node * 2 + 1;
 }
 
-qint64 PriorityTaskModel::right(qint64 node)
+qint64 PriorityModel::right(qint64 node)
 {
     return node * 2 + 2;
 }
 
-bool PriorityTaskModel::hasLeft(qint64 node)
+bool PriorityModel::hasLeft(qint64 node)
 {
     return left(node) < container.size();
 }
 
-qint64 PriorityTaskModel::ancestor(qint64 node)
+qint64 PriorityModel::ancestor(qint64 node)
 {
     return (node - 1) / 2;
 }
 
-bool PriorityTaskModel::hasRight(qint64 node)
+bool PriorityModel::hasRight(qint64 node)
 {
     return right(node) < container.size();
 }
 
-void PriorityTaskModel::swap(qint64 one, qint64 two)
+void PriorityModel::swap(qint64 one, qint64 two)
 {
     if (one < 0 || one >= container.size())
     {
@@ -43,7 +44,16 @@ void PriorityTaskModel::swap(qint64 one, qint64 two)
     }
 }
 
-void PriorityTaskModel::upheap(qint64 node)
+PriorityModel::PriorityModel(QObject *parent) : QAbstractTableModel{parent} {}
+
+bool PriorityModel::betterThan(const QModelIndex &one, const QModelIndex &two) const
+{
+    auto first = one.data(Task::PriorityRole).toLongLong();
+    auto second = two.data(Task::PriorityRole).toLongLong();
+    return first > second;
+}
+
+void PriorityModel::upheap(qint64 node)
 {
     qint64 top = ancestor(node);
     while (top >= 0)
@@ -61,7 +71,7 @@ void PriorityTaskModel::upheap(qint64 node)
     }
 }
 
-void PriorityTaskModel::downheap(qint64 node)
+void PriorityModel::downheap(qint64 node)
 {
     while (hasLeft(node))
     {
@@ -87,7 +97,7 @@ void PriorityTaskModel::downheap(qint64 node)
     }
 }
 
-bool PriorityTaskModel::insertTask(const QModelIndex &index)
+bool PriorityModel::insertTask(const QModelIndex &index)
 {
     auto size = container.size();
     beginInsertRows(QModelIndex(), size, size);
@@ -97,17 +107,21 @@ bool PriorityTaskModel::insertTask(const QModelIndex &index)
     return true;
 }
 
-void PriorityTaskModel::removeBest()
+void PriorityModel::removeBest()
 {
     removeRow(0);
 }
 
-QModelIndex PriorityTaskModel::peekBest() const
+QModelIndex PriorityModel::peekBest() const
 {
-    return !container.isEmpty() ? container.front() : QModelIndex();
+    if (container.isEmpty())
+    {
+        return {};
+    }
+    return container.constFirst();
 }
 
-int PriorityTaskModel::rowCount(const QModelIndex &parent) const
+int PriorityModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
     {
@@ -116,7 +130,7 @@ int PriorityTaskModel::rowCount(const QModelIndex &parent) const
     return container.size();
 }
 
-bool PriorityTaskModel::removeRows(int row, int count, const QModelIndex &parent)
+bool PriorityModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     if (parent.isValid() || row < 0 || row + count > container.size())
     {
