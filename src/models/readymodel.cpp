@@ -185,7 +185,7 @@ qsizetype ReadyModel::getMaximumSize() const
     return maximum;
 }
 
-bool ReadyModel::insertTask(const QPersistentModelIndex &index)
+bool ReadyModel::insertTask(const QModelIndex &index)
 {
     auto size = container.size();
     if (!hasCapacity())
@@ -193,18 +193,19 @@ bool ReadyModel::insertTask(const QPersistentModelIndex &index)
         return false;
     }
     beginInsertRows(QModelIndex(), size, size);
-    container.append(index);
+    container.append(QPersistentModelIndex(index));
     endInsertRows();
     upheap(size);
     return true;
 }
 
-void ReadyModel::removeTask(const QPersistentModelIndex &index)
+void ReadyModel::removeTask(const QModelIndex &index)
 {
     auto i = 0;
+    QPersistentModelIndex target = index;
     while (i < container.size())
     {
-        if(container.at(i++) == index)
+        if(container.at(i++) == target)
         {
             auto size = container.size();
             beginRemoveRows(QModelIndex(), size - 1, size - 1);
@@ -236,7 +237,7 @@ void ReadyModel::removeMostCritical()
     }
 }
 
-QPersistentModelIndex ReadyModel::getMostCritical() const
+QModelIndex ReadyModel::getMostCritical() const
 {
     return !container.isEmpty() ? container.front() : QPersistentModelIndex();
 }
@@ -248,23 +249,6 @@ void ReadyModel::setMaximumSize(qsizetype size)
     container.reserve(size);
 }
 
-void ReadyModel::removeTask(qsizetype i)
-{
-    auto size = container.size();
-    if (i >= 0 && i < size)
-    {
-        beginRemoveRows(QModelIndex(), i, i);
-        auto data = container.takeLast();
-        endRemoveRows();
-
-        if (i + 1 < size)
-        {
-            container[i] = data;
-            downheap(i);
-        }
-    }
-}
-
 int ReadyModel::rowCount(const QModelIndex &parent) const
 {
     if (parent.isValid())
@@ -272,6 +256,35 @@ int ReadyModel::rowCount(const QModelIndex &parent) const
         return 0;
     }
     return container.size();
+}
+
+bool ReadyModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+    if (parent.isValid())
+    {
+        return false;
+    }
+    else if (row < 0 || row + count > container.size())
+    {
+        return false;
+    }
+    auto size = container.size();
+    for (auto i = row; i < row + count; ++i)
+    {
+        container[i] = container[size-- - 1];
+    }
+    size = container.size();
+    beginRemoveRows(parent, size - count, size - 1);
+    container.remove(size - count, count);
+    endRemoveRows();
+    if (!container.isEmpty())
+    {
+        for (auto i = row; i < row + count && i < container.size(); ++i)
+        {
+            downheap(i);
+        }
+    }
+    return true;
 }
 
 int ReadyModel::columnCount(const QModelIndex &parent) const
@@ -327,9 +340,16 @@ QVariant ReadyModel::data(const QModelIndex &index, int role) const
         }
         case Header::Progress:
         {
-            auto burst = target.data(Task::BurstTimeRole).toLongLong();
-            auto remaining = target.data(Task::RemainingTimeRole).toLongLong();
-            return QString("%1%").arg((1 - remaining / burst) * 100);
+            bool ok = false;
+            auto total = target.data(Task::BurstTimeRole).toLongLong(&ok);
+            if(!ok) {
+                return {};
+            }
+            auto passed = target.data(Task::QuantumRole).toLongLong(&ok);
+            if (!ok) {
+                return {};
+            }
+            return QString("%1%").arg((passed / total) * 100);
         }
         }
     }

@@ -28,22 +28,21 @@ protected:
 
 public:
     explicit ReadyModel(qsizetype maximum = 0, QObject *parent = nullptr);
-
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const override;
     virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
 public:
     bool hasCapacity() const;
     qsizetype getMaximumSize() const;
-    QPersistentModelIndex getMostCritical() const;
+    QModelIndex getMostCritical() const;
 
 public slots:
-    bool insertTask(const QPersistentModelIndex &index);
-    void removeTask(const QPersistentModelIndex &index);
+    bool insertTask(const QModelIndex &index);
+    void removeTask(const QModelIndex &index);
     void setMaximumSize(qsizetype size);
-    void removeTask(qsizetype i);
     void removeMostCritical();
 
 private:
