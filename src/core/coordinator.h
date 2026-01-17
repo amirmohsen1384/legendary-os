@@ -31,6 +31,7 @@ public:
     Coordinator(const Config::Info &info, QObject *parent);
     qint64 getElapsedQuantums();
     qint64 getUnusedQuantums();
+    qreal getUtilizationRate();
 
     TaskModel* getTasks();
     AgentModel* getAgents();

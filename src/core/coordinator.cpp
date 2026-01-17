@@ -16,6 +16,12 @@ qint64 Coordinator::getUnusedQuantums()
     return unusedQuantums;
 }
 
+qreal Coordinator::getUtilizationRate()
+{
+    const auto elapsed = getElapsedQuantums();
+    return elapsed > 0 ? 1 - getUnusedQuantums() / elapsed : 0;
+}
+
 TaskModel *Coordinator::getTasks()
 {
     return tasks;
