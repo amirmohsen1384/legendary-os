@@ -17,6 +17,217 @@ qint64 Coordinator::getUnusedQuantums()
     return unusedQuantums;
 }
 
+TaskModel *Coordinator::getTasks()
+{
+    return tasks;
+}
+
+AgentModel *Coordinator::getAgents()
+{
+    return agents;
+}
+
+LoggingModel *Coordinator::getLogs()
+{
+    return logs;
+}
+
+ReadyModel *Coordinator::getReadyTasks()
+{
+    return readyTasks;
+}
+
+PriorityModel *Coordinator::getLimitTasks()
+{
+    return limitTasks;
+}
+
+PriorityModel *Coordinator::getAgentTasks()
+{
+    return agentTasks;
+}
+
+bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
+{
+    auto index = agents->insertAgent(info, parent);
+    if (!index.isValid()) {
+        return false;
+    }
+    const auto currentPath = agents->toString(index);
+    for (auto i = 0; i < agentTasks->rowCount(); ++i) {
+        auto target = agentTasks->index(i, 0);
+        auto targetPath = agentTasks->data(target, Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
+        if (targetPath == currentPath)
+        {
+            agentTasks->removeRow(i--);
+            if (readyTasks->hasCapacity())
+            {
+                tasks->setData(target, Task::State::Ready, Task::StateRole);
+                readyTasks->insertTask(target);
+            }
+            else
+            {
+                tasks->setData(target, Task::State::WaitingForLimit, Task::StateRole);
+                limitTasks->insertTask(target);
+            }
+        }
+    }
+    return true;
+}
+
+bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
+{
+    if (!hasReqiurements()) {
+        return false;
+    }
+    auto index = tasks->insertTask(info, parent);
+    if (!index.isValid()) {
+        return false;
+    }
+    dispatch(index);
+    return true;
+}
+
+bool Coordinator::removeAgent(const QModelIndex &index)
+{
+    for (auto i = 0; i < agents->rowCount(index); ++i) {
+        auto index = agents->index(i, 0, index);
+        if (!removeAgent(index)) {
+            return false;
+        }
+    }
+    auto path = agents->toString(index);
+    for (auto i = 0; i < readyTasks->rowCount(); ++i) {
+        auto index = readyTasks->index(i, 0);
+        auto currentPath = index.data(Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
+        if (path == currentPath) {
+            readyTasks->removeRow(i--);
+            agentTasks->insertTask(index);
+        }
+    }
+    for (auto i = 0; i < limitTasks->rowCount(); ++i) {
+        auto index = readyTasks->index(i, 0);
+        auto currentPath = index.data(Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
+        if (path == currentPath) {
+            readyTasks->removeRow(i--);
+            agentTasks->insertTask(index);
+        }
+    }
+    return agents->removeAgent(index);
+}
+
+bool Coordinator::removeTask(const QModelIndex &index)
+{
+    for (auto i = 0; i < tasks->rowCount(index); ++i) {
+        auto index = tasks->index(i, 0, index);
+        if (!removeTask(index)) {
+            return false;
+        }
+    }
+    for (auto i = 0; i < readyTasks->rowCount(); ++i) {
+        auto index = readyTasks->index(i, 0);
+        auto current = index.data(Qt::UserRole).value<QModelIndex>();
+        if (index == current) {
+            readyTasks->removeRow(i--);
+        }
+    }
+    for (auto i = 0; i < limitTasks->rowCount(); ++i) {
+        auto index = limitTasks->index(i, 0);
+        auto current = index.data(Qt::UserRole).value<QModelIndex>();
+        if (index == current) {
+            limitTasks->removeRow(i--);
+        }
+    }
+    for (auto i = 0; i < agentTasks->rowCount(); ++i) {
+        auto index = agentTasks->index(i, 0);
+        auto current = index.data(Qt::UserRole).value<QModelIndex>();
+        if (index == current) {
+            agentTasks->removeRow(i--);
+        }
+    }
+    return tasks->removeTask(index);
+}
+
+void Coordinator::scheduleShutdown()
+{
+    if (!shudownSchedule)
+    {
+        QMutexLocker locker(&mutex);
+        shudownSchedule = true;
+        emit shutdownScheduled();
+    }
+}
+
+void Coordinator::setTasks(TaskModel *model)
+{
+    tasks = model;
+}
+
+void Coordinator::setAgents(AgentModel *model)
+{
+    agents = model;
+}
+
+void Coordinator::setLogs(LoggingModel *model)
+{
+    logs = model;
+}
+
+void Coordinator::setReadyTasks(ReadyModel *model)
+{
+    readyTasks = model;
+}
+
+void Coordinator::setLimitTasks(PriorityModel *model)
+{
+    limitTasks = model;
+}
+
+void Coordinator::setAgentTasks(PriorityModel *model)
+{
+    agentTasks = model;
+}
+
+void Coordinator::dispatch(const QModelIndex &task)
+{
+    auto executable = task.data(Task::ExecutableRole).toBool();
+    if (executable)
+    {
+        if (readyTasks->hasCapacity())
+        {
+            tasks->setData(task, Task::State::Ready, Task::StateRole);
+            readyTasks->insertTask(task);
+        }
+        else
+        {
+            tasks->setData(task, Task::State::WaitingForLimit, Task::StateRole);
+            limitTasks->insertTask(task);
+        }
+    }
+    else
+    {
+        auto path = task.data(Task::AgentRole).toString();
+        if (agents->index(path).isValid())
+        {
+            if (readyTasks->hasCapacity())
+            {
+                tasks->setData(task, Task::State::Ready, Task::StateRole);
+                readyTasks->insertTask(task);
+            }
+            else
+            {
+                tasks->setData(task, Task::State::WaitingForLimit, Task::StateRole);
+                limitTasks->insertTask(task);
+            }
+        }
+        else
+        {
+            tasks->setData(task, Task::State::WaitingForAgent, Task::StateRole);
+            agentTasks->insertTask(task);
+        }
+    }
+}
+
 bool Coordinator::hasReqiurements() const
 {
     return agents && tasks && logs && limitTasks && agentTasks;
@@ -97,5 +308,12 @@ void Coordinator::run()
             unusedQuantums += unit;
             emit quantumUnused(unusedQuantums);
         }
+    }
+    if (shudownSchedule)
+    {
+        tasks->removeTask(QModelIndex());
+        readyTasks->clear();
+        limitTasks->clear();
+        agentTasks->clear();
     }
 }
