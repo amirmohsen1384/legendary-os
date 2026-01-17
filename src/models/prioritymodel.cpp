@@ -1,5 +1,6 @@
 #include "prioritymodel.h"
 #include "core/task.h"
+#include <QColor>
 
 qint64 PriorityModel::left(qint64 node)
 {
