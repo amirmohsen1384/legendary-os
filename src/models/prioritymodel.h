@@ -41,6 +41,7 @@ public:
     virtual QModelIndex peekBest() const;
 
 public slots:
+    virtual void clear();
     virtual void removeBest();
     virtual bool insertTask(const QModelIndex &index);
 

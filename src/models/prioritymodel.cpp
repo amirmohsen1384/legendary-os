@@ -92,6 +92,10 @@ QVariant PriorityModel::data(const QModelIndex &index, int role) const
     {
         return Qt::AlignCenter;
     }
+    case Qt::UserRole:
+    {
+        return QVariant::fromValue(target);
+    }
     default:
     {
         return {};
@@ -176,6 +180,13 @@ QModelIndex PriorityModel::peekBest() const
         return {};
     }
     return container.constFirst();
+}
+
+void PriorityModel::clear()
+{
+    beginResetModel();
+    container.clear();
+    endResetModel();
 }
 
 int PriorityModel::rowCount(const QModelIndex &parent) const
