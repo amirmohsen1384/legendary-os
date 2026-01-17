@@ -518,6 +518,31 @@ qint64 TaskModel::proceed(const QModelIndex &index, qint64 quantum)
     return result;
 }
 
+TaskModel::State TaskModel::setState(const QModelIndex &index, const Task::State state)
+{
+    State result;
+    if (!index.isValid()) {
+        return result;
+    }
+    result.current = state;
+    result.previous = index.data(Task::StateRole).value<Task::State>();
+    result.successful = setData(index, QVariant::fromValue(state), Task::StateRole);
+    return result;
+}
+
+QModelIndex TaskModel::getRunningTask() const
+{
+    return runningIndex;
+}
+
+Task::State TaskModel::getState(const QModelIndex &index)
+{
+    if (!index.isValid()) {
+        return Task::State::Unknown;
+    }
+    return index.data(Task::StateRole).value<Task::State>();
+}
+
 void TaskModel::clear()
 {
     beginResetModel();

@@ -13,6 +13,14 @@ protected:
     void clear();
 
 public:
+    struct State
+    {
+        bool successful = false;
+        Task::State current = Task::State::Unknown;
+        Task::State previous = Task::State::Unknown;
+    };
+
+public:
     explicit TaskModel(QObject *parent = nullptr);
 
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
@@ -33,6 +41,12 @@ public slots:
     void beginToProceed(const QModelIndex &index, qint64 timestamp);
     void endToProceed(const QModelIndex &index, qint64 timestamp);
     qint64 proceed(const QModelIndex &index, qint64 quantum);
+
+public:
+    QModelIndex getRunningTask() const;
+    Task::State getState(const QModelIndex &index);
+    TaskModel::State setState(const QModelIndex &index, const Task::State state);
+
 
 private:
     QModelIndex runningIndex;
