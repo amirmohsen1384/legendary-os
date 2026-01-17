@@ -168,6 +168,15 @@ bool PriorityModel::insertTask(const QModelIndex &index)
     return true;
 }
 
+QModelIndex PriorityModel::toTask(const QModelIndex &index) const
+{
+    if (!index.isValid())
+    {
+        return {};
+    }
+    return container.at(index.row());
+}
+
 void PriorityModel::removeBest()
 {
     removeRow(0);

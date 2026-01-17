@@ -45,6 +45,9 @@ public slots:
     virtual void removeBest();
     virtual bool insertTask(const QModelIndex &index);
 
+public:
+    QModelIndex toTask(const QModelIndex &index) const;
+
 protected:
     QList<QPersistentModelIndex> container;
 };
