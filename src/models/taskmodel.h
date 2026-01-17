@@ -13,7 +13,7 @@ protected:
     void clear();
 
 public:
-    struct State
+    struct TransitionState
     {
         bool successful = false;
         Task::State current = Task::State::Unknown;
@@ -45,7 +45,7 @@ public slots:
 public:
     QModelIndex getRunningTask() const;
     Task::State getState(const QModelIndex &index);
-    TaskModel::State setState(const QModelIndex &index, const Task::State state);
+    TaskModel::TransitionState setState(const QModelIndex &index, const Task::State state);
 
 
 private:

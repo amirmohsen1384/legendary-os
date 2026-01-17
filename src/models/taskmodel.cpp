@@ -518,10 +518,11 @@ qint64 TaskModel::proceed(const QModelIndex &index, qint64 quantum)
     return result;
 }
 
-TaskModel::State TaskModel::setState(const QModelIndex &index, const Task::State state)
+TaskModel::TransitionState TaskModel::setState(const QModelIndex &index, const Task::State state)
 {
-    State result;
-    if (!index.isValid()) {
+    TransitionState result;
+    if (!index.isValid())
+    {
         return result;
     }
     result.current = state;
