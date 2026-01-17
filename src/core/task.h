@@ -50,9 +50,12 @@ public:
     {
         WaitingForLimit,
         WaitingForAgent,
+        Terminate,
+        Execute,
         Running,
         Unknown,
         Timeout,
+        Error,
         Ready
     };
 
