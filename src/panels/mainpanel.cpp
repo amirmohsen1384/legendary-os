@@ -1,5 +1,11 @@
 #include "mainpanel.h"
 #include "ui_mainpanel.h"
+#include <QMessageBox>
+
+void MainPanel::showAboutQt()
+{
+    QMessageBox::aboutQt(this, "About Qt");
+}
 
 MainPanel::MainPanel(const Config::Info &info, QWidget *parent) : QMainWindow(parent), settings(info)
 {

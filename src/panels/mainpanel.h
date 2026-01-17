@@ -18,6 +18,10 @@ namespace Ui
 class MainPanel : public QMainWindow
 {
     Q_OBJECT
+
+private slots:
+    void showAboutQt();
+
 public:
     explicit MainPanel(const Config::Info &info, QWidget *parent = nullptr);
     ~MainPanel();
