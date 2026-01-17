@@ -23,6 +23,7 @@ namespace Config
 {
     struct Info
     {
+        qint64 pause;
         qint64 quantumSize;
         qint64 executionCycle;
         qint64 readyQueueLimit;

@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include "system.h"
 
+const auto pause = "pauseDuration";
 const auto quantum = "quantumSize";
 const auto readyLimit = "readyLimit";
 const auto workspaceName = "workspace";
@@ -20,6 +21,7 @@ Config::Info Config::load()
 {
     QSettings settings;
     Config::Info result;
+    result.pause = settings.value(pause, 500).toLongLong();
     result.quantumSize = settings.value(quantum, 20).toLongLong();
     result.executionCycle = settings.value(cycle, 5).toLongLong();
     result.readyQueueLimit = settings.value(readyLimit, 5).toLongLong();
@@ -31,6 +33,7 @@ Config::Info Config::load()
 void Config::save(const Info &info)
 {
     QSettings settings;
+    settings.setValue(pause, info.pause);
     settings.setValue(quantum, info.quantumSize);
     settings.setValue(cycle, info.executionCycle);
     settings.setValue(readyLimit, info.readyQueueLimit);
