@@ -1,8 +1,7 @@
 #include "coordinator.h"
 #include <QMutexLocker>
 
-Coordinator::Coordinator(const Config::Info &info, QObject *parent)
-    : QThread(parent), settings(info)
+Coordinator::Coordinator(const Config::Info &info, QObject *parent) : QThread(parent), settings(info)
 {}
 
 qint64 Coordinator::getElapsedQuantums()
@@ -50,25 +49,35 @@ PriorityModel *Coordinator::getAgentTasks()
 bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
 {
     auto index = agents->insertAgent(info, parent);
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         return false;
     }
     const auto currentPath = agents->toString(index);
-    for (auto i = 0; i < agentTasks->rowCount(); ++i) {
-        auto target = agentTasks->index(i, 0);
-        auto targetPath = agentTasks->data(target, Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
+    for (auto i = 0; i < agentTasks->rowCount(); ++i)
+    {
+        auto target = agentTasks->toTask(agentTasks->index(i, 0));
+        auto targetPath = target.data(Task::AgentRole).toString();
         if (targetPath == currentPath)
         {
             agentTasks->removeRow(i--);
             if (readyTasks->hasCapacity())
             {
-                tasks->setData(target, Task::State::Ready, Task::StateRole);
-                readyTasks->insertTask(target);
+                auto result = tasks->setState(target, Task::State::Ready);
+                if (result.successful)
+                {
+                    readyTasks->insertTask(target);
+                    logTask(target, result.previous, result.current);
+                }
             }
             else
             {
-                tasks->setData(target, Task::State::WaitingForLimit, Task::StateRole);
-                limitTasks->insertTask(target);
+                auto result = tasks->setState(target, Task::State::WaitingForLimit);
+                if (result.successful)
+                {
+                    limitTasks->insertTask(target);
+                    logTask(target, result.previous, result.current);
+                }
             }
         }
     }
@@ -88,64 +97,90 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
     return true;
 }
 
-bool Coordinator::removeAgent(const QModelIndex &index)
+bool Coordinator::removeAgent(const QModelIndex &agent)
 {
-    for (auto i = 0; i < agents->rowCount(index); ++i) {
-        auto index = agents->index(i, 0, index);
-        if (!removeAgent(index)) {
+    for (auto i = 0; i < agents->rowCount(agent); ++i)
+    {
+        auto child = agents->index(i, 0, agent);
+        if (!removeAgent(child))
+        {
             return false;
         }
     }
-    auto path = agents->toString(index);
-    for (auto i = 0; i < readyTasks->rowCount(); ++i) {
-        auto index = readyTasks->index(i, 0);
-        auto currentPath = index.data(Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
-        if (path == currentPath) {
+    auto path = agents->toString(agent);
+    for (auto i = 0; i < readyTasks->rowCount(); ++i)
+    {
+        auto index = readyTasks->toTask(readyTasks->index(i, 0));
+        auto current = agent.data(Task::AgentRole).toString();
+        if(current.isEmpty())
+        {
+            continue;
+        }
+        else if (path == current)
+        {
             readyTasks->removeRow(i--);
             agentTasks->insertTask(index);
         }
     }
-    for (auto i = 0; i < limitTasks->rowCount(); ++i) {
-        auto index = readyTasks->index(i, 0);
-        auto currentPath = index.data(Qt::UserRole).value<QModelIndex>().data(Task::AgentRole).toString();
-        if (path == currentPath) {
-            readyTasks->removeRow(i--);
+    for (auto i = 0; i < limitTasks->rowCount(); ++i)
+    {
+        auto index = limitTasks->toTask(limitTasks->index(i, 0));
+        auto current = agent.data(Task::AgentRole).toString();
+        if(current.isEmpty())
+        {
+            continue;
+        }
+        else if (path == current)
+        {
+            limitTasks->removeRow(i--);
             agentTasks->insertTask(index);
         }
     }
-    return agents->removeAgent(index);
+    return agents->removeAgent(agent);
 }
 
-bool Coordinator::removeTask(const QModelIndex &index)
+bool Coordinator::removeTask(const QModelIndex &task)
 {
-    for (auto i = 0; i < tasks->rowCount(index); ++i) {
-        auto index = tasks->index(i, 0, index);
-        if (!removeTask(index)) {
+    for (auto i = 0; i < tasks->rowCount(task); ++i)
+    {
+        auto child = tasks->index(i, 0, task);
+        if (!removeTask(child))
+        {
             return false;
         }
     }
-    for (auto i = 0; i < readyTasks->rowCount(); ++i) {
-        auto index = readyTasks->index(i, 0);
-        auto current = index.data(Qt::UserRole).value<QModelIndex>();
-        if (index == current) {
+
+    for (auto i = 0; i < readyTasks->rowCount(); ++i)
+    {
+        auto current = readyTasks->toTask(readyTasks->index(i, 0));
+        if (task == current)
+        {
             readyTasks->removeRow(i--);
+            return tasks->removeTask(task);
         }
     }
-    for (auto i = 0; i < limitTasks->rowCount(); ++i) {
-        auto index = limitTasks->index(i, 0);
-        auto current = index.data(Qt::UserRole).value<QModelIndex>();
-        if (index == current) {
+
+    for (auto i = 0; i < limitTasks->rowCount(); ++i)
+    {
+        auto current = limitTasks->toTask(limitTasks->index(i, 0));
+        if (task == current)
+        {
             limitTasks->removeRow(i--);
+            return tasks->removeTask(task);
         }
     }
-    for (auto i = 0; i < agentTasks->rowCount(); ++i) {
-        auto index = agentTasks->index(i, 0);
-        auto current = index.data(Qt::UserRole).value<QModelIndex>();
-        if (index == current) {
+
+    for (auto i = 0; i < agentTasks->rowCount(); ++i)
+    {
+        auto current = agentTasks->toTask(agentTasks->index(i, 0));
+        if (task == current)
+        {
             agentTasks->removeRow(i--);
+            return tasks->removeTask(task);
         }
     }
-    return tasks->removeTask(index);
+
+    return tasks->removeTask(task);
 }
 
 void Coordinator::scheduleShutdown()
@@ -195,12 +230,12 @@ void Coordinator::dispatch(const QModelIndex &task)
     {
         if (readyTasks->hasCapacity())
         {
-            tasks->setData(task, Task::State::Ready, Task::StateRole);
+            tasks->setState(task, Task::State::Ready);
             readyTasks->insertTask(task);
         }
         else
         {
-            tasks->setData(task, Task::State::WaitingForLimit, Task::StateRole);
+            tasks->setState(task, Task::State::WaitingForLimit);
             limitTasks->insertTask(task);
         }
     }
@@ -211,26 +246,58 @@ void Coordinator::dispatch(const QModelIndex &task)
         {
             if (readyTasks->hasCapacity())
             {
-                tasks->setData(task, Task::State::Ready, Task::StateRole);
+                tasks->setState(task, Task::State::Ready);
                 readyTasks->insertTask(task);
             }
             else
             {
-                tasks->setData(task, Task::State::WaitingForLimit, Task::StateRole);
+                tasks->setState(task, Task::State::WaitingForLimit);
                 limitTasks->insertTask(task);
             }
         }
         else
         {
-            tasks->setData(task, Task::State::WaitingForAgent, Task::StateRole);
+            tasks->setState(task, Task::State::WaitingForAgent);
             agentTasks->insertTask(task);
         }
     }
 }
 
+bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description)
+{
+    if (!task.isValid()) {
+        return false;
+    }
+    LogInfo information;
+    information.name = task.data(Task::NameRole).toString();
+
+    bool ok = false;
+    information.identifier = task.data(Task::PIDRole).toLongLong(&ok);
+    if (!ok) {
+        information.identifier = 0;
+    }
+
+    information.timestamp = getElapsedQuantums();
+    information.description = description;
+
+    QString path = task.data(Task::AgentRole).toString();
+    auto agent = agents->index(path);
+    if (agent.isValid())
+    {
+        information.agent.setName(agent.data(Agent::NameRole).toString());
+        information.agent.setDescription(agent.data(Agent::DescriptionRole).toString());
+    }
+    information.previous = previous;
+    information.current = current;
+
+    return logs->log(information);
+}
+
+
+
 bool Coordinator::hasReqiurements() const
 {
-    return agents && tasks && logs && limitTasks && agentTasks;
+    return agents && tasks && logs && limitTasks && agentTasks && tasks->rowCount() > 0;
 }
 
 void Coordinator::setElapsedQuantums(qint64 value)
@@ -242,73 +309,118 @@ void Coordinator::setElapsedQuantums(qint64 value)
 
 void Coordinator::run()
 {
-    if (!hasReqiurements()) {
+    if (!hasReqiurements())
+    {
         return;
     }
     const auto unit = settings.quantumSize;
     for (auto i = 0; i < settings.executionCycle; ++i)
     {
-        const auto current = getElapsedQuantums();
-
-        if (readyTasks->rowCount() > 0)
+        auto timestamp = getElapsedQuantums();
+        if (readyTasks->rowCount() <= 0)
         {
-            auto task = readyTasks->peekBest();
+            QMutexLocker locker(&mutex);
+            unusedQuantums += unit;
+            emit quantumUnused(unusedQuantums);
+            continue;
+        }
 
-            tasks->beginToProceed(task, current);
-            QThread::sleep(settings.pause);
+        auto task = readyTasks->peekBest();
 
+        {
+            auto before = tasks->getState(task);
+            tasks->beginToProceed(task, timestamp);
+            logTask(task, before, tasks->getState(task));
+        }
+
+        QThread::sleep(settings.pause);
+
+        {
+            auto before = tasks->getState(task);
             tasks->proceed(task, unit);
-            QThread::sleep(settings.pause);
+            logTask(task, before, tasks->getState(task));
+        }
 
-            current += unit;
-            setElapsedQuantums(current);
-            tasks->endToProceed(task, current);
-            QThread::sleep(settings.pause);
+        QThread::sleep(settings.pause);
 
-            auto state = tasks->data(task, Task::StateRole).value<Task::State>();
-            if (state == Task::State::Timeout)
-            {
-                readyTasks->removeBest();
-                bool ok = false;
-                auto usedQuantums = tasks->data(task, Task::QuantumRole).toLongLong(&ok);
-                auto currentPriority = tasks->data(task, Task::PriorityRole).toLongLong(&ok);
-                if (!ok) {
-                    usedQuantums = 0;
-                    currentPriority = 1;
-                }
-                auto priority = qint64(currentPriority / (0.5 * usedQuantums + 1));
-                tasks->setData(task, priority, Task::PriorityRole);
-                tasks->setData(task, Task::State::Ready, Task::State);
-                readyTasks->insertTask(task);
-            }
+        timestamp += unit;
+        setElapsedQuantums(timestamp);
+
+        {
+            auto before = tasks->getState(task);
+            tasks->endToProceed(task, timestamp);
+            logTask(task, before, tasks->getState(task));
+        }
+
+        QThread::sleep(settings.pause);
+
+        auto state = tasks->getState(task);
+        if (state == Task::State::Timeout)
+        {
+            readyTasks->removeBest();
+
             bool ok = false;
-            auto time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
-            if (!ok) {
-                time = 0;
+            auto usedQuantums = tasks->data(task, Task::QuantumRole).toLongLong(&ok);
+            auto currentPriority = tasks->data(task, Task::PriorityRole).toLongLong(&ok);
+            if (!ok)
+            {
+                usedQuantums = 0;
+                currentPriority = 1;
             }
-            if (time == 0) {
-                if(!tasks->removeTask(task)) {
-                    qDebug() << "Failed to remove the task.";
-                }
-                else
-                {
-                    while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity()) {
-                        auto newTask = limitTasks->peekBest();
-                        limitTasks->removeBest();
 
-                        tasks->setData(newTask, Task::State::Ready, Task::StateRole);
-                        readyTasks->insertTask(newTask);
-                    }
+            auto priority = qint64(currentPriority / (0.5 * usedQuantums + 1));
+            tasks->setData(task, priority, Task::PriorityRole);
+            {
+                auto result = tasks->setState(task, Task::State::Ready);
+                if (result.successful)
+                {
+                    readyTasks->insertTask(task);
+                    logTask(task, result.previous, result.current);
                 }
             }
         }
         else
         {
-            QMutexLocker locker(&mutex);
-            unusedQuantums += unit;
-            emit quantumUnused(unusedQuantums);
+            bool ok = false;
+            auto time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
+            if (!ok)
+            {
+                time = 0;
+            }
+            if (time == 0)
+            {
+                readyTasks->removeBest();
+                logTask(task, tasks->getState(task), Task::State::Terminate);
+
+                if(!tasks->removeTask(task))
+                {
+                    qDebug() << "Failed to remove the task.";
+                }
+                else
+                {
+                    while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
+                    {
+                        auto newTask = limitTasks->peekBest();
+                        {
+                            auto result = tasks->setState(newTask, Task::State::Ready);
+                            if (result.successful)
+                            {
+                                readyTasks->insertTask(newTask);
+                                limitTasks->removeBest();
+                                logTask(newTask, result.previous, result.current);
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                logTask(task, tasks->getState(task), Task::State::Execute);
+            }
         }
     }
+
+    QMutexLocker locker(&mutex);
     if (shudownSchedule)
     {
         tasks->removeTask(QModelIndex());

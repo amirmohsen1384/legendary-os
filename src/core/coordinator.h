@@ -18,6 +18,7 @@ class Coordinator : public QThread
 
 private:
     void dispatch(const QModelIndex &task);
+    bool logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description = QString());
 
 protected:
     bool hasReqiurements() const;
@@ -41,8 +42,8 @@ public:
 public slots:
     bool insertAgent(const AgentInfo &info, const QModelIndex &parent);
     bool insertTask(const TaskInfo &info, const QModelIndex &parent);
-    bool removeAgent(const QModelIndex &index);
-    bool removeTask(const QModelIndex &index);
+    bool removeAgent(const QModelIndex &agent);
+    bool removeTask(const QModelIndex &task);
     void scheduleShutdown();
 
     void setTasks(TaskModel *model);
