@@ -43,6 +43,8 @@ qt_add_executable(LegendaryOS
     src/models/readymodel.cpp
     src/models/prioritymodel.cpp
     src/models/prioritymodel.h
+    src/core/coordinator.h
+    src/core/coordinator.cpp
 )
 
 target_link_libraries(LegendaryOS
