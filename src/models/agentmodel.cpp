@@ -27,7 +27,7 @@ bool AgentModel::loadFromJSON(const QJsonObject &object, const QModelIndex &pare
         info.setName(iterator.key());
         const auto major = iterator->toObject();
         info.setDescription(major["description"].toString());
-        auto index = insert(info, parent);
+        auto index = insertAgent(info, parent);
         if (!loadFromJSON(major["children"].toObject(), index))
         {
             return false;
@@ -302,7 +302,7 @@ bool AgentModel::loadFromJSON(const QByteArray &data, const QModelIndex &parent)
     {
         return false;
     }
-    remove(parent);
+    removeAgent(parent);
     return loadFromJSON(document.object(), parent);
 }
 
