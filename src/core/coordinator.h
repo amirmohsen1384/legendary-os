@@ -28,7 +28,7 @@ protected:
     virtual void run() override;
 
 public:
-    Coordinator(const Config::Info &info, QObject *parent);
+    Coordinator(const Config::Info &info, QObject *parent = nullptr);
     qint64 getElapsedQuantums();
     qint64 getUnusedQuantums();
     qreal getUtilizationRate();
