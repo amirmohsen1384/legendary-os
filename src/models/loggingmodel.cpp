@@ -231,39 +231,39 @@ QVariant LoggingModel::data(const QModelIndex &index, int role) const
     }
 }
 
-QString LogInfo::text(const State &info)
+QString LogInfo::text(const Task::State &info)
 {
     switch (info)
     {
-    case State::Error:
+    case Task::State::Error:
     {
         return "Error happened";
     }
-    case State::Executed:
+    case Task::State::Execute:
     {
         return "Executed";
     }
-    case State::Ready:
+    case Task::State::Ready:
     {
         return "Ready";
     }
-    case State::Running:
+    case Task::State::Running:
     {
         return "Running";
     }
-    case State::Terminated:
+    case Task::State::Terminate:
     {
         return "Finished";
     }
-    case State::Unknown:
+    case Task::State::Unknown:
     {
         return "Not Known";
     }
-    case State::WaitingForFile:
+    case Task::State::WaitingForAgent:
     {
-        return "Waiting for file";
+        return "Waiting for agent";
     }
-    case State::WaitingForLimit:
+    case Task::State::WaitingForLimit:
     {
         return "Waiting for limit";
     }
@@ -274,27 +274,27 @@ QString LogInfo::text(const State &info)
     }
 }
 
-QColor LogInfo::color(const State &info)
+QColor LogInfo::color(const Task::State &info)
 {
     switch(info)
     {
-    case LogInfo::Error:
+    case Task::State::Error:
     {
         return QColor(Qt::darkRed);
     }
-    case LogInfo::Executed:
+    case Task::State::Execute:
     {
         return QColor(Qt::darkBlue);
     }
-    case LogInfo::Terminated:
+    case Task::State::Terminate:
     {
         return QColor(Qt::darkMagenta);
     }
-    case LogInfo::Ready:
+    case Task::State::Ready:
     {
         return QColor(Qt::darkCyan);
     }
-    case LogInfo::Running:
+    case Task::State::Running:
     {
         return QColor(Qt::darkGreen);
     }

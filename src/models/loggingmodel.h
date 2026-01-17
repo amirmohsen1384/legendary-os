@@ -2,30 +2,20 @@
 #define LOGGINGMODEL_H
 
 #include <QAbstractTableModel>
+#include "core/task.h"
 #include "core/agent.h"
 
 struct LogInfo
 {
-    enum State
-    {
-        Unknown,
-        Ready,
-        Error,
-        Running,
-        Executed,
-        Terminated,
-        WaitingForFile,
-        WaitingForLimit
-    };
     QString name;
     AgentInfo agent;
     qint64 timestamp;
     qint64 identifier;
     QString description;
-    State current = State::Unknown;
-    State previous = State::Unknown;
-    static QString text(const State &info);
-    static QColor color(const State &info);
+    Task::State current = Task::State::Unknown;
+    Task::State previous = Task::State::Unknown;
+    static QString text(const Task::State &info);
+    static QColor color(const Task::State &info);
 };
 
 Q_DECLARE_METATYPE(LogInfo)
