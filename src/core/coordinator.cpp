@@ -263,7 +263,7 @@ void Coordinator::pause()
 
 void Coordinator::setTasks(TaskModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -272,7 +272,7 @@ void Coordinator::setTasks(TaskModel *model)
 
 void Coordinator::setAgents(AgentModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -281,7 +281,7 @@ void Coordinator::setAgents(AgentModel *model)
 
 void Coordinator::setLogs(LoggingModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -290,7 +290,7 @@ void Coordinator::setLogs(LoggingModel *model)
 
 void Coordinator::setReadyTasks(ReadyModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -299,7 +299,7 @@ void Coordinator::setReadyTasks(ReadyModel *model)
 
 void Coordinator::setLimitTasks(PriorityModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -308,7 +308,7 @@ void Coordinator::setLimitTasks(PriorityModel *model)
 
 void Coordinator::setAgentTasks(PriorityModel *model)
 {
-    if (isRunning() || !hasReqiurements())
+    if (isRunning())
     {
         return;
     }
@@ -425,7 +425,7 @@ bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, 
 
 bool Coordinator::hasReqiurements() const
 {
-    return agents && tasks && logs && limitTasks && agentTasks && tasks->rowCount() > 0;
+    return agents && tasks && logs && limitTasks && agentTasks;
 }
 
 void Coordinator::setElapsedQuantums(qint64 value)
