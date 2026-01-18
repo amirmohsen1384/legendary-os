@@ -18,11 +18,12 @@ namespace Ui
 class MainPanel : public QMainWindow
 {
     Q_OBJECT
-
 private slots:
     void showAboutQt();
+    void updateTaskView();
     void showSettingsDialog();
 
+    void insertTask();
 public:
     explicit MainPanel(const Settings::Info &info, QWidget *parent = nullptr);
     ~MainPanel();
