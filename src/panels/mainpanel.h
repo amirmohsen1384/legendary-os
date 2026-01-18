@@ -21,6 +21,7 @@ class MainPanel : public QMainWindow
 
 private slots:
     void showAboutQt();
+    void showSettingsDialog();
 
 public:
     explicit MainPanel(const Settings::Info &info, QWidget *parent = nullptr);

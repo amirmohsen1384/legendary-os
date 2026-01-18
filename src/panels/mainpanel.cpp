@@ -1,10 +1,23 @@
+#include <QMessageBox>
 #include "mainpanel.h"
 #include "ui_mainpanel.h"
-#include <QMessageBox>
+#include "dialogs/settingsedit.h"
 
 void MainPanel::showAboutQt()
 {
     QMessageBox::aboutQt(this, "About Qt");
+}
+
+void MainPanel::showSettingsDialog()
+{
+    SettingsEdit editor;
+    editor.setSettings(settings);
+    if(editor.exec() == QDialog::Accepted)
+    {
+        Settings::save(editor.getSettings());
+        QMessageBox::information(this, "Restart Required", "You need to restart the application to apply the new settings.");
+        QApplication::quit();
+    }
 }
 
 MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info)

@@ -45,6 +45,9 @@ qt_add_executable(LegendaryOS
     src/models/prioritymodel.h
     src/core/coordinator.h
     src/core/coordinator.cpp
+    src/dialogs/settingsedit.h
+    src/dialogs/settingsedit.cpp
+    ui/dialogs/settingsedit.ui
 )
 
 target_link_libraries(LegendaryOS
