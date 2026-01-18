@@ -7,6 +7,8 @@
 #include "models/agentmodel.h"
 #include "models/taskmodel.h"
 #include "core/system.h"
+
+#include <QWaitCondition>
 #include <QThread>
 #include <QMutex>
 
@@ -15,6 +17,7 @@ class Coordinator : public QThread
     Q_OBJECT
     Q_PROPERTY(qint64 unusedQuantums READ getUnusedQuantums NOTIFY quantumUnused)
     Q_PROPERTY(qint64 elapsedQuantums READ getElapsedQuantums NOTIFY quantumElapsed)
+    Q_PROPERTY(Coordinator::State state READ getState WRITE setState NOTIFY runningStateChanged)
 
 private:
     void dispatch(const QModelIndex &task);
@@ -28,10 +31,15 @@ protected:
     virtual void run() override;
 
 public:
+    enum State {StoppedState, RunningState, PausedState};
+
     Coordinator(const Config::Info &info, QObject *parent = nullptr);
+    ~Coordinator();
+
     qint64 getElapsedQuantums();
     qint64 getUnusedQuantums();
     qreal getUtilizationRate();
+    State getState();
 
     TaskModel* getTasks();
     AgentModel* getAgents();
@@ -47,14 +55,17 @@ public slots:
     bool removeTask(const QModelIndex &task);
     void scheduleShutdown();
 
+
     void setTasks(TaskModel *model);
     void setAgents(AgentModel *model);
     void setLogs(LoggingModel *model);
     void setReadyTasks(ReadyModel *model);
     void setLimitTasks(PriorityModel *model);
     void setAgentTasks(PriorityModel *model);
+    void setState(const Coordinator::State state);
 
 signals:
+    void runningStateChanged(Coordinator::State state);
     void quantumElapsed(qint64 quantum);
     void quantumUnused(qint64 quantum);
     void shutdownScheduled();
@@ -62,6 +73,7 @@ signals:
 private:
     QMutex mutex;
     Config::Info settings;
+    QWaitCondition condition;
     qint64 unusedQuantums = 0;
     qint64 elapsedQuantums = 0;
     TaskModel* tasks = nullptr;
@@ -69,6 +81,7 @@ private:
     LoggingModel* logs = nullptr;
     bool shudownSchedule = false;
     ReadyModel* readyTasks = nullptr;
+    State state = State::StoppedState;
     PriorityModel* limitTasks = nullptr;
     PriorityModel* agentTasks = nullptr;
 };

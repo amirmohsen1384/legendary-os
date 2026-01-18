@@ -2,7 +2,23 @@
 #include <QMutexLocker>
 
 Coordinator::Coordinator(const Config::Info &info, QObject *parent) : QThread(parent), settings(info)
-{}
+{
+    connect(this, &QThread::started, this, [&]() {
+        setState(Coordinator::RunningState);
+    });
+    connect(this, &QThread::finished, this, [&]() {
+        setState(Coordinator::StoppedState);
+    });
+}
+
+Coordinator::~Coordinator()
+{
+    if (isRunning())
+    {
+        setState(Coordinator::StoppedState);
+        wait();
+    }
+}
 
 qint64 Coordinator::getElapsedQuantums()
 {
@@ -20,6 +36,12 @@ qreal Coordinator::getUtilizationRate()
 {
     const auto elapsed = getElapsedQuantums();
     return elapsed > 0 ? 1 - getUnusedQuantums() / elapsed : 0;
+}
+
+Coordinator::State Coordinator::getState()
+{
+    QMutexLocker locker(&mutex);
+    return state;
 }
 
 TaskModel *Coordinator::getTasks()
@@ -229,6 +251,17 @@ void Coordinator::setAgentTasks(PriorityModel *model)
     agentTasks = model;
 }
 
+void Coordinator::setState(const State value)
+{
+    QMutexLocker locker(&mutex);
+    state = value;
+    if (state == State::RunningState)
+    {
+        condition.wakeOne();
+    }
+    emit runningStateChanged(state);
+}
+
 void Coordinator::dispatch(const QModelIndex &task)
 {
     auto executable = task.data(Task::ExecutableRole).toBool();
@@ -322,6 +355,20 @@ void Coordinator::run()
     const auto unit = settings.quantumSize;
     for (auto i = 0; i < settings.executionCycle; ++i)
     {
+        {
+            auto state = getState();
+            if (state == State::PausedState)
+            {
+                mutex.lock();
+                condition.wait(&mutex);
+                mutex.unlock();
+            }
+            else if (state == State::StoppedState)
+            {
+                return;
+            }
+        }
+
         auto timestamp = getElapsedQuantums();
         if (readyTasks->rowCount() <= 0)
         {
@@ -340,6 +387,19 @@ void Coordinator::run()
         }
 
         QThread::sleep(settings.pause);
+        {
+            auto state = getState();
+            if (state == State::PausedState)
+            {
+                mutex.lock();
+                condition.wait(&mutex);
+                mutex.unlock();
+            }
+            else if (state == State::StoppedState)
+            {
+                return;
+            }
+        }
 
         {
             auto before = tasks->getState(task);
@@ -348,6 +408,19 @@ void Coordinator::run()
         }
 
         QThread::sleep(settings.pause);
+        {
+            auto state = getState();
+            if (state == State::PausedState)
+            {
+                mutex.lock();
+                condition.wait(&mutex);
+                mutex.unlock();
+            }
+            else if (state == State::StoppedState)
+            {
+                return;
+            }
+        }
 
         timestamp += unit;
         setElapsedQuantums(timestamp);
@@ -359,6 +432,19 @@ void Coordinator::run()
         }
 
         QThread::sleep(settings.pause);
+        {
+            auto state = getState();
+            if (state == State::PausedState)
+            {
+                mutex.lock();
+                condition.wait(&mutex);
+                mutex.unlock();
+            }
+            else if (state == State::StoppedState)
+            {
+                return;
+            }
+        }
 
         auto state = tasks->getState(task);
         if (state == Task::State::Timeout)
@@ -425,7 +511,6 @@ void Coordinator::run()
             }
         }
     }
-
     QMutexLocker locker(&mutex);
     if (shudownSchedule)
     {
