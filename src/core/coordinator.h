@@ -54,6 +54,9 @@ public slots:
     bool removeAgent(const QModelIndex &agent);
     bool removeTask(const QModelIndex &task);
     void scheduleShutdown();
+    void resume();
+    void abort();
+    void pause();
 
 
     void setTasks(TaskModel *model);

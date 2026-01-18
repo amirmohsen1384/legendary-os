@@ -240,6 +240,27 @@ void Coordinator::scheduleShutdown()
     }
 }
 
+void Coordinator::resume()
+{
+    if (getState() == State::PausedState)
+    {
+        setState(State::RunningState);
+    }
+}
+
+void Coordinator::abort()
+{
+    setState(State::StoppedState);
+}
+
+void Coordinator::pause()
+{
+    if (getState() == State::RunningState)
+    {
+        setState(State::PausedState);
+    }
+}
+
 void Coordinator::setTasks(TaskModel *model)
 {
     if (isRunning() || !hasReqiurements())
@@ -296,7 +317,7 @@ void Coordinator::setAgentTasks(PriorityModel *model)
 
 void Coordinator::setState(const State value)
 {
-    if (state == value)
+    if (getState() == value)
     {
         return;
     }
