@@ -10,27 +10,27 @@ const auto workspaceName = "workspace";
 const auto inputLimit = "inputCommandLimit";
 const auto cycle = "executionQuantumsPerCycle";
 
-void Config::initialize()
+void Settings::initialize()
 {
     QApplication::setOrganizationName("Legend");
     QApplication::setApplicationName("Legendary OS");
     QApplication::setOrganizationDomain("legend.com");
 }
 
-Config::Info Config::load()
+Settings::Info Settings::load()
 {
     QSettings settings;
-    Config::Info result;
+    Settings::Info result;
     result.pause = settings.value(pause, 500).toLongLong();
     result.quantumSize = settings.value(quantum, 20).toLongLong();
     result.executionCycle = settings.value(cycle, 5).toLongLong();
     result.readyQueueLimit = settings.value(readyLimit, 5).toLongLong();
     result.inputCommandLimit = settings.value(inputLimit, 3).toLongLong();
-    Config::save(result);
+    Settings::save(result);
     return result;
 }
 
-void Config::save(const Info &info)
+void Settings::save(const Info &info)
 {
     QSettings settings;
     settings.setValue(pause, info.pause);

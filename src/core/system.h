@@ -3,23 +3,7 @@
 
 #include <QString>
 
-namespace Exception
-{
-    class ConfigNotFound : public std::exception
-    {
-    public:
-        const char* what() const noexcept override;
-    };
-
-    class ConfigCorruption : public std::exception
-    {
-    public:
-        const char* what() const noexcept override;
-        QString error;
-    };
-}
-
-namespace Config
+namespace Settings
 {
     struct Info
     {
@@ -31,8 +15,8 @@ namespace Config
     };
 
     void initialize();
-    Config::Info load();
-    void save(const Config::Info &info);
+    Settings::Info load();
+    void save(const Settings::Info &info);
 }
 
 #endif // SYSTEM_H

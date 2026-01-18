@@ -1,7 +1,7 @@
 #include "coordinator.h"
 #include <QMutexLocker>
 
-Coordinator::Coordinator(const Config::Info &info, QObject *parent) : QThread(parent), settings(info)
+Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info)
 {
     connect(this, &QThread::started, this, [&]() {
         setState(Coordinator::RunningState);

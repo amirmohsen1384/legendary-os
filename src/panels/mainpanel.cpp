@@ -7,7 +7,7 @@ void MainPanel::showAboutQt()
     QMessageBox::aboutQt(this, "About Qt");
 }
 
-MainPanel::MainPanel(const Config::Info &info, QWidget *parent) : QMainWindow(parent), settings(info)
+MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info)
 {
     tasks = std::make_unique<TaskModel>();
     ui = std::make_unique<Ui::MainPanel>();

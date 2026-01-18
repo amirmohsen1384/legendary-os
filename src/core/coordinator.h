@@ -33,7 +33,7 @@ protected:
 public:
     enum State {StoppedState, RunningState, PausedState};
 
-    Coordinator(const Config::Info &info, QObject *parent = nullptr);
+    Coordinator(const Settings::Info &info, QObject *parent = nullptr);
     ~Coordinator();
 
     qint64 getElapsedQuantums();
@@ -75,7 +75,7 @@ signals:
 
 private:
     QMutex mutex;
-    Config::Info settings;
+    Settings::Info settings;
     QWaitCondition condition;
     qint64 unusedQuantums = 0;
     qint64 elapsedQuantums = 0;

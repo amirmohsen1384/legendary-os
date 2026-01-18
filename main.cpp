@@ -6,9 +6,9 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Config::initialize();
+    Settings::initialize();
 
-    auto settings = Config::load();
+    auto settings = Settings::load();
     MainPanel panel(settings);
     panel.show();
 

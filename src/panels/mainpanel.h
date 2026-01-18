@@ -23,11 +23,11 @@ private slots:
     void showAboutQt();
 
 public:
-    explicit MainPanel(const Config::Info &info, QWidget *parent = nullptr);
+    explicit MainPanel(const Settings::Info &info, QWidget *parent = nullptr);
     ~MainPanel();
 
 private:
-    Config::Info settings {};
+    Settings::Info settings {};
     std::unique_ptr<TaskModel> tasks {};
     std::unique_ptr<Ui::MainPanel> ui {};
     std::unique_ptr<AgentModel> agents {};
