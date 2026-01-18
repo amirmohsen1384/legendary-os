@@ -76,6 +76,11 @@ PriorityModel *Coordinator::getAgentTasks()
 
 bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return false;
+    }
+
     auto index = agents->insertAgent(info, parent);
     if (!index.isValid())
     {
@@ -114,11 +119,13 @@ bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
 
 bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
 {
-    if (!hasReqiurements()) {
+    if (isRunning() || !hasReqiurements())
+    {
         return false;
     }
     auto index = tasks->insertTask(info, parent);
-    if (!index.isValid()) {
+    if (!index.isValid())
+    {
         return false;
     }
     dispatch(index);
@@ -127,6 +134,10 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
 
 bool Coordinator::removeAgent(const QModelIndex &agent)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return false;
+    }
     for (auto i = 0; i < agents->rowCount(agent); ++i)
     {
         auto child = agents->index(i, 0, agent);
@@ -169,6 +180,10 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
 
 bool Coordinator::removeTask(const QModelIndex &task)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return false;
+    }
     for (auto i = 0; i < tasks->rowCount(task); ++i)
     {
         auto child = tasks->index(i, 0, task);
@@ -213,6 +228,10 @@ bool Coordinator::removeTask(const QModelIndex &task)
 
 void Coordinator::scheduleShutdown()
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     if (!shudownSchedule)
     {
         QMutexLocker locker(&mutex);
@@ -223,47 +242,95 @@ void Coordinator::scheduleShutdown()
 
 void Coordinator::setTasks(TaskModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     tasks = model;
 }
 
 void Coordinator::setAgents(AgentModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     agents = model;
 }
 
 void Coordinator::setLogs(LoggingModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     logs = model;
 }
 
 void Coordinator::setReadyTasks(ReadyModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     readyTasks = model;
 }
 
 void Coordinator::setLimitTasks(PriorityModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     limitTasks = model;
 }
 
 void Coordinator::setAgentTasks(PriorityModel *model)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     agentTasks = model;
 }
 
 void Coordinator::setState(const State value)
 {
-    QMutexLocker locker(&mutex);
-    state = value;
-    if (state == State::RunningState)
+    if (state == value)
     {
-        condition.wakeOne();
+        return;
     }
-    emit runningStateChanged(state);
+
+    QMutexLocker locker(&mutex);
+    if (state == StoppedState)
+    {
+        if (value == PausedState)
+        {
+            return;
+        }
+        else if (value == RunningState)
+        {
+            state = value;
+            start(LowPriority);
+        }
+    }
+    else
+    {
+        state = value;
+        if (state != State::PausedState)
+        {
+            condition.wakeOne();
+        }
+        emit runningStateChanged(state);
+    }
 }
 
 void Coordinator::dispatch(const QModelIndex &task)
 {
+    if (isRunning() || !hasReqiurements())
+    {
+        return;
+    }
     auto executable = task.data(Task::ExecutableRole).toBool();
     if (executable)
     {
@@ -304,7 +371,8 @@ void Coordinator::dispatch(const QModelIndex &task)
 
 bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description)
 {
-    if (!task.isValid()) {
+    if (isRunning() || !hasReqiurements() || !task.isValid())
+    {
         return false;
     }
     LogInfo information;
@@ -359,11 +427,10 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
-                mutex.lock();
+                QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
-                mutex.unlock();
             }
-            else if (state == State::StoppedState)
+            if (state == State::StoppedState)
             {
                 return;
             }
@@ -391,11 +458,10 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
-                mutex.lock();
+                QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
-                mutex.unlock();
             }
-            else if (state == State::StoppedState)
+            if (state == State::StoppedState)
             {
                 return;
             }
@@ -412,11 +478,10 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
-                mutex.lock();
+                QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
-                mutex.unlock();
             }
-            else if (state == State::StoppedState)
+            if (state == State::StoppedState)
             {
                 return;
             }
@@ -436,11 +501,10 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
-                mutex.lock();
+                QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
-                mutex.unlock();
             }
-            else if (state == State::StoppedState)
+            if (state == State::StoppedState)
             {
                 return;
             }
