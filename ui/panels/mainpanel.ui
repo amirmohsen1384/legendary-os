@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>912</width>
-    <height>693</height>
+    <width>955</width>
+    <height>710</height>
    </rect>
   </property>
   <property name="palette">
@@ -59,13 +59,239 @@
   <property name="windowTitle">
    <string>Legendary OS</string>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="mainLayout">
+    <item>
+     <layout class="QHBoxLayout" name="majorLayout">
+      <item>
+       <widget class="QTabWidget" name="entitiesGroup">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="tasksTab">
+         <attribute name="title">
+          <string>Tasks</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <item>
+           <widget class="QLabel" name="tasksEmptyLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:gray</string>
+            </property>
+            <property name="text">
+             <string>No task is currently available.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTreeView" name="tasksView">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Shape::NoFrame</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Sunken</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="agentsTab">
+         <attribute name="title">
+          <string>Agents</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
+          <item>
+           <widget class="QLabel" name="agentsEmptyLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:gray</string>
+            </property>
+            <property name="text">
+             <string>No agent is currently available.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTreeView" name="agentsView">
+            <property name="frameShape">
+             <enum>QFrame::Shape::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+      <item>
+       <widget class="QTabWidget" name="queueGroup">
+        <property name="currentIndex">
+         <number>0</number>
+        </property>
+        <widget class="QWidget" name="readyTasksTab">
+         <attribute name="title">
+          <string>Ready Tasks</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="readyTaskEmptyLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:gray</string>
+            </property>
+            <property name="text">
+             <string>No task is currently ready to be processed.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="readyTaskTable">
+            <property name="frameShape">
+             <enum>QFrame::Shape::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="sizeLimitTab">
+         <attribute name="title">
+          <string>Size Limit</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_5">
+          <item>
+           <widget class="QLabel" name="sizeLimitEmptyLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:gray</string>
+            </property>
+            <property name="text">
+             <string>No size limit task is currently available.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="sizeLimitTable">
+            <property name="frameShape">
+             <enum>QFrame::Shape::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="agentDependencyTab">
+         <attribute name="title">
+          <string>Agent Dependency</string>
+         </attribute>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QLabel" name="agentDependencyEmptyLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="styleSheet">
+             <string notr="true">color:gray</string>
+            </property>
+            <property name="text">
+             <string>No agent dependency task is currently available.</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QTableView" name="agentDependencyTable">
+            <property name="frameShape">
+             <enum>QFrame::Shape::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="logsGroup">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="title">
+       <string>Logs</string>
+      </property>
+      <property name="flat">
+       <bool>true</bool>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QTableView" name="logsView">
+         <property name="frameShape">
+          <enum>QFrame::Shape::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Shadow::Plain</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>912</width>
+     <width>955</width>
      <height>26</height>
     </rect>
    </property>
@@ -107,62 +333,6 @@
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <widget class="QDockWidget" name="tasksDockWidget">
-   <property name="autoFillBackground">
-    <bool>true</bool>
-   </property>
-   <property name="features">
-    <set>QDockWidget::DockWidgetFeature::DockWidgetClosable|QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
-   </property>
-   <property name="allowedAreas">
-    <set>Qt::DockWidgetArea::AllDockWidgetAreas</set>
-   </property>
-   <property name="windowTitle">
-    <string>Tasks</string>
-   </property>
-   <attribute name="dockWidgetArea">
-    <number>8</number>
-   </attribute>
-   <widget class="QWidget" name="tasksDockWidgetParent">
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QLabel" name="emptyLabel">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="styleSheet">
-        <string notr="true">color:gray</string>
-       </property>
-       <property name="text">
-        <string>No task is currently available.</string>
-       </property>
-       <property name="alignment">
-        <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QTreeView" name="tasksView">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
-       <property name="frameShape">
-        <enum>QFrame::Shape::NoFrame</enum>
-       </property>
-       <property name="frameShadow">
-        <enum>QFrame::Shadow::Sunken</enum>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </widget>
-  </widget>
   <action name="actionLogs">
    <property name="checkable">
     <bool>true</bool>
