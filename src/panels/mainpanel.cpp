@@ -100,6 +100,11 @@ void MainPanel::showAboutQt()
     QMessageBox::aboutQt(this, "About Qt");
 }
 
+void MainPanel::openGitHubPage()
+{
+    qDebug() << "Showing GitHub Page";
+}
+
 void MainPanel::showSettingsDialog()
 {
     SettingsEdit editor;

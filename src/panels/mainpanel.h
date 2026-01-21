@@ -34,6 +34,7 @@ private:
 private slots:
     void insertTask();
     void showAboutQt();
+    void openGitHubPage();
     void showSettingsDialog();
 
 private slots:

@@ -311,7 +311,7 @@
      <x>0</x>
      <y>0</y>
      <width>955</width>
-     <height>25</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGeneral">
@@ -342,10 +342,9 @@
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
-     <string>&amp;Help</string>
+     <string>&amp;About</string>
     </property>
-    <addaction name="actionHelp"/>
-    <addaction name="actionAbout"/>
+    <addaction name="actionGitHubPage"/>
     <addaction name="actionAboutQt"/>
    </widget>
    <addaction name="menuGeneral"/>
@@ -423,22 +422,9 @@
     <string>F2</string>
    </property>
   </action>
-  <action name="actionHelp">
+  <action name="actionGitHubPage">
    <property name="text">
-    <string>Help</string>
-   </property>
-   <property name="shortcut">
-    <string>F1</string>
-   </property>
-  </action>
-  <action name="actionView_GitHub_Page">
-   <property name="text">
-    <string>View GitHub Page</string>
-   </property>
-  </action>
-  <action name="actionAbout">
-   <property name="text">
-    <string>About</string>
+    <string>GitHub Page</string>
    </property>
   </action>
   <action name="actionAboutQt">
@@ -671,6 +657,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionGitHubPage</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>openGitHubPage()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAboutQt()</slot>
@@ -682,5 +684,6 @@
   <slot>setSizeLimitTabVisible(bool)</slot>
   <slot>setAgentDependencyTabVisible(bool)</slot>
   <slot>setLogsTabVisible(bool)</slot>
+  <slot>openGitHubPage()</slot>
  </slots>
 </ui>
