@@ -18,26 +18,47 @@ namespace Ui
 class MainPanel : public QMainWindow
 {
     Q_OBJECT
+private:
+    void setupView();
+    void setupKernel();
+    void setupEditionActions();
+
+private:
+    bool isTasksTabVisible() const;
+    bool isAgentsTabVisible() const;
+    bool isSizeLimitTabVisible() const;
+    bool isReadyTasksTabVisible() const;
+    bool isAgentDependencyTabVisible() const;
+
 private slots:
+    void insertTask();
     void showAboutQt();
     void updateTaskView();
     void showSettingsDialog();
 
-    void insertTask();
+private slots:
+    void setLogsTabVisible(bool visible);
+    void setTasksTabVisible(bool visible);
+    void setAgentsTabVisible(bool visible);
+    void setSizeLimitTabVisible(bool visible);
+    void setReadyTasksTabVisible(bool visible);
+    void setAgentDependencyTabVisible(bool visible);
+
 public:
     explicit MainPanel(const Settings::Info &info, QWidget *parent = nullptr);
     ~MainPanel();
 
 private:
+    TaskModel* tasks {};
+    Ui::MainPanel* ui {};
+    AgentModel* agents {};
+    LoggingModel* logs {};
+    Coordinator* kernel {};
+    ReadyModel* readyTasks {};
     Settings::Info settings {};
-    std::unique_ptr<TaskModel> tasks {};
-    std::unique_ptr<Ui::MainPanel> ui {};
-    std::unique_ptr<AgentModel> agents {};
-    std::unique_ptr<LoggingModel> logs {};
-    std::unique_ptr<Coordinator> kernel {};
-    std::unique_ptr<ReadyModel> readyTasks {};
-    std::unique_ptr<PriorityModel> limitTasks {};
-    std::unique_ptr<PriorityModel> agentTasks {};
+    PriorityModel* limitTasks {};
+    PriorityModel* agentTasks {};
+    QActionGroup* editionActions {};
 };
 
 #endif // MAINPANEL_H

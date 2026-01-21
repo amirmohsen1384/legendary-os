@@ -151,7 +151,7 @@
       <item>
        <widget class="QTabWidget" name="queueGroup">
         <property name="currentIndex">
-         <number>0</number>
+         <number>2</number>
         </property>
         <widget class="QWidget" name="readyTasksTab">
          <attribute name="title">
@@ -292,7 +292,7 @@
      <x>0</x>
      <y>0</y>
      <width>955</width>
-     <height>26</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuGeneral">
@@ -314,11 +314,12 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="actionLogs"/>
-    <addaction name="actionReadyTasks"/>
-    <addaction name="actionPendingTasks"/>
     <addaction name="actionAvailableTasks"/>
     <addaction name="actionAvailableAgents"/>
+    <addaction name="actionReadyTasks"/>
+    <addaction name="actionSizeLimitTasks"/>
+    <addaction name="actionAgentDependencyTasks"/>
+    <addaction name="actionLogs"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -337,30 +338,39 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show logs</string>
    </property>
    <property name="shortcut">
-    <string>F2</string>
+    <string>F7</string>
    </property>
   </action>
   <action name="actionReadyTasks">
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show ready tasks</string>
    </property>
    <property name="shortcut">
-    <string>F6</string>
+    <string>F4</string>
    </property>
   </action>
-  <action name="actionPendingTasks">
+  <action name="actionSizeLimitTasks">
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
-    <string>Show pending tasks</string>
+    <string>Show size limit tasks</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -370,22 +380,28 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show available agents</string>
    </property>
    <property name="shortcut">
-    <string>F4</string>
+    <string>F3</string>
    </property>
   </action>
   <action name="actionAvailableTasks">
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Show available tasks</string>
    </property>
    <property name="shortcut">
-    <string>F3</string>
+    <string>F2</string>
    </property>
   </action>
   <action name="actionHelp">
@@ -475,6 +491,20 @@
     <string>P</string>
    </property>
   </action>
+  <action name="actionAgentDependencyTasks">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Show agent dependency tasks</string>
+   </property>
+   <property name="shortcut">
+    <string>F6</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections>
@@ -526,10 +556,112 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionAvailableAgents</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setAgentsTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAvailableTasks</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setTasksTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionReadyTasks</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setReadyTasksTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSizeLimitTasks</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setSizeLimitTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAgentDependencyTasks</sender>
+   <signal>triggered(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setAgentDependencyTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLogs</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>MainPanel</receiver>
+   <slot>setLogsTabVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAboutQt()</slot>
   <slot>showSettingsDialog()</slot>
   <slot>insertTask()</slot>
+  <slot>setTasksTabVisible(bool)</slot>
+  <slot>setAgentsTabVisible(bool)</slot>
+  <slot>setReadyTasksTabVisible(bool)</slot>
+  <slot>setSizeLimitTabVisible(bool)</slot>
+  <slot>setAgentDependencyTabVisible(bool)</slot>
+  <slot>setLogsTabVisible(bool)</slot>
  </slots>
 </ui>
