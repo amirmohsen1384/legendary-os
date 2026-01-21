@@ -19,8 +19,9 @@ class MainPanel : public QMainWindow
 {
     Q_OBJECT
 private:
-    void setupView();
+    void setupLayout();
     void setupKernel();
+    void setupModels();
     void setupEditionActions();
 
 private:
@@ -33,8 +34,15 @@ private:
 private slots:
     void insertTask();
     void showAboutQt();
-    void updateTaskView();
     void showSettingsDialog();
+
+private slots:
+    void updateLogView();
+    void updateTaskView();
+    void updateAgentView();
+    void updateReadyTaskView();
+    void updateSizeLimitView();
+    void updateAgentDependencyView();
 
 private slots:
     void setLogsTabVisible(bool visible);

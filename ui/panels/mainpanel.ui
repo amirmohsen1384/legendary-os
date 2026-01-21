@@ -151,7 +151,7 @@
       <item>
        <widget class="QTabWidget" name="queueGroup">
         <property name="currentIndex">
-         <number>2</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="readyTasksTab">
          <attribute name="title">
@@ -178,7 +178,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="readyTaskTable">
+           <widget class="QTableView" name="readyTaskView">
             <property name="frameShape">
              <enum>QFrame::Shape::NoFrame</enum>
             </property>
@@ -211,7 +211,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="sizeLimitTable">
+           <widget class="QTableView" name="sizeLimitView">
             <property name="frameShape">
              <enum>QFrame::Shape::NoFrame</enum>
             </property>
@@ -244,7 +244,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QTableView" name="agentDependencyTable">
+           <widget class="QTableView" name="agentDependencyView">
             <property name="frameShape">
              <enum>QFrame::Shape::NoFrame</enum>
             </property>
@@ -271,6 +271,25 @@
        <bool>true</bool>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_7">
+       <item>
+        <widget class="QLabel" name="logsEmptyLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">color:gray</string>
+         </property>
+         <property name="text">
+          <string>No log has been recorded.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignmentFlag::AlignHCenter|Qt::AlignmentFlag::AlignTop</set>
+         </property>
+        </widget>
+       </item>
        <item>
         <widget class="QTableView" name="logsView">
          <property name="frameShape">

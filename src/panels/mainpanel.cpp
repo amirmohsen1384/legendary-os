@@ -5,7 +5,7 @@
 #include "dialogs/taskedit.h"
 #include "dialogs/settingsedit.h"
 
-void MainPanel::setupView()
+void MainPanel::setupLayout()
 {
     ui->actionLogs->setChecked(false);
     ui->actionReadyTasks->setChecked(true);
@@ -36,6 +36,27 @@ void MainPanel::setupKernel()
 
     readyTasks = new ReadyModel(settings.readyQueueLimit, this);
     kernel->setReadyTasks(readyTasks);
+}
+
+void MainPanel::setupModels()
+{
+    ui->tasksView->setModel(tasks);
+    updateTaskView();
+
+    ui->agentsView->setModel(agents);
+    updateAgentView();
+
+    ui->readyTaskView->setModel(readyTasks);
+    updateReadyTaskView();
+
+    ui->sizeLimitView->setModel(limitTasks);
+    updateSizeLimitView();
+
+    ui->agentDependencyView->setModel(agentTasks);
+    updateAgentDependencyView();
+
+    ui->logsView->setModel(logs);
+    updateLogView();
 }
 
 void MainPanel::setupEditionActions()
@@ -79,13 +100,6 @@ void MainPanel::showAboutQt()
     QMessageBox::aboutQt(this, "About Qt");
 }
 
-void MainPanel::updateTaskView()
-{
-    auto condition = tasks->rowCount() > 0;
-    ui->tasksEmptyLabel->setVisible(!condition);
-    ui->tasksView->setVisible(condition);
-}
-
 void MainPanel::showSettingsDialog()
 {
     SettingsEdit editor;
@@ -96,6 +110,48 @@ void MainPanel::showSettingsDialog()
         QMessageBox::information(this, "Restart Required", "You need to restart the application to apply the new settings.");
         QApplication::quit();
     }
+}
+
+void MainPanel::updateLogView()
+{
+    auto condition = logs->rowCount() > 0;
+    ui->logsView->setVisible(condition);
+    ui->logsEmptyLabel->setVisible(!condition);
+}
+
+void MainPanel::updateTaskView()
+{
+    auto condition = tasks->rowCount() > 0;
+    ui->tasksEmptyLabel->setVisible(!condition);
+    ui->tasksView->setVisible(condition);
+}
+
+void MainPanel::updateAgentView()
+{
+    auto condition = agents->rowCount() > 0;
+    ui->agentsEmptyLabel->setVisible(!condition);
+    ui->agentsView->setVisible(condition);
+}
+
+void MainPanel::updateReadyTaskView()
+{
+    auto condition = readyTasks->rowCount() > 0;
+    ui->readyTaskEmptyLabel->setVisible(!condition);
+    ui->readyTaskView->setVisible(condition);
+}
+
+void MainPanel::updateSizeLimitView()
+{
+    auto condition = limitTasks->rowCount() > 0;
+    ui->sizeLimitView->setVisible(condition);
+    ui->sizeLimitEmptyLabel->setVisible(!condition);
+}
+
+void MainPanel::updateAgentDependencyView()
+{
+    auto condition = agentTasks->rowCount() > 0;
+    ui->agentDependencyView->setVisible(condition);
+    ui->agentDependencyEmptyLabel->setVisible(!condition);
 }
 
 void MainPanel::setLogsTabVisible(bool visible)
@@ -146,13 +202,10 @@ void MainPanel::insertTask()
 MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info), ui(new Ui::MainPanel)
 {
     setupKernel();
-
     ui->setupUi(this);
     setupEditionActions();
-
-    ui->tasksView->setModel(tasks);
-    updateTaskView();
-    setupView();
+    setupLayout();
+    setupModels();
 }
 
 MainPanel::~MainPanel()
