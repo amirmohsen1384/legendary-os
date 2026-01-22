@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(LegendaryOS LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets StateMachine)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogs
@@ -53,7 +53,6 @@ target_link_libraries(LegendaryOS
     PRIVATE
         Qt::Core
         Qt::Widgets
-        Qt::StateMachine
 )
 
 include(GNUInstallDirs)
