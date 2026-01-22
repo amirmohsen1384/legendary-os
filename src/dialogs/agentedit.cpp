@@ -2,11 +2,6 @@
 #include "agentedit.h"
 #include "ui_agentedit.h"
 
-AgentEdit::AgentEdit(AgentModel *model, QWidget *parent) : AgentEdit(parent)
-{
-    setModel(model);
-}
-
 AgentEdit::AgentEdit(QWidget *parent) : QDialog(parent)
 {
     ui = std::make_unique<Ui::AgentEdit>();

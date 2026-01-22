@@ -14,7 +14,6 @@ class AgentEdit : public QDialog
     Q_OBJECT
 
 public:
-    explicit AgentEdit(AgentModel *model, QWidget *parent = nullptr);
     explicit AgentEdit(QWidget *parent = nullptr);
     ~AgentEdit();
 
