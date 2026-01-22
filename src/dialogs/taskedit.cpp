@@ -2,14 +2,30 @@
 #include <QMessageBox>
 #include "ui_taskedit.h"
 
-TaskEdit::TaskEdit(TaskModel *model, QWidget *parent) : QDialog(parent)
+void TaskEdit::browseAgent()
 {
-    ui = std::make_unique<Ui::TaskEdit>();
-    ui->setupUi(this);
-    setModel(model);
+    if(!agents) {
+        return;
+    }
+    AgentEdit editor;
+    editor.setModel(agents);
+    if (editor.exec() == QDialog::Accepted)
+    {
+        auto index = editor.getParent();
+        auto info = editor.getAgentInfo();
+        ui->agentEdit->setText(agents->toString(index).append("/%1").arg(info.getName()));
+    }
 }
 
-TaskEdit::~TaskEdit() {}
+TaskEdit::TaskEdit(QWidget *parent) : QDialog(parent), ui(new Ui::TaskEdit)
+{
+    ui->setupUi(this);
+}
+
+TaskEdit::~TaskEdit()
+{
+    delete ui;
+}
 
 QString TaskEdit::getName() const
 {
@@ -89,17 +105,27 @@ void TaskEdit::setParent(const QModelIndex &parent)
     ui->locationView->setCurrentIndex(parent);
 }
 
-TaskModel *TaskEdit::getModel()
+TaskModel *TaskEdit::getTaskModel()
 {
     return static_cast<TaskModel*>(ui->locationView->model());
 }
 
-void TaskEdit::setModel(TaskModel *model)
+void TaskEdit::setTaskModel(TaskModel *model)
 {
     ui->locationView->setModel(model);
     auto visible = model && model->rowCount() > 0;
     ui->emptyLabel->setVisible(!visible);
     ui->locationView->setVisible(visible);
+}
+
+AgentModel *TaskEdit::getAgentModel()
+{
+    return agents;
+}
+
+void TaskEdit::setAgentModel(AgentModel *model)
+{
+    agents = model;
 }
 
 void TaskEdit::expandFrom(const QModelIndex &index)

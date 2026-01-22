@@ -2,6 +2,7 @@
 #define TASKEDIT_H
 
 #include <QDialog>
+#include "agentedit.h"
 #include "models/taskmodel.h"
 
 namespace Ui
@@ -12,8 +13,11 @@ namespace Ui
 class TaskEdit : public QDialog
 {
     Q_OBJECT
+private slots:
+    void browseAgent();
+
 public:
-    explicit TaskEdit(TaskModel* model, QWidget *parent = nullptr);
+    explicit TaskEdit(QWidget *parent = nullptr);
     ~TaskEdit();
 
     QString getName() const;
@@ -37,8 +41,11 @@ public:
     QModelIndex getParent() const;
     void setParent(const QModelIndex &parent);
 
-    TaskModel* getModel();
-    void setModel(TaskModel *model);
+    TaskModel* getTaskModel();
+    void setTaskModel(TaskModel *model);
+
+    AgentModel* getAgentModel();
+    void setAgentModel(AgentModel *model);
 
     void expandFrom(const QModelIndex &index);
 
@@ -46,7 +53,8 @@ public:
     virtual void accept();
 
 private:
-    std::unique_ptr<Ui::TaskEdit> ui;
+    Ui::TaskEdit* ui {};
+    AgentModel* agents {};
 };
 
 #endif // TASKEDIT_H
