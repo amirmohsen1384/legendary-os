@@ -2,6 +2,7 @@
 #include "mainpanel.h"
 #include <QActionGroup>
 #include "ui_mainpanel.h"
+#include <QDesktopServices>
 #include "dialogs/taskedit.h"
 #include "dialogs/settingsedit.h"
 
@@ -116,6 +117,11 @@ void MainPanel::showAboutQt()
 void MainPanel::openGitHubPage()
 {
     qDebug() << "Showing GitHub Page";
+    if(!QDesktopServices::openUrl(QUrl("https://github.com/UI-DS-2025/LegendaryOS.git")))
+    {
+        qDebug() << "Failed to open the GitHub Page.";
+    }
+
 }
 
 void MainPanel::showSettingsDialog()
