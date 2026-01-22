@@ -5,6 +5,12 @@
 #include "dialogs/taskedit.h"
 #include "dialogs/settingsedit.h"
 
+bool MainPanel::showConfirmMessage(const QString &display)
+{
+    auto result = QMessageBox::warning(this, "Confirm", display, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
+    return true ? result == QMessageBox::Yes : QMessageBox::No;
+}
+
 void MainPanel::setupLayout()
 {
     ui->actionLogs->setChecked(false);
@@ -57,6 +63,13 @@ void MainPanel::setupModels()
 
     ui->logsView->setModel(logs);
     updateLogView();
+}
+
+void MainPanel::setupConnections()
+{
+    connect(kernel, &Coordinator::shutdownScheduled, [&]() {
+        statusBar()->showMessage("Scheduled the system for a shutdown", 3000);
+    });
 }
 
 void MainPanel::setupEditionActions()
@@ -196,12 +209,72 @@ void MainPanel::setAgentDependencyTabVisible(bool visible)
 
 void MainPanel::insertTask()
 {
-    TaskEdit editor(tasks);
+    TaskEdit editor;
+    editor.setTaskModel(tasks);
+    editor.setAgentModel(agents);
     if (editor.exec() == QDialog::Accepted)
     {
         kernel->insertTask(editor.getTaskInfo(), editor.getParent());
         updateTaskView();
     }
+}
+
+void MainPanel::insertAgent()
+{
+    AgentEdit editor;
+    editor.setModel(agents);
+    if (editor.exec() == QDialog::Accepted)
+    {
+        const auto info = editor.getAgentInfo();
+        if (info.isValid())
+        {
+            kernel->insertAgent(editor.getAgentInfo(), editor.getParent());
+        }
+        updateTaskView();
+    }
+}
+
+void MainPanel::removeTask()
+{
+    auto index = ui->tasksView->currentIndex();
+    if (!index.isValid())
+    {
+        return;
+    }
+    auto confirm = showConfirmMessage("Are you sure to delete this task?\n\n"
+                                     "This will remove the task from all pending queues and will make the kernel cancel the task.");
+    if (confirm)
+    {
+        auto confirm = kernel->removeTask(index);
+        if (!confirm)
+        {
+            qDebug() << "Failed to remove the task.";
+        }
+    }
+}
+
+void MainPanel::removeAgent()
+{
+    auto index = ui->agentsView->currentIndex();
+    if (!index.isValid())
+    {
+        return;
+    }
+    auto confirm = showConfirmMessage("Are you sure to delete this agent?\n\n"
+                                      "This will revert back the depending tasks to the agent dependency queue if available.");
+    if (confirm)
+    {
+        auto confirm = kernel->removeAgent(index);
+        if (!confirm)
+        {
+            qDebug() << "Failed to remove the agent.";
+        }
+    }
+}
+
+void MainPanel::shutdown()
+{
+    kernel->scheduleShutdown();
 }
 
 MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info), ui(new Ui::MainPanel)
@@ -211,6 +284,7 @@ MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(
     setupEditionActions();
     setupLayout();
     setupModels();
+    setupConnections();
 }
 
 MainPanel::~MainPanel()

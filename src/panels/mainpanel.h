@@ -19,9 +19,13 @@ class MainPanel : public QMainWindow
 {
     Q_OBJECT
 private:
+    bool showConfirmMessage(const QString &display);
+
+private:
     void setupLayout();
     void setupKernel();
     void setupModels();
+    void setupConnections();
     void setupEditionActions();
 
 private:
@@ -33,6 +37,13 @@ private:
 
 private slots:
     void insertTask();
+    void insertAgent();
+
+    void removeTask();
+    void removeAgent();
+
+    void shutdown();
+
     void showAboutQt();
     void openGitHubPage();
     void showSettingsDialog();

@@ -673,6 +673,70 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionInsertAgent</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>insertAgent()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemoveTask</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>removeTask()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionRemoveAgent</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>removeAgent()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionShutdown</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>shutdown()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>477</x>
+     <y>354</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAboutQt()</slot>
@@ -685,5 +749,9 @@
   <slot>setAgentDependencyTabVisible(bool)</slot>
   <slot>setLogsTabVisible(bool)</slot>
   <slot>openGitHubPage()</slot>
+  <slot>insertAgent()</slot>
+  <slot>removeTask()</slot>
+  <slot>removeAgent()</slot>
+  <slot>shutdown()</slot>
  </slots>
 </ui>
