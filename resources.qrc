@@ -1,0 +1,23 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/general/preferences.png</file>
+        <file>icons/about/about-qt.png</file>
+        <file>icons/about/github.png</file>
+        <file>icons/view/agents.png</file>
+        <file>icons/view/dependency.png</file>
+        <file>icons/view/limit.png</file>
+        <file>icons/view/logs.png</file>
+        <file>icons/view/ready-tasks.png</file>
+        <file>icons/view/tasks.png</file>
+        <file>icons/run/pause.png</file>
+        <file>icons/run/play.png</file>
+        <file>icons/run/stop.png</file>
+        <file>icons/general/add-agent.png</file>
+        <file>icons/general/add-task.png</file>
+        <file>icons/general/export.png</file>
+        <file>icons/general/import.png</file>
+        <file>icons/general/remove-agent.png</file>
+        <file>icons/general/remove-task.png</file>
+        <file>icons/general/shutdown.png</file>
+    </qresource>
+</RCC>

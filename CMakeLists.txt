@@ -45,6 +45,7 @@ qt_add_executable(LegendaryOS
     src/dialogs/settingsedit.h
     src/dialogs/settingsedit.cpp
     ui/dialogs/settingsedit.ui
+    resources.qrc
 )
 
 target_link_libraries(LegendaryOS
