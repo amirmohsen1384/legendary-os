@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    Settings::initialize();
+    Settings::initialize(app);
 
     auto settings = Settings::load();
     MainPanel panel(settings);
