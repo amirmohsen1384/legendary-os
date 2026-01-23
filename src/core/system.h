@@ -13,8 +13,8 @@ namespace Settings
         qint64 readyQueueLimit;
         qint64 inputCommandLimit;
     };
-
-    void initialize();
+    
+    void initialize(QApplication &app);
     Settings::Info load();
     void save(const Settings::Info &info);
 }

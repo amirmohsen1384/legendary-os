@@ -2,6 +2,7 @@
 #include <QSettings>
 #include <stdexcept>
 #include "system.h"
+#include <QIcon>
 
 const auto pause = "pauseDuration";
 const auto quantum = "quantumSize";
@@ -10,11 +11,17 @@ const auto workspaceName = "workspace";
 const auto inputLimit = "inputCommandLimit";
 const auto cycle = "executionQuantumsPerCycle";
 
-void Settings::initialize()
+void Settings::initialize(QApplication &app)
 {
-    QApplication::setOrganizationName("Legend");
-    QApplication::setApplicationName("Legendary OS");
-    QApplication::setOrganizationDomain("legend.com");
+    app.setWindowIcon(QIcon(":/icon.png"));
+    app.setOrganizationName("Legend");
+    app.setApplicationName("Legendary OS");
+    app.setOrganizationDomain("legend.com");
+    app.setApplicationDisplayName("Legendary OS");
+    app.setApplicationVersion("1.0");
+    app.setAttribute(Qt::AA_EnableHighDpiScaling);
+    app.setAttribute(Qt::AA_UseHighDpiPixmaps);
+    app.setDesktopFileName("Legendary OS");
 }
 
 Settings::Info Settings::load()
