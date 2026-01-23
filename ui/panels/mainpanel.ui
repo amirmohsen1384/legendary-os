@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>955</width>
-    <height>710</height>
+    <width>1155</width>
+    <height>858</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="palette">
    <palette>
@@ -63,15 +69,25 @@
    <string notr="true"/>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="mainLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QHBoxLayout" name="majorLayout">
       <item>
        <widget class="QTabWidget" name="entitiesGroup">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
         </property>
         <widget class="QWidget" name="tasksTab">
+         <attribute name="icon">
+          <iconset resource="../../resources.qrc">
+           <normaloff>:/icons/view/tasks.png</normaloff>:/icons/view/tasks.png</iconset>
+         </attribute>
          <attribute name="title">
           <string>Tasks</string>
          </attribute>
@@ -114,6 +130,10 @@
          </layout>
         </widget>
         <widget class="QWidget" name="agentsTab">
+         <attribute name="icon">
+          <iconset resource="../../resources.qrc">
+           <normaloff>:/icons/view/agents.png</normaloff>:/icons/view/agents.png</iconset>
+         </attribute>
          <attribute name="title">
           <string>Agents</string>
          </attribute>
@@ -151,9 +171,19 @@
       <item>
        <widget class="QTabWidget" name="queueGroup">
         <property name="currentIndex">
-         <number>1</number>
+         <number>2</number>
+        </property>
+        <property name="iconSize">
+         <size>
+          <width>24</width>
+          <height>24</height>
+         </size>
         </property>
         <widget class="QWidget" name="readyTasksTab">
+         <attribute name="icon">
+          <iconset resource="../../resources.qrc">
+           <normaloff>:/icons/view/ready-tasks.png</normaloff>:/icons/view/ready-tasks.png</iconset>
+         </attribute>
          <attribute name="title">
           <string>Ready Tasks</string>
          </attribute>
@@ -187,6 +217,10 @@
          </layout>
         </widget>
         <widget class="QWidget" name="sizeLimitTab">
+         <attribute name="icon">
+          <iconset resource="../../resources.qrc">
+           <normaloff>:/icons/view/limit.png</normaloff>:/icons/view/limit.png</iconset>
+         </attribute>
          <attribute name="title">
           <string>Size Limit</string>
          </attribute>
@@ -220,6 +254,10 @@
          </layout>
         </widget>
         <widget class="QWidget" name="agentDependencyTab">
+         <attribute name="icon">
+          <iconset resource="../../resources.qrc">
+           <normaloff>:/icons/view/dependency.png</normaloff>:/icons/view/dependency.png</iconset>
+         </attribute>
          <attribute name="title">
           <string>Agent Dependency</string>
          </attribute>
@@ -268,9 +306,9 @@
        <string>Logs</string>
       </property>
       <property name="flat">
-       <bool>true</bool>
+       <bool>false</bool>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_7">
+      <layout class="QVBoxLayout" name="logsLayout">
        <item>
         <widget class="QLabel" name="logsEmptyLabel">
          <property name="sizePolicy">
@@ -303,6 +341,134 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="2" colspan="3">
+       <widget class="QLabel" name="label">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="font">
+         <font>
+          <pointsize>30</pointsize>
+          <stylestrategy>PreferAntialias</stylestrategy>
+          <fontweight>ExtraLight</fontweight>
+         </font>
+        </property>
+        <property name="text">
+         <string>Nothing is currently visible.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="2" column="1" colspan="5">
+       <widget class="QLabel" name="label_2">
+        <property name="font">
+         <font>
+          <pointsize>13</pointsize>
+          <fontweight>Light</fontweight>
+         </font>
+        </property>
+        <property name="text">
+         <string>Click on View and make one of the sections visible to see what's happening.</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="6">
+       <spacer name="horizontalSpacer_4">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="1" column="5" colspan="2">
+       <spacer name="horizontalSpacer_3">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="0" colspan="3">
+       <spacer name="horizontalSpacer_5">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="4" colspan="3">
+       <spacer name="horizontalSpacer_6">
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+     </layout>
+    </item>
    </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -310,7 +476,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>955</width>
+     <width>1155</width>
      <height>26</height>
     </rect>
    </property>
@@ -347,17 +513,54 @@
     <addaction name="actionGitHubPage"/>
     <addaction name="actionAboutQt"/>
    </widget>
+   <widget class="QMenu" name="menu_Run">
+    <property name="title">
+     <string>&amp;Run</string>
+    </property>
+    <addaction name="actionPlay"/>
+    <addaction name="actionAbort"/>
+   </widget>
    <addaction name="menuGeneral"/>
+   <addaction name="menu_Run"/>
    <addaction name="menuView"/>
    <addaction name="menuHelp"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <property name="iconSize">
+    <size>
+     <width>32</width>
+     <height>32</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionInsertTask"/>
+   <addaction name="actionRemoveTask"/>
+   <addaction name="actionInsertAgent"/>
+   <addaction name="actionRemoveAgent"/>
+   <addaction name="actionShutdown"/>
+   <addaction name="separator"/>
+   <addaction name="actionPlay"/>
+   <addaction name="actionAbort"/>
+  </widget>
   <action name="actionLogs">
    <property name="checkable">
     <bool>true</bool>
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/logs.png</normaloff>:/icons/view/logs.png</iconset>
    </property>
    <property name="text">
     <string>Show logs</string>
@@ -373,6 +576,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/ready-tasks.png</normaloff>:/icons/view/ready-tasks.png</iconset>
+   </property>
    <property name="text">
     <string>Show ready tasks</string>
    </property>
@@ -386,6 +593,10 @@
    </property>
    <property name="checked">
     <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/limit.png</normaloff>:/icons/view/limit.png</iconset>
    </property>
    <property name="text">
     <string>Show size limit tasks</string>
@@ -401,6 +612,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/agents.png</normaloff>:/icons/view/agents.png</iconset>
+   </property>
    <property name="text">
     <string>Show available agents</string>
    </property>
@@ -415,6 +630,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/tasks.png</normaloff>:/icons/view/tasks.png</iconset>
+   </property>
    <property name="text">
     <string>Show available tasks</string>
    </property>
@@ -423,16 +642,28 @@
    </property>
   </action>
   <action name="actionGitHubPage">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/about/github.png</normaloff>:/icons/about/github.png</iconset>
+   </property>
    <property name="text">
     <string>GitHub Page</string>
    </property>
   </action>
   <action name="actionAboutQt">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/about/about-qt.png</normaloff>:/icons/about/about-qt.png</iconset>
+   </property>
    <property name="text">
     <string>About Qt</string>
    </property>
   </action>
   <action name="actionInsertTask">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/add-task.png</normaloff>:/icons/general/add-task.png</iconset>
+   </property>
    <property name="text">
     <string>Insert Task</string>
    </property>
@@ -441,6 +672,10 @@
    </property>
   </action>
   <action name="actionRemoveTask">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/remove-task.png</normaloff>:/icons/general/remove-task.png</iconset>
+   </property>
    <property name="text">
     <string>Remove Task</string>
    </property>
@@ -449,6 +684,10 @@
    </property>
   </action>
   <action name="actionInsertAgent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/add-agent.png</normaloff>:/icons/general/add-agent.png</iconset>
+   </property>
    <property name="text">
     <string>Insert Agent</string>
    </property>
@@ -457,6 +696,10 @@
    </property>
   </action>
   <action name="actionRemoveAgent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/remove-agent.png</normaloff>:/icons/general/remove-agent.png</iconset>
+   </property>
    <property name="text">
     <string>Remove Agent</string>
    </property>
@@ -465,6 +708,10 @@
    </property>
   </action>
   <action name="actionShutdown">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/shutdown.png</normaloff>:/icons/general/shutdown.png</iconset>
+   </property>
    <property name="text">
     <string>Shutdown</string>
    </property>
@@ -473,6 +720,10 @@
    </property>
   </action>
   <action name="actionImportAgent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/import.png</normaloff>:/icons/general/import.png</iconset>
+   </property>
    <property name="text">
     <string>Import agents</string>
    </property>
@@ -481,6 +732,10 @@
    </property>
   </action>
   <action name="actionExportAgent">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/export.png</normaloff>:/icons/general/export.png</iconset>
+   </property>
    <property name="text">
     <string>Export agents</string>
    </property>
@@ -489,6 +744,10 @@
    </property>
   </action>
   <action name="actionPreferences">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/general/preferences.png</normaloff>:/icons/general/preferences.png</iconset>
+   </property>
    <property name="text">
     <string>Preferences</string>
    </property>
@@ -503,6 +762,10 @@
    <property name="checked">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/view/dependency.png</normaloff>:/icons/view/dependency.png</iconset>
+   </property>
    <property name="text">
     <string>Show agent dependency tasks</string>
    </property>
@@ -510,8 +773,34 @@
     <string>F6</string>
    </property>
   </action>
+  <action name="actionPlay">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/run/play.png</normaloff>:/icons/run/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>Run</string>
+   </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
+  </action>
+  <action name="actionAbort">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/run/stop.png</normaloff>:/icons/run/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Abort</string>
+   </property>
+   <property name="shortcut">
+    <string>Esc</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="../../resources.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>actionAboutQt</sender>
