@@ -308,13 +308,14 @@ void MainPanel::shutdown()
 
 MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info), ui(new Ui::MainPanel)
 {
-    setupKernel();
     ui->setupUi(this);
+    setupKernel();
     setupEditionActions();
     setupLayout();
     setupModels();
     setupConnections();
     updateEmptyFrame();
+    showMaximized();
 }
 
 MainPanel::~MainPanel()
