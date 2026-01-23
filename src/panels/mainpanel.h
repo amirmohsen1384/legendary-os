@@ -29,6 +29,7 @@ private:
     void setupEditionActions();
 
 private:
+    bool isLogsTabVisible() const;
     bool isTasksTabVisible() const;
     bool isAgentsTabVisible() const;
     bool isSizeLimitTabVisible() const;
@@ -52,6 +53,7 @@ private slots:
     void updateLogView();
     void updateTaskView();
     void updateAgentView();
+    void updateEmptyFrame();
     void updateReadyTaskView();
     void updateSizeLimitView();
     void updateAgentDependencyView();

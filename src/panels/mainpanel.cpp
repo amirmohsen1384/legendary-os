@@ -84,6 +84,11 @@ void MainPanel::setupEditionActions()
     editionActions->addAction(ui->actionRemoveAgent);
 }
 
+bool MainPanel::isLogsTabVisible() const
+{
+    return ui->logsGroup->isVisible();
+}
+
 bool MainPanel::isTasksTabVisible() const
 {
     return ui->entitiesGroup->isTabVisible(0);
@@ -157,6 +162,18 @@ void MainPanel::updateAgentView()
     ui->agentsView->setVisible(condition);
 }
 
+void MainPanel::updateEmptyFrame()
+{
+    ui->emptyFrame->setVisible(
+        !isLogsTabVisible() &&
+        !isAgentsTabVisible() &&
+        !isTasksTabVisible() &&
+        !isSizeLimitTabVisible() &&
+        !isReadyTasksTabVisible() &&
+        !isAgentDependencyTabVisible()
+    );
+}
+
 void MainPanel::updateReadyTaskView()
 {
     auto condition = readyTasks->rowCount() > 0;
@@ -181,36 +198,42 @@ void MainPanel::updateAgentDependencyView()
 void MainPanel::setLogsTabVisible(bool visible)
 {
     ui->logsGroup->setVisible(visible);
+    updateEmptyFrame();
 }
 
 void MainPanel::setTasksTabVisible(bool visible)
 {
     ui->entitiesGroup->setTabVisible(0, visible);
     ui->entitiesGroup->setVisible(isTasksTabVisible() || isAgentsTabVisible());
+    updateEmptyFrame();
 }
 
 void MainPanel::setAgentsTabVisible(bool visible)
 {
     ui->entitiesGroup->setTabVisible(1, visible);
     ui->entitiesGroup->setVisible(isTasksTabVisible() || isAgentsTabVisible());
+    updateEmptyFrame();
 }
 
 void MainPanel::setSizeLimitTabVisible(bool visible)
 {
     ui->queueGroup->setTabVisible(1, visible);
     ui->queueGroup->setVisible(isSizeLimitTabVisible() || isReadyTasksTabVisible() || isAgentDependencyTabVisible());
+    updateEmptyFrame();
 }
 
 void MainPanel::setReadyTasksTabVisible(bool visible)
 {
     ui->queueGroup->setTabVisible(0, visible);
     ui->queueGroup->setVisible(isSizeLimitTabVisible() || isReadyTasksTabVisible() || isAgentDependencyTabVisible());
+    updateEmptyFrame();
 }
 
 void MainPanel::setAgentDependencyTabVisible(bool visible)
 {
     ui->queueGroup->setTabVisible(2, visible);
     ui->queueGroup->setVisible(isSizeLimitTabVisible() || isReadyTasksTabVisible() || isAgentDependencyTabVisible());
+    updateEmptyFrame();
 }
 
 void MainPanel::insertTask()
@@ -291,6 +314,7 @@ MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(
     setupLayout();
     setupModels();
     setupConnections();
+    updateEmptyFrame();
 }
 
 MainPanel::~MainPanel()
