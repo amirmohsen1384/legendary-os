@@ -75,7 +75,7 @@
       <item>
        <widget class="QTabWidget" name="entitiesGroup">
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <property name="iconSize">
          <size>
@@ -124,6 +124,9 @@
             </property>
             <property name="frameShadow">
              <enum>QFrame::Shadow::Sunken</enum>
+            </property>
+            <property name="animated">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
