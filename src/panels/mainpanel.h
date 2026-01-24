@@ -1,7 +1,9 @@
 #ifndef MAINPANEL_H
 #define MAINPANEL_H
 
+#include <QMessageBox>
 #include <QMainWindow>
+#include <QActionGroup>
 #include "core/system.h"
 #include "core/coordinator.h"
 #include "models/taskmodel.h"
@@ -19,7 +21,12 @@ class MainPanel : public QMainWindow
 {
     Q_OBJECT
 private:
-    bool showConfirmMessage(const QString &display);
+    void confirm(
+        const QString &text,
+        std::function<void(bool)> handler,
+        const QString &information = QString(),
+        const QMessageBox::Icon icon = QMessageBox::Warning
+    );
 
 private:
     void setupLayout();

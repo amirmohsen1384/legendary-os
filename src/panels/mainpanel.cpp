@@ -1,15 +1,26 @@
-#include <QMessageBox>
 #include "mainpanel.h"
-#include <QActionGroup>
 #include "ui_mainpanel.h"
 #include <QDesktopServices>
 #include "dialogs/taskedit.h"
 #include "dialogs/settingsedit.h"
 
-bool MainPanel::showConfirmMessage(const QString &display)
+void MainPanel::confirm(const QString &text, std::function<void(bool)> handler, const QString &information, const QMessageBox::Icon icon)
 {
-    auto result = QMessageBox::warning(this, "Confirm", display, QMessageBox::Yes | QMessageBox::No, QMessageBox::Yes);
-    return true ? result == QMessageBox::Yes : QMessageBox::No;
+    auto message = new QMessageBox(this);
+    message->setIcon(icon);
+    if(!information.isEmpty()) {
+        message->setInformativeText(information);
+    }
+    message->setText(text);
+    message->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    message->setDefaultButton(QMessageBox::Yes);
+
+    QObject::connect(message, &QMessageBox::finished, [handler, message](int result) {
+        handler(result == QMessageBox::Yes);
+        message->deleteLater();
+    });
+
+    message->open();
 }
 
 void MainPanel::setupLayout()
@@ -269,41 +280,40 @@ void MainPanel::insertAgent()
 
 void MainPanel::removeTask()
 {
-    auto index = ui->tasksView->currentIndex();
-    if (!index.isValid())
-    {
+    QPersistentModelIndex index = ui->tasksView->currentIndex();
+    if (!index.isValid()) {
         return;
     }
-    auto confirm = showConfirmMessage("Are you sure to delete this task?\n\n"
-                                     "This will remove the task from all pending queues and will make the kernel cancel the task.");
-    if (confirm)
-    {
-        auto confirm = kernel->removeTask(index);
-        if (!confirm)
-        {
-            qDebug() << "Failed to remove the task.";
-        }
-    }
+    confirm("Are you sure to delete this task?",
+        [this, index](bool result) {
+            if (!result || !index.isValid()) {
+                return;
+            }
+            kernel->removeTask(index);
+            updateTaskView();
+        },
+        "This will remove the task from all queues even if it still running."
+    );
 }
 
 void MainPanel::removeAgent()
 {
-    auto index = ui->agentsView->currentIndex();
-    if (!index.isValid())
-    {
+    QPersistentModelIndex index = ui->agentsView->currentIndex();
+    if (!index.isValid()) {
         return;
     }
-    auto confirm = showConfirmMessage("Are you sure to delete this agent?\n\n"
-                                      "This will revert back the depending tasks to the agent dependency queue if available.");
-    if (confirm)
-    {
-        auto confirm = kernel->removeAgent(index);
-        if (!confirm)
-        {
-            qDebug() << "Failed to remove the agent.";
-        }
-    }
+    confirm("Are you sure to delete this agent?",
+        [this, index](bool accepted) {
+            if (!accepted || !index.isValid()) {
+                return;
+            }
+            kernel->removeAgent(index);
+            updateAgentView();
+        },
+        "This will revert depending tasks to the agent dependency queue if available."
+    );
 }
+
 
 void MainPanel::shutdown()
 {
