@@ -451,9 +451,6 @@
     <addaction name="actionRemoveAgent"/>
     <addaction name="actionShutdown"/>
     <addaction name="separator"/>
-    <addaction name="actionImportAgent"/>
-    <addaction name="actionExportAgent"/>
-    <addaction name="separator"/>
     <addaction name="actionPreferences"/>
    </widget>
    <widget class="QMenu" name="menuView">
@@ -678,30 +675,6 @@
    </property>
    <property name="shortcut">
     <string>Esc</string>
-   </property>
-  </action>
-  <action name="actionImportAgent">
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/icons/general/import.png</normaloff>:/icons/general/import.png</iconset>
-   </property>
-   <property name="text">
-    <string>Import agents</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
-  <action name="actionExportAgent">
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/icons/general/export.png</normaloff>:/icons/general/export.png</iconset>
-   </property>
-   <property name="text">
-    <string>Export agents</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+S</string>
    </property>
   </action>
   <action name="actionPreferences">

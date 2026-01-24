@@ -1,7 +1,4 @@
-#include <QJsonValue>
-#include <QJsonObject>
 #include "agentmodel.h"
-#include <QJsonDocument>
 
 Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
 {
@@ -17,23 +14,6 @@ Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
     parent->addChild(std::move(agent));
 
     return result;
-}
-
-bool AgentModel::loadFromJSON(const QJsonObject &object, const QModelIndex &parent)
-{
-    for(auto iterator = object.begin(); iterator != object.end(); ++iterator)
-    {
-        AgentInfo info;
-        info.setName(iterator.key());
-        const auto major = iterator->toObject();
-        info.setDescription(major["description"].toString());
-        auto index = insertAgent(info, parent);
-        if (!loadFromJSON(major["children"].toObject(), index))
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 AgentModel::AgentModel(QObject *parent) : QAbstractItemModel(parent)
@@ -288,22 +268,6 @@ bool AgentModel::removeAgent(const QModelIndex &index)
     auto result = parent->removeChild(row);
     endRemoveRows();
     return result;
-}
-
-bool AgentModel::loadFromJSON(const QByteArray &data, const QModelIndex &parent)
-{
-    QJsonParseError error;
-    auto document = QJsonDocument::fromJson(data, &error);
-    if (error.error != QJsonParseError::NoError)
-    {
-        return false;
-    }
-    else if (!document.isObject())
-    {
-        return false;
-    }
-    removeAgent(parent);
-    return loadFromJSON(document.object(), parent);
 }
 
 void AgentModel::clear()

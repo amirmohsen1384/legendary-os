@@ -91,7 +91,6 @@ void MainPanel::setupEditionActions()
     editionActions->addAction(ui->actionInsertTask);
     editionActions->addAction(ui->actionRemoveTask);
     editionActions->addAction(ui->actionInsertAgent);
-    editionActions->addAction(ui->actionImportAgent);
     editionActions->addAction(ui->actionRemoveAgent);
 }
 

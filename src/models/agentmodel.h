@@ -9,7 +9,6 @@ class AgentModel : public QAbstractItemModel
     Q_OBJECT
     void clear();
     Agent* createAgent(const AgentInfo &info, Agent *parent);
-    bool loadFromJSON(const QJsonObject &data, const QModelIndex &parent = QModelIndex());
 
 public:
     enum class Header {Name = 0, Description = 1};
@@ -33,7 +32,6 @@ public:
 
 public:
     QString toString(const QModelIndex &index);
-    bool loadFromJSON(const QByteArray &data, const QModelIndex &parent = QModelIndex());
 
 private:
     std::unique_ptr<Agent> root;
