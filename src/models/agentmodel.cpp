@@ -183,8 +183,8 @@ QVariant AgentModel::data(const QModelIndex &index, int role) const
         }
         case AgentModel::Header::Description:
         {
-            const auto &description = item->getDescription();
-            return description.size() <= 8 ? description : QString("%1...").arg(description.first(8));
+            auto description = item->getDescription();
+            return description;
         }
         default:
         {
