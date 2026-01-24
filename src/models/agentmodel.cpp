@@ -248,10 +248,13 @@ QModelIndex AgentModel::insertAgent(const AgentInfo &info, const QModelIndex &pa
     {
         return QModelIndex();
     }
-    beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
+    auto row = ancestor->childCount();
+
+    beginInsertRows(parent, row, row);
     auto agent = createAgent(info, ancestor);
     endInsertRows();
-    return createIndex(ancestor->childCount(), 0, agent);
+
+    return createIndex(row, 0, agent);
 }
 
 bool AgentModel::removeAgent(const QModelIndex &index)
@@ -261,12 +264,19 @@ bool AgentModel::removeAgent(const QModelIndex &index)
         clear();
         return true;
     }
+
     const auto row = index.row();
-    const auto item = index.parent();
-    auto parent = !item.isValid() ? root.get() : static_cast<Agent*>(item.internalPointer());
-    beginRemoveRows(item, row, row);
+    auto parentIndex = index.parent();
+    auto parent = parentIndex.isValid() ? static_cast<Agent*>(parentIndex.internalPointer()) : root.get();
+
+    if (row < 0 || row >= parent->childCount()) {
+        return false;
+    }
+
+    beginRemoveRows(parentIndex, row, row);
     auto result = parent->removeChild(row);
     endRemoveRows();
+
     return result;
 }
 
