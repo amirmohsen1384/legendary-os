@@ -82,10 +82,33 @@ void MainPanel::setupModels()
 
 void MainPanel::setupConnections()
 {
-    connect(kernel, &Coordinator::shutdownScheduled, [&]() {
+    connect(kernel, &Coordinator::shutdownScheduled, this, [this]() {
         statusBar()->showMessage("Scheduled the system for a shutdown", 3000);
     });
+    auto hook = [this](QAbstractItemModel *model, auto updater) {
+        connect(model, &QAbstractItemModel::rowsInserted, this,
+                [this, updater](const QModelIndex &, int, int) {
+                    (this->*updater)();
+                });
+
+        connect(model, &QAbstractItemModel::rowsRemoved, this,
+                [this, updater](const QModelIndex &, int, int) {
+                    (this->*updater)();
+                });
+
+        connect(model, &QAbstractItemModel::modelReset, this,
+                [this, updater]() {
+                    (this->*updater)();
+                });
+    };
+    hook(logs, &MainPanel::updateLogView);
+    hook(tasks, &MainPanel::updateTaskView);
+    hook(agents, &MainPanel::updateAgentView);
+    hook(limitTasks, &MainPanel::updateSizeLimitView);
+    hook(readyTasks, &MainPanel::updateReadyTaskView);
+    hook(agentTasks, &MainPanel::updateAgentDependencyView);
 }
+
 
 void MainPanel::setupEditionActions()
 {
