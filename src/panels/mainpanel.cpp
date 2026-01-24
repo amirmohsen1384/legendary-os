@@ -257,11 +257,11 @@ void MainPanel::insertAgent()
     editor->setModel(agents);
     connect(editor, &QDialog::accepted, this, [this, editor]() {
         const auto info = editor->getAgentInfo();
-        if (info.isValid())
-        {
-            kernel->insertAgent(info, editor->getParent());
+        if (!info.isValid()) {
+            return;
         }
-        updateTaskView();
+        kernel->insertAgent(info, editor->getParent());
+        updateAgentView();
     });
     connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
     editor->open();
