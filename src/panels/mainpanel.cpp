@@ -238,29 +238,33 @@ void MainPanel::setAgentDependencyTabVisible(bool visible)
 
 void MainPanel::insertTask()
 {
-    TaskEdit editor;
-    editor.setTaskModel(tasks);
-    editor.setAgentModel(agents);
-    if (editor.exec() == QDialog::Accepted)
-    {
-        kernel->insertTask(editor.getTaskInfo(), editor.getParent());
+    auto editor = new TaskEdit(this);
+    editor->setObjectName("taskeditor");
+    editor->setAgentModel(agents);
+    editor->setTaskModel(tasks);
+    connect(editor, &QDialog::accepted, this, [this, editor]() {
+        kernel->insertTask(editor->getTaskInfo(), editor->getParent());
         updateTaskView();
-    }
+    });
+    connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
+    editor->open();
 }
 
 void MainPanel::insertAgent()
 {
-    AgentEdit editor;
-    editor.setModel(agents);
-    if (editor.exec() == QDialog::Accepted)
-    {
-        const auto info = editor.getAgentInfo();
+    auto editor = new AgentEdit(this);
+    editor->setObjectName("agenteditor");
+    editor->setModel(agents);
+    connect(editor, &QDialog::accepted, this, [this, editor]() {
+        const auto info = editor->getAgentInfo();
         if (info.isValid())
         {
-            kernel->insertAgent(editor.getAgentInfo(), editor.getParent());
+            kernel->insertAgent(info, editor->getParent());
         }
         updateTaskView();
-    }
+    });
+    connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
+    editor->open();
 }
 
 void MainPanel::removeTask()
