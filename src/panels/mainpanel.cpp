@@ -26,6 +26,19 @@ void MainPanel::confirm(const QString &text, std::function<void(bool)> handler, 
     message->open();
 }
 
+void MainPanel::setupViews()
+{
+    auto makeStretch = [this](QTableView *view) {
+        auto header = view->horizontalHeader();
+        header->setSectionResizeMode(QHeaderView::Interactive);
+        header->setSectionResizeMode(header->count() - 1, QHeaderView::Stretch);
+    };
+    makeStretch(ui->logsView);
+    makeStretch(ui->readyTaskView);
+    makeStretch(ui->sizeLimitView);
+    makeStretch(ui->agentDependencyView);
+}
+
 void MainPanel::setupLayout()
 {
     ui->actionLogs->setChecked(false);
@@ -372,6 +385,7 @@ MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(
     setupModels();
     setupConnections();
     updateEmptyFrame();
+    setupViews();
     showMaximized();
 }
 

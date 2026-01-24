@@ -29,6 +29,7 @@ private:
     );
 
 private:
+    void setupViews();
     void setupLayout();
     void setupKernel();
     void setupModels();
