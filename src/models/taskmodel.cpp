@@ -110,7 +110,7 @@ QModelIndex TaskModel::parent(const QModelIndex &index) const
         {
             return {};
         }
-        return createIndex(item->row(), 0, parent);
+        return createIndex(parent->row(), 0, parent);
     }
 }
 
@@ -431,12 +431,15 @@ QModelIndex TaskModel::insertTask(const TaskInfo &info, const QModelIndex &paren
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Task*>(parent.internalPointer());
     if(!ancestor)
     {
-        return QModelIndex();
+        return {};
     }
-    beginInsertRows(parent, ancestor->childCount(), ancestor->childCount());
+    auto row = ancestor->childCount();
+
+    beginInsertRows(parent, row, row);
     auto task = createTask(info, ancestor);
     endInsertRows();
-    return createIndex(ancestor->childCount(), 0, task);
+
+    return createIndex(row, 0, task);
 }
 
 bool TaskModel::removeTask(const QModelIndex &index)
@@ -446,13 +449,21 @@ bool TaskModel::removeTask(const QModelIndex &index)
         clear();
         return true;
     }
-    const auto row = index.row();
-    const auto item = index.parent();
-    auto parent = !item.isValid() ? root.get() : static_cast<Task*>(item.internalPointer());
-    beginRemoveRows(item, row, row);
-    auto result = parent->removeChild(row);
+
+    QModelIndex parentIndex = index.parent();
+    Task* parent = parentIndex.isValid() ? static_cast<Task*>(parentIndex.internalPointer()) : root.get();
+
+    const int row = index.row();
+
+    if (row < 0 || row >= parent->childCount()) {
+        return false;
+    }
+
+    beginRemoveRows(parentIndex, row, row);
+    parent->removeChild(row);
     endRemoveRows();
-    return result;
+
+    return true;
 }
 
 void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
@@ -462,7 +473,7 @@ void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
         return;
     }
     auto item = static_cast<Task*>(index.internalPointer());
-    if(item->beginToProceed(timestamp));
+    if(item->beginToProceed(timestamp))
     {
         QList<int> roles;
         runningIndex = index;
