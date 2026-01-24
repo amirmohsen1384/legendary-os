@@ -306,7 +306,7 @@ void MainPanel::removeTask()
 
 void MainPanel::removeAgent()
 {
-    auto selection = ui->tasksView->selectionModel();
+    auto selection = ui->agentsView->selectionModel();
     if (!selection->hasSelection()) {
         return;
     }
