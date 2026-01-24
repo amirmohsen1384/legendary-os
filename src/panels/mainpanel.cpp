@@ -154,6 +154,16 @@ void MainPanel::showSettingsDialog()
     }
 }
 
+void MainPanel::updateViews()
+{
+    updateTaskView();
+    updateAgentView();
+    updateReadyTaskView();
+    updateSizeLimitView();
+    updateAgentDependencyView();
+    updateLogView();
+}
+
 void MainPanel::updateLogView()
 {
     auto condition = logs->rowCount() > 0;
@@ -257,7 +267,6 @@ void MainPanel::insertTask()
     editor->setTaskModel(tasks);
     connect(editor, &QDialog::accepted, this, [this, editor]() {
         kernel->insertTask(editor->getTaskInfo(), editor->getParent());
-        updateTaskView();
     });
     connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
     editor->open();
@@ -274,7 +283,6 @@ void MainPanel::insertAgent()
             return;
         }
         kernel->insertAgent(info, editor->getParent());
-        updateAgentView();
     });
     connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
     editor->open();
@@ -298,7 +306,6 @@ void MainPanel::removeTask()
                 return;
             }
             kernel->removeTask(index);
-            updateTaskView();
         },
         "This will remove the task from all queues even if it still running."
     );
@@ -322,7 +329,6 @@ void MainPanel::removeAgent()
                 return;
             }
             kernel->removeAgent(index);
-            updateAgentView();
         },
         "This will revert depending tasks to the agent dependency queue if available."
     );

@@ -57,6 +57,7 @@ private slots:
     void showSettingsDialog();
 
 private slots:
+    void updateViews();
     void updateLogView();
     void updateTaskView();
     void updateAgentView();
