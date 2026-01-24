@@ -24,7 +24,7 @@ public:
     void setDescription(const QString &value);
 
     QModelIndex getParent() const;
-    void setParent(const QModelIndex &index);
+    void setParent(const QModelIndex &parent);
 
     AgentInfo getAgentInfo() const;
     void setAgentInfo(const AgentInfo &info);

@@ -279,10 +279,16 @@ void MainPanel::insertAgent()
 
 void MainPanel::removeTask()
 {
-    QPersistentModelIndex index = ui->tasksView->currentIndex();
+    auto selection = ui->tasksView->selectionModel();
+    if (!selection->hasSelection()) {
+        return;
+    }
+
+    QPersistentModelIndex index = selection->selectedIndexes().constFirst();
     if (!index.isValid()) {
         return;
     }
+
     confirm("Are you sure to delete this task?",
         [this, index](bool result) {
             if (!result || !index.isValid()) {
@@ -297,10 +303,16 @@ void MainPanel::removeTask()
 
 void MainPanel::removeAgent()
 {
-    QPersistentModelIndex index = ui->agentsView->currentIndex();
+    auto selection = ui->tasksView->selectionModel();
+    if (!selection->hasSelection()) {
+        return;
+    }
+
+    QPersistentModelIndex index = selection->selectedIndexes().constFirst();
     if (!index.isValid()) {
         return;
     }
+
     confirm("Are you sure to delete this agent?",
         [this, index](bool accepted) {
             if (!accepted || !index.isValid()) {

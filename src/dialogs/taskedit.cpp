@@ -97,12 +97,16 @@ void TaskEdit::setTaskInfo(const TaskInfo &info)
 
 QModelIndex TaskEdit::getParent() const
 {
-    return ui->locationView->currentIndex();
+    auto selection = ui->locationView->selectionModel();
+    if (!selection->hasSelection()) {
+        return {};
+    }
+    return selection->selectedIndexes().constFirst();
 }
 
 void TaskEdit::setParent(const QModelIndex &parent)
 {
-    ui->locationView->setCurrentIndex(parent);
+    ui->locationView->selectionModel()->select(parent, QItemSelectionModel::Select);
 }
 
 TaskModel *TaskEdit::getTaskModel()

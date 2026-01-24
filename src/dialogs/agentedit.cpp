@@ -32,12 +32,16 @@ void AgentEdit::setDescription(const QString &value)
 
 QModelIndex AgentEdit::getParent() const
 {
-    return ui->agentView->currentIndex();
+    auto selection = ui->agentView->selectionModel();
+    if (!selection->hasSelection()) {
+        return {};
+    }
+    return selection->selectedIndexes().constFirst();
 }
 
-void AgentEdit::setParent(const QModelIndex &index)
+void AgentEdit::setParent(const QModelIndex &parent)
 {
-    ui->agentView->setCurrentIndex(index);
+    ui->agentView->selectionModel()->select(parent, QItemSelectionModel::Select);
 }
 
 AgentInfo AgentEdit::getAgentInfo() const
