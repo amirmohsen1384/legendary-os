@@ -120,6 +120,25 @@ void MainPanel::setupConnections()
     hook(limitTasks, &MainPanel::updateSizeLimitView);
     hook(readyTasks, &MainPanel::updateReadyTaskView);
     hook(agentTasks, &MainPanel::updateAgentDependencyView);
+    connect(ui->tasksView->selectionModel(), &QItemSelectionModel::selectionChanged,
+        [this](const QItemSelection &current, const QItemSelection &) {
+            ui->actionRemoveTask->setDisabled(current.isEmpty());
+        }
+    );
+    connect(ui->agentsView->selectionModel(), &QItemSelectionModel::selectionChanged,
+        [this](const QItemSelection &current, const QItemSelection &) {
+            ui->actionRemoveAgent->setDisabled(current.isEmpty());
+        }
+    );
+    connect(ui->entitiesGroup, &QTabWidget::currentChanged, [this](int) {
+        ui->tasksView->selectionModel()->clear();
+        ui->agentsView->selectionModel()->clear();
+    });
+    connect(ui->queueGroup, &QTabWidget::currentChanged, [this](int) {
+        ui->readyTaskView->selectionModel()->clear();
+        ui->sizeLimitView->selectionModel()->clear();
+        ui->agentDependencyView->selectionModel()->clear();
+    });
 }
 
 

@@ -630,6 +630,9 @@
    </property>
   </action>
   <action name="actionRemoveTask">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../resources.qrc">
      <normaloff>:/icons/general/remove-task.png</normaloff>:/icons/general/remove-task.png</iconset>
@@ -654,6 +657,9 @@
    </property>
   </action>
   <action name="actionRemoveAgent">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="../../resources.qrc">
      <normaloff>:/icons/general/remove-agent.png</normaloff>:/icons/general/remove-agent.png</iconset>
