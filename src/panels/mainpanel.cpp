@@ -15,6 +15,9 @@ void MainPanel::confirm(const QString &text, std::function<void(bool)> handler, 
     message->setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     message->setDefaultButton(QMessageBox::Yes);
 
+    message->setMinimumSize(message->sizeHint());
+    message->adjustSize();
+
     QObject::connect(message, &QMessageBox::finished, [handler, message](int result) {
         handler(result == QMessageBox::Yes);
         message->deleteLater();
