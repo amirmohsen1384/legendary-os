@@ -209,6 +209,21 @@ void MainPanel::showSettingsDialog()
     }
 }
 
+void MainPanel::startKernel()
+{
+    kernel->start(QThread::LowPriority);
+}
+
+void MainPanel::pauseKernel()
+{
+    kernel->pause();
+}
+
+void MainPanel::abortKernel()
+{
+    kernel->abort();
+}
+
 void MainPanel::updateViews()
 {
     updateTaskView();

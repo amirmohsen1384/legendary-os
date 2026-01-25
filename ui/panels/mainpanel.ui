@@ -966,6 +966,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPlay</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>startKernel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>577</x>
+     <y>436</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>showAboutQt()</slot>
@@ -982,5 +998,8 @@
   <slot>removeTask()</slot>
   <slot>removeAgent()</slot>
   <slot>shutdown()</slot>
+  <slot>startKernel()</slot>
+  <slot>pauseKernel()</slot>
+  <slot>abortKernel()</slot>
  </slots>
 </ui>

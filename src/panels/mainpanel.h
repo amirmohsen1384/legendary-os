@@ -57,6 +57,10 @@ private slots:
     void openGitHubPage();
     void showSettingsDialog();
 
+    void startKernel();
+    void abortKernel();
+    void pauseKernel();
+
 private slots:
     void updateViews();
     void updateLogView();
