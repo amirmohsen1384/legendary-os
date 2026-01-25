@@ -84,12 +84,11 @@ qint64 Task::getIdentifier() const
 
 qint64 Task::getRemainingTime() const
 {
-    return remainingTime;
+    return getBurstTime() - getQuantum();
 }
 
 void Task::setBurstTime(qint64 value)
 {
-    remainingTime = value;
     TaskInfo::setBurstTime(value);
 }
 
@@ -113,7 +112,7 @@ bool Task::endToProceed(qint64 timestamp)
     {
         return false;
     }
-    if (finished())
+    else if (finished())
     {
         finishTime = timestamp;
         state = State::Ready;
@@ -131,24 +130,15 @@ qint64 Task::proceed(qint64 value)
     {
         return 0;
     }
-    qint64 spent = 0;
-    if (remainingTime >= value)
-    {
-        remainingTime -= value;
-        spent = value;
-    }
-    else
-    {
-        spent = remainingTime;
-        remainingTime = 0;
-    }
+    qint64 rest = getRemainingTime();
+    qint64 spent = rest >= value ? value : rest;
     quantum += spent;
     return spent;
 }
 
 bool Task::finished() const
 {
-    return remainingTime == 0;
+    return getRemainingTime() == 0;
 }
 
 qint64 Task::getStartTime() const
@@ -169,6 +159,50 @@ qint64 Task::getFinishTime() const
 Task* Task::getParent()
 {
     return parent;
+}
+
+QString Task::text(const State &state)
+{
+    switch (state)
+    {
+    case Task::State::WaitingForLimit:
+    {
+        return QStringLiteral("Waiting For Limit");
+    }
+    case Task::State::WaitingForAgent:
+    {
+        return QStringLiteral("Waiting For Agent");
+    }
+    case Task::State::Terminate:
+    {
+        return QStringLiteral("Terminate");
+    }
+    case Task::State::Execute:
+    {
+        return QStringLiteral("Execute");
+    }
+    case Task::State::Running:
+    {
+        return QStringLiteral("Running");
+    }
+    case Task::State::Unknown:
+    {
+        return QStringLiteral("Unknown");
+    }
+    case Task::State::Timeout:
+    {
+        return QStringLiteral("Timeout");
+    }
+    case Task::State::Error:
+    {
+        return QStringLiteral("Error");
+    }
+    case Task::State::Ready:
+    {
+        return QStringLiteral("Ready");
+    }
+    }
+    return QStringLiteral("Invalid State");
 }
 
 void Task::setParent(Task *value)

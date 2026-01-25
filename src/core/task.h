@@ -81,6 +81,8 @@ public:
     qint64 row() const;
     Task* getParent();
 
+    static QString text(const Task::State &state);
+
 public:
     bool removeChild(int row);
     void setState(State value);
@@ -99,7 +101,6 @@ private:
     qint64 startTime = -1;
     qint64 finishTime = -1;
     Task *parent = nullptr;
-    qint64 remainingTime = 0;
     State state = State::Unknown;
     std::vector<std::unique_ptr<Task>> children;
 };
