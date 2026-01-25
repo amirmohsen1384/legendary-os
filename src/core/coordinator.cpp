@@ -394,6 +394,7 @@ bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, 
 {
     if (isRunning() || !hasReqiurements() || !task.isValid())
     {
+        qDebug() << "Failed to log the status";
         return false;
     }
     LogInfo information;
@@ -418,7 +419,10 @@ bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, 
     information.previous = previous;
     information.current = current;
 
-    return logs->log(information);
+    auto result = logs->log(information);
+    qDebug() << "Logging Completed. Status:" << result;
+
+    return result;
 }
 
 
@@ -439,27 +443,38 @@ void Coordinator::run()
 {
     if (!hasReqiurements())
     {
+        qDebug() << "The kernel does not meet the requirements.";
         return;
     }
+    qInfo() << "Running the kernel";
+
     const auto unit = settings.quantumSize;
+
+    qInfo() << "The quantum size is" << unit;
+
     for (auto i = 0; i < settings.executionCycle; ++i)
     {
         {
             auto state = getState();
             if (state == State::PausedState)
             {
+                qInfo() << "Pausing the kernel...";
                 QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
             }
             if (state == State::StoppedState)
             {
+                qInfo() << "Forcing the kernel to stop...";
                 return;
             }
         }
 
         auto timestamp = getElapsedQuantums();
+        qInfo() << "Current timestamp is" << timestamp;
+
         if (readyTasks->rowCount() <= 0)
         {
+            qWarning() << "No ready task is available to run. Forwading the current quantum.";
             QMutexLocker locker(&mutex);
             unusedQuantums += unit;
             emit quantumUnused(unusedQuantums);
@@ -467,10 +482,14 @@ void Coordinator::run()
         }
 
         auto task = readyTasks->peekBest();
-
+        qInfo() << "Found one ready task:" << task.data(Task::NameRole).toString();
         {
             auto before = tasks->getState(task);
+            qInfo() << "The current state at the beginning is" << qint64(before) << ": Kernel is starting to process.";
+
             tasks->beginToProceed(task, timestamp);
+
+            qInfo() << "Logging the status...";
             logTask(task, before, tasks->getState(task));
         }
 
@@ -479,18 +498,24 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
+                qInfo() << "Pausing the kernel...";
                 QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
             }
             if (state == State::StoppedState)
             {
+                qInfo() << "Forcing the kernel to stop...";
                 return;
             }
         }
 
         {
             auto before = tasks->getState(task);
+            qInfo() << "The current state right before processing is" << qint64(before) << ": Kernel is processing.";
+
             tasks->proceed(task, unit);
+
+            qInfo() << "Logging the status...";
             logTask(task, before, tasks->getState(task));
         }
 
@@ -499,21 +524,28 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
+                qInfo() << "Pausing the kernel...";
                 QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
             }
             if (state == State::StoppedState)
             {
+                qInfo() << "Forcing the kernel to stop...";
                 return;
             }
         }
 
         timestamp += unit;
         setElapsedQuantums(timestamp);
+        qInfo() << "Current timestamp is" << timestamp;
 
         {
             auto before = tasks->getState(task);
+            qInfo() << "The current state right before processing is" << qint64(before) << ": Kernel is processing.";
+
             tasks->endToProceed(task, timestamp);
+
+            qInfo() << "Logging the status...";
             logTask(task, before, tasks->getState(task));
         }
 
@@ -522,11 +554,13 @@ void Coordinator::run()
             auto state = getState();
             if (state == State::PausedState)
             {
+                qInfo() << "Pausing the kernel...";
                 QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
             }
             if (state == State::StoppedState)
             {
+                qInfo() << "Forcing the kernel to stop...";
                 return;
             }
         }
@@ -534,6 +568,7 @@ void Coordinator::run()
         auto state = tasks->getState(task);
         if (state == Task::State::Timeout)
         {
+            qInfo() << "Timeout happened. Removing the current ready task...";
             readyTasks->removeBest();
 
             bool ok = false;
@@ -541,50 +576,77 @@ void Coordinator::run()
             auto currentPriority = tasks->data(task, Task::PriorityRole).toLongLong(&ok);
             if (!ok)
             {
+                qWarning() << "Failed to retrieve the current values: Current Priority:" << currentPriority << "Used Quantums:" << usedQuantums;
                 usedQuantums = 0;
                 currentPriority = 1;
             }
 
             auto priority = qint64(currentPriority / (0.5 * usedQuantums + 1));
+            qWarning() << "The new priority is " << priority;
+
             tasks->setData(task, priority, Task::PriorityRole);
             {
                 auto result = tasks->setState(task, Task::State::Ready);
                 if (result.successful)
                 {
+                    qInfo() << "Inserting the task again into the ready queue...";
                     readyTasks->insertTask(task);
+
+                    qInfo() << "Logging the status...";
                     logTask(task, result.previous, result.current);
+                }
+                else
+                {
+                    qDebug() << "Failed to set the new state...";
                 }
             }
         }
         else
         {
+            qInfo() << "No timeout happened.";
             bool ok = false;
             auto time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
             if (!ok)
             {
+                qInfo() << "Failed to retrieve the remaining time... Time:" << time;
                 time = 0;
             }
             if (time == 0)
             {
+                qInfo() << "Task has been finished...Removing the task from the ready qeueus...";
                 readyTasks->removeBest();
+
+                qInfo() << "Logging the status.";
                 logTask(task, tasks->getState(task), Task::State::Terminate);
 
+                qInfo() << "Removing the task from the whole list...";
                 if(!tasks->removeTask(task))
                 {
                     qDebug() << "Failed to remove the task.";
                 }
                 else
                 {
+                    qInfo() << "Checking if there are some new tasks...";
                     while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
                     {
                         auto newTask = limitTasks->peekBest();
+                        qInfo() << "Found one size limit task:" << task.data(Task::NameRole).toString();
                         {
                             auto result = tasks->setState(newTask, Task::State::Ready);
                             if (result.successful)
                             {
+                                qInfo() << "Inserting into the ready tasks.";
                                 readyTasks->insertTask(newTask);
+
+                                qInfo() << "Removing from the size limit tasks.";
                                 limitTasks->removeBest();
+
+                                qInfo() << "Logging the status...";
                                 logTask(newTask, result.previous, result.current);
+                            }
+                            else
+                            {
+                                qDebug() << "Failed to change the state to ready.";
                             }
                         }
                     }
@@ -592,6 +654,7 @@ void Coordinator::run()
             }
             else
             {
+                qInfo() << "Logging the status...Seems it just got executed.";
                 logTask(task, tasks->getState(task), Task::State::Execute);
             }
         }
@@ -599,9 +662,10 @@ void Coordinator::run()
     QMutexLocker locker(&mutex);
     if (shudownSchedule)
     {
-        tasks->removeTask(QModelIndex());
+        qInfo() << "Scheduled for a shutdown...Removing everything...";
         readyTasks->clear();
         limitTasks->clear();
         agentTasks->clear();
+        tasks->removeTask(QModelIndex());
     }
 }
