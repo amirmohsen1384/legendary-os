@@ -392,7 +392,7 @@ void Coordinator::dispatch(const QModelIndex &task)
 
 bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description)
 {
-    if (isRunning() || !hasReqiurements() || !task.isValid())
+    if (!hasReqiurements() || !task.isValid())
     {
         qDebug() << "Failed to log the status";
         return false;
@@ -462,7 +462,7 @@ void Coordinator::run()
                 QMutexLocker locker(&mutex);
                 condition.wait(&mutex);
             }
-            if (state == State::StoppedState)
+            else if (state == State::StoppedState)
             {
                 qInfo() << "Forcing the kernel to stop...";
                 return;
