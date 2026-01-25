@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 project(LegendaryOS LANGUAGES CXX)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Test)
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/dialogs
@@ -46,12 +46,15 @@ qt_add_executable(LegendaryOS
     src/dialogs/settingsedit.cpp
     ui/dialogs/settingsedit.ui
     resources.qrc
+    src/tests/simpletest.h
+    src/tests/simpletest.cpp
 )
 
 target_link_libraries(LegendaryOS
     PRIVATE
         Qt::Core
         Qt::Widgets
+        Qt::Test
 )
 
 include(GNUInstallDirs)
