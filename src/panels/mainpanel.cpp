@@ -7,6 +7,7 @@
 void MainPanel::confirm(const QString &text, std::function<void(bool)> handler, const QString &information, const QMessageBox::Icon icon)
 {
     auto message = new QMessageBox(this);
+    message->setObjectName("confirmdialog");
     message->setIcon(icon);
     if(!information.isEmpty()) {
         message->setInformativeText(information);
