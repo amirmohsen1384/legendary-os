@@ -40,8 +40,16 @@ void PriorityModel::swap(qint64 one, qint64 two)
     else
     {
         std::swap(container[one], container[two]);
-        emit dataChanged(index(one, 0), index(one, columnCount() - 1), roleNames().keys());
-        emit dataChanged(index(two, 0), index(two, columnCount() - 1), roleNames().keys());
+        emit dataChanged(
+            index(one, 0),
+            index(one, columnCount() - 1),
+            { Qt::DisplayRole }
+            );
+        emit dataChanged(
+            index(two, 0),
+            index(two, columnCount() - 1),
+            { Qt::DisplayRole }
+            );
     }
 }
 
@@ -58,8 +66,7 @@ QVariant PriorityModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
     {
-        auto column = static_cast<Header>(index.column());
-        switch (column)
+        switch (index.column())
         {
         case Header::PID:
         {
@@ -67,11 +74,11 @@ QVariant PriorityModel::data(const QModelIndex &index, int role) const
             auto result = target.data(Task::PIDRole).toLongLong(&ok);
             return ok ? result : QVariant();
         }
-        case Header::Name:
+        case Name:
         {
             return target.data(Task::NameRole).toString();
         }
-        case Header::Priority:
+        case Priority:
         {
             bool ok = false;
             auto result = target.data(Task::PriorityRole).toLongLong(&ok);
@@ -81,7 +88,7 @@ QVariant PriorityModel::data(const QModelIndex &index, int role) const
                 return {};
             }
         }
-        case Header::Agent:
+        case Agent:
         {
             auto result = target.data(Task::AgentRole).toString();
             return result.isEmpty() ? "No Agent Provided" : result;
@@ -112,19 +119,15 @@ bool PriorityModel::betterThan(const QModelIndex &one, const QModelIndex &two) c
 
 void PriorityModel::upheap(qint64 node)
 {
-    qint64 top = ancestor(node);
-    while (top >= 0)
+    while (node > 0)
     {
-        if (betterThan(container[node], container[top]))
-        {
-            swap(top, node);
-            node = top;
-            top = ancestor(node);
-        }
-        else
+        qint64 parent = ancestor(node);
+        if (!betterThan(container[node], container[parent]))
         {
             break;
         }
+        swap(node, parent);
+        node = parent;
     }
 }
 
@@ -299,27 +302,27 @@ QVariant PriorityModel::headerData(int section, Qt::Orientation orientation, int
     }
     }
 }
+
 bool PriorityModel::removeRows(int row, int count, const QModelIndex &parent)
 {
     if (parent.isValid() || row < 0 || row + count > container.size())
     {
         return false;
     }
-    auto size = container.size();
-    for (auto i = row; i < row + count; ++i)
+
+    beginRemoveRows(parent, row, row + count - 1);
+    int last = container.size() - 1;
+    for (int i = 0; i < count; ++i)
     {
-        container[i] = container[size-- - 1];
+        container[row + i] = container[last - i];
     }
-    size = container.size();
-    beginRemoveRows(parent, size - count, size - 1);
-    container.remove(size - count, count);
+    container.resize(container.size() - count);
     endRemoveRows();
+
     if (!container.isEmpty())
     {
-        for (auto i = row; i < row + count && i < container.size(); ++i)
-        {
-            downheap(i);
-        }
+        downheap(row);
     }
     return true;
 }
+
