@@ -32,7 +32,7 @@ void MainPanel::setupViews()
     auto makeStretch = [this](QTableView *view) {
         auto header = view->horizontalHeader();
         header->setSectionResizeMode(QHeaderView::Interactive);
-        header->setSectionResizeMode(header->count() - 1, QHeaderView::Stretch);
+        header->setSectionResizeMode(1, QHeaderView::Stretch);
     };
     makeStretch(ui->logsView);
     makeStretch(ui->readyTaskView);
