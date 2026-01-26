@@ -33,6 +33,7 @@ private:
     void setupLayout();
     void setupKernel();
     void setupModels();
+    void setupStatusBar();
     void setupConnections();
     void setupEditionActions();
 
