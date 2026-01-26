@@ -212,7 +212,14 @@ void MainPanel::showSettingsDialog()
 
 void MainPanel::startKernel()
 {
-    kernel->start(QThread::LowPriority);
+    if (!kernel->isRunning())
+    {
+        kernel->start(QThread::LowPriority);
+    }
+    else
+    {
+        qDebug() << "The scheduler is already running. Wait for it to finish.";
+    }
 }
 
 void MainPanel::pauseKernel()
