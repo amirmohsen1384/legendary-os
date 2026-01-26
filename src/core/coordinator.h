@@ -21,6 +21,7 @@ class Coordinator : public QThread
 
 private:
     void dispatch(const QModelIndex &task);
+    qint64 reevaluatePriority(const QModelIndex &task);
     bool logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description = QString());
 
 protected:

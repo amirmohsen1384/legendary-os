@@ -382,6 +382,19 @@ void Coordinator::dispatch(const QModelIndex &task)
     }
 }
 
+qint64 Coordinator::reevaluatePriority(const QModelIndex &task)
+{
+    bool ok = false;
+    auto usedQuantums = tasks->data(task, Task::QuantumRole).toLongLong(&ok);
+    auto currentPriority = tasks->data(task, Task::PriorityRole).toLongLong(&ok);
+    if (!ok)
+    {
+        currentPriority = 1;
+        usedQuantums = 0;
+    }
+    return qint64(currentPriority / (0.5 * usedQuantums + 1));
+}
+
 bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description)
 {
     if (!hasReqiurements() || !task.isValid())
@@ -437,6 +450,7 @@ void Coordinator::run()
         qDebug() << "The kernel does not meet the requirements.";
         return;
     }
+
     qInfo() << "Running the kernel";
     setState(Coordinator::RunningState);
 
@@ -552,22 +566,13 @@ void Coordinator::run()
 
         auto state = tasks->getState(task);
         qInfo() << "The current task state is " << Task::text(state);
+
         if (state == Task::State::Timeout)
         {
             qInfo() << "Timeout happened. Removing the current ready task...";
             readyTasks->removeBest();
 
-            bool ok = false;
-            auto usedQuantums = tasks->data(task, Task::QuantumRole).toLongLong(&ok);
-            auto currentPriority = tasks->data(task, Task::PriorityRole).toLongLong(&ok);
-            if (!ok)
-            {
-                qWarning() << "Failed to retrieve the current values: Current Priority:" << currentPriority << "Used Quantums:" << usedQuantums;
-                currentPriority = 1;
-                usedQuantums = 0;
-            }
-
-            auto priority = qint64(currentPriority / (0.5 * usedQuantums + 1));
+            auto priority = reevaluatePriority(task);
             qWarning() << "The new priority is " << priority;
 
             if(tasks->setData(task, priority, Task::PriorityRole))
@@ -594,12 +599,13 @@ void Coordinator::run()
         else
         {
             qInfo() << "No timeout happened. The current state of the task is" << Task::text(tasks->getState(task));
-            bool ok = false;
+            auto ok = false;
+
             auto time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
             qInfo() << "Remaining time is " << time;
             if (!ok)
             {
-                qInfo() << "Failed to retrieve the remaining time... Time:" << time;
+                qInfo() << "Failed to retrieve the remaining time.";
                 time = 0;
             }
             if (time == 0)
