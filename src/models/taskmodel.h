@@ -43,13 +43,11 @@ public slots:
     qint64 proceed(const QModelIndex &index, qint64 quantum);
 
 public:
-    QModelIndex getRunningTask() const;
     Task::State getState(const QModelIndex &index);
     TaskModel::TransitionState setState(const QModelIndex &index, const Task::State state);
 
 
 private:
-    QModelIndex runningIndex;
     std::unique_ptr<Task> root;
 };
 

@@ -468,15 +468,15 @@ bool TaskModel::removeTask(const QModelIndex &index)
 
 void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
 {
-    if (!index.isValid() || runningIndex.isValid())
+    if (!index.isValid())
     {
+        qDebug() << "Failed to start the task.";
         return;
     }
     auto item = static_cast<Task*>(index.internalPointer());
     if(item->beginToProceed(timestamp))
     {
         QList<int> roles;
-        runningIndex = index;
         roles.append(Task::StateRole);
         roles.append(Qt::DisplayRole);
         roles.append(Qt::BackgroundRole);
@@ -488,8 +488,9 @@ void TaskModel::beginToProceed(const QModelIndex &index, qint64 timestamp)
 
 void TaskModel::endToProceed(const QModelIndex &index, qint64 timestamp)
 {
-    if (!index.isValid() || !runningIndex.isValid() || index != runningIndex)
+    if (!index.isValid())
     {
+        qDebug() << "Failed to finish the task.";
         return;
     }
     auto item = static_cast<Task*>(index.internalPointer());
@@ -510,6 +511,7 @@ qint64 TaskModel::proceed(const QModelIndex &index, qint64 quantum)
 {
     if (!index.isValid())
     {
+        qDebug() << "Failed to process the task.";
         return 0;
     }
     auto item = static_cast<Task*>(index.internalPointer());
@@ -540,11 +542,6 @@ TaskModel::TransitionState TaskModel::setState(const QModelIndex &index, const T
     result.previous = index.data(Task::StateRole).value<Task::State>();
     result.successful = setData(index, QVariant::fromValue(state), Task::StateRole);
     return result;
-}
-
-QModelIndex TaskModel::getRunningTask() const
-{
-    return runningIndex;
 }
 
 Task::State TaskModel::getState(const QModelIndex &index)
