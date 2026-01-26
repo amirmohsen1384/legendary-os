@@ -42,7 +42,7 @@ void MainPanel::setupViews()
 
 void MainPanel::setupLayout()
 {
-    ui->actionLogs->setChecked(false);
+    ui->logsDock->hide();
     ui->actionReadyTasks->setChecked(true);
     ui->actionSizeLimitTasks->setChecked(true);
     ui->actionAvailableTasks->setChecked(true);
@@ -154,11 +154,6 @@ void MainPanel::setupEditionActions()
     editionActions->addAction(ui->actionRemoveAgent);
 }
 
-bool MainPanel::isLogsTabVisible() const
-{
-    return ui->logsGroup->isVisible();
-}
-
 bool MainPanel::isTasksTabVisible() const
 {
     return ui->entitiesGroup->isTabVisible(0);
@@ -267,7 +262,6 @@ void MainPanel::updateAgentView()
 void MainPanel::updateEmptyFrame()
 {
     ui->emptyFrame->setVisible(
-        !isLogsTabVisible() &&
         !isAgentsTabVisible() &&
         !isTasksTabVisible() &&
         !isSizeLimitTabVisible() &&
@@ -297,10 +291,9 @@ void MainPanel::updateAgentDependencyView()
     ui->agentDependencyEmptyLabel->setVisible(!condition);
 }
 
-void MainPanel::setLogsTabVisible(bool visible)
+void MainPanel::showLogsDock()
 {
-    ui->logsGroup->setVisible(visible);
-    updateEmptyFrame();
+    ui->logsDock->show();
 }
 
 void MainPanel::setTasksTabVisible(bool visible)

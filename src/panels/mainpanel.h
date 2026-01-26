@@ -37,7 +37,6 @@ private:
     void setupEditionActions();
 
 private:
-    bool isLogsTabVisible() const;
     bool isTasksTabVisible() const;
     bool isAgentsTabVisible() const;
     bool isSizeLimitTabVisible() const;
@@ -72,7 +71,7 @@ private slots:
     void updateAgentDependencyView();
 
 private slots:
-    void setLogsTabVisible(bool visible);
+    void showLogsDock();
     void setTasksTabVisible(bool visible);
     void setAgentsTabVisible(bool visible);
     void setSizeLimitTabVisible(bool visible);
