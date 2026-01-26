@@ -338,6 +338,21 @@ void Coordinator::setState(const State value)
     }
 }
 
+void Coordinator::removeLater(const QModelIndex &task)
+{
+    removeAtEnd.enqueue(task);
+}
+
+void Coordinator::removeQueuedTasks()
+{
+    while (!removeAtEnd.isEmpty())
+    {
+        auto index = removeAtEnd.dequeue();
+        qDebug() << "Removing:" << index.data(Task::NameRole).toString();
+        tasks->removeTask(index);
+    }
+}
+
 void Coordinator::dispatch(const QModelIndex &task)
 {
     if (isRunning() || !hasReqiurements())
@@ -645,11 +660,8 @@ void Coordinator::run()
                     }
                 }
 
-                qInfo() << "Removing the task from the whole list...";
-                if(!tasks->removeTask(task))
-                {
-                    qDebug() << "Failed to remove the task.";
-                }
+                qInfo() << "Scheduled for deletion:" << task.data(Task::NameRole).toString();
+                removeLater(task);
             }
             else
             {
@@ -659,17 +671,24 @@ void Coordinator::run()
         }
     }
     qDebug() << "Checking shutdown scheduler.";
+    mutex.lock();
+    auto state = shudownSchedule;
+    mutex.unlock();
+
+    if (state)
     {
-        QMutexLocker locker(&mutex);
-        if (shudownSchedule)
-        {
-            qInfo() << "Scheduled for a shutdown...Removing everything...";
-            readyTasks->clear();
-            limitTasks->clear();
-            agentTasks->clear();
-            tasks->removeTask(QModelIndex());
-        }
+        qInfo() << "Scheduled for a shutdown...Removing everything...";
+        readyTasks->clear();
+        limitTasks->clear();
+        agentTasks->clear();
+        tasks->removeTask(QModelIndex());
     }
+    else
+    {
+        qInfo() << "Removing all scheduled tasks at the end.";
+        removeQueuedTasks();
+    }
+
     setState(Coordinator::StoppedState);
     qInfo() << "Finished a cycle of running the kernel.";
 }

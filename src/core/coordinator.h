@@ -11,6 +11,7 @@
 #include <QWaitCondition>
 #include <QThread>
 #include <QMutex>
+#include <QQueue>
 
 class Coordinator : public QThread
 {
@@ -18,6 +19,9 @@ class Coordinator : public QThread
     Q_PROPERTY(qint64 unusedQuantums READ getUnusedQuantums NOTIFY quantumUnused)
     Q_PROPERTY(qint64 elapsedQuantums READ getElapsedQuantums NOTIFY quantumElapsed)
     Q_PROPERTY(Coordinator::State state READ getState WRITE setState NOTIFY runningStateChanged)
+private:
+    void removeLater(const QModelIndex &task);
+    void removeQueuedTasks();
 
 private:
     void dispatch(const QModelIndex &task);
@@ -88,6 +92,7 @@ private:
     State state = State::StoppedState;
     PriorityModel* limitTasks = nullptr;
     PriorityModel* agentTasks = nullptr;
+    QQueue<QPersistentModelIndex> removeAtEnd;
 };
 
 #endif // COORDINATOR_H
