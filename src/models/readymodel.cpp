@@ -159,15 +159,15 @@ QVariant ReadyModel::data(const QModelIndex &index, int role) const
         case Header::Progress:
         {
             bool ok = false;
-            auto total = target.data(Task::BurstTimeRole).toLongLong(&ok);
+            auto total = target.data(Task::BurstTimeRole).toFloat(&ok);
             if(!ok) {
                 return {};
             }
-            auto passed = target.data(Task::QuantumRole).toLongLong(&ok);
+            auto passed = target.data(Task::QuantumRole).toFloat(&ok);
             if (!ok) {
                 return {};
             }
-            return QString("%1%").arg((passed / total) * 100);
+            return QString("%1%").arg(int((passed / total) * 100));
         }
         }
     }
