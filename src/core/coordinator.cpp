@@ -123,6 +123,11 @@ bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
             }
         }
     }
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
+    }
     return true;
 }
 
@@ -138,6 +143,11 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
         return false;
     }
     dispatch(index);
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
+    }
     return true;
 }
 
@@ -183,6 +193,11 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
             limitTasks->removeRow(i--);
             agentTasks->insertTask(index);
         }
+    }
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
     }
     return agents->removeAgent(agent);
 }
@@ -231,7 +246,11 @@ bool Coordinator::removeTask(const QModelIndex &task)
             return tasks->removeTask(task);
         }
     }
-
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
+    }
     return tasks->removeTask(task);
 }
 
@@ -246,6 +265,11 @@ void Coordinator::scheduleShutdown()
         QMutexLocker locker(&mutex);
         shudownSchedule = true;
         emit shutdownScheduled();
+    }
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
     }
 }
 
@@ -723,5 +747,7 @@ void Coordinator::run()
     }
 
     setState(Coordinator::StoppedState);
+    enteredCommands = 0;
+    unlock();
     qInfo() << "Finished a cycle of running the kernel.";
 }

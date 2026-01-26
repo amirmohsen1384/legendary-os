@@ -89,6 +89,7 @@ private:
     Settings::Info settings;
     QWaitCondition condition;
     qint64 unusedQuantums = 0;
+    qint64 enteredCommands = 0;
     qint64 elapsedQuantums = 0;
     TaskModel* tasks = nullptr;
     AgentModel* agents = nullptr;
