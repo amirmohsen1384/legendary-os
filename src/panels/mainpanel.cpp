@@ -254,30 +254,16 @@ void MainPanel::showSettingsDialog()
 
 void MainPanel::startKernel()
 {
-    if (!kernel->isRunning())
-    {
-        kernel->setState(Coordinator::RunningState);
-        ui->actionPause->setVisible(true);
-        ui->actionRun->setVisible(false);
-    }
-    else
-    {
-        qDebug() << "The scheduler is already running. Wait for it to finish.";
-    }
+    kernel->setState(Coordinator::RunningState);
+    ui->actionPause->setVisible(true);
+    ui->actionRun->setVisible(false);
 }
 
 void MainPanel::pauseKernel()
 {
-    if (kernel->isRunning())
-    {
-        kernel->setState(Coordinator::PausedState);
-        ui->actionPause->setVisible(false);
-        ui->actionRun->setVisible(true);
-    }
-    else
-    {
-        qDebug() << "The scheduler is not running.";
-    }
+    kernel->setState(Coordinator::PausedState);
+    ui->actionPause->setVisible(false);
+    ui->actionRun->setVisible(true);
 }
 
 void MainPanel::abortKernel()
