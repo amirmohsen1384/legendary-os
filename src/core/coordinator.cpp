@@ -1,7 +1,19 @@
 #include "coordinator.h"
 #include <QMutexLocker>
 
-Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info) {}
+Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info)
+{
+    connect(this, &QThread::started, [this]() {
+        if (!this->isLocked()) {
+            lock();
+        }
+    });
+    connect(this, &QThread::finished, [this]() {
+        if (this->isLocked()) {
+            unlock();
+        }
+    });
+}
 
 Coordinator::~Coordinator()
 {
@@ -28,6 +40,11 @@ qreal Coordinator::getUtilizationRate()
 {
     const auto elapsed = getElapsedQuantums();
     return elapsed > 0 ? 1 - getUnusedQuantums() / elapsed : 0;
+}
+
+bool Coordinator::isLocked()
+{
+    return locked;
 }
 
 Coordinator::State Coordinator::getState()
@@ -251,6 +268,22 @@ void Coordinator::pause()
     {
         setState(State::PausedState);
     }
+}
+
+void Coordinator::lock()
+{
+    setLocked(true);
+}
+
+void Coordinator::unlock()
+{
+    setLocked(false);
+}
+
+void Coordinator::setLocked(bool state)
+{
+    locked = state;
+    emit lockStateChanged(state);
 }
 
 void Coordinator::setTasks(TaskModel *model)

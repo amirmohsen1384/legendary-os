@@ -44,6 +44,7 @@ public:
     qint64 getElapsedQuantums();
     qint64 getUnusedQuantums();
     qreal getUtilizationRate();
+    bool isLocked();
     State getState();
 
     TaskModel* getTasks();
@@ -63,6 +64,9 @@ public slots:
     void abort();
     void pause();
 
+    void lock();
+    void unlock();
+    void setLocked(bool state);
 
     void setTasks(TaskModel *model);
     void setAgents(AgentModel *model);
@@ -76,10 +80,12 @@ signals:
     void runningStateChanged(Coordinator::State state);
     void quantumElapsed(qint64 quantum);
     void quantumUnused(qint64 quantum);
+    void lockStateChanged(bool state);
     void shutdownScheduled();
 
 private:
     QMutex mutex;
+    bool locked = false;
     Settings::Info settings;
     QWaitCondition condition;
     qint64 unusedQuantums = 0;

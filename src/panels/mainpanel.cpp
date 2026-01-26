@@ -140,6 +140,7 @@ void MainPanel::setupConnections()
         ui->sizeLimitView->selectionModel()->clear();
         ui->agentDependencyView->selectionModel()->clear();
     });
+    connect(kernel, &Coordinator::lockStateChanged, editionActions, &QActionGroup::setDisabled);
 }
 
 
