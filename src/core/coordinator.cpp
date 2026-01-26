@@ -441,7 +441,6 @@ void Coordinator::run()
     setState(Coordinator::RunningState);
 
     const auto unit = settings.quantumSize;
-
     qInfo() << "The quantum size is" << unit;
 
     for (auto i = 0; i < settings.executionCycle; ++i)
@@ -484,7 +483,7 @@ void Coordinator::run()
             logTask(task, before, tasks->getState(task));
         }
 
-        QThread::sleep(settings.pause);
+        QThread::msleep(settings.pause);
         {
             auto state = getState();
             if (state == State::PausedState)
@@ -506,7 +505,7 @@ void Coordinator::run()
             qDebug() << "Finished processing. This process consumed" << tasks->data(task, Task::QuantumRole).toInt() << "quantums";;
         }
 
-        QThread::sleep(settings.pause);
+        QThread::msleep(settings.pause);
         {
             auto state = getState();
             if (state == State::PausedState)
@@ -535,7 +534,7 @@ void Coordinator::run()
             logTask(task, before, tasks->getState(task));
         }
 
-        QThread::sleep(settings.pause);
+        QThread::msleep(settings.pause);
         {
             auto state = getState();
             if (state == State::PausedState)
@@ -564,8 +563,8 @@ void Coordinator::run()
             if (!ok)
             {
                 qWarning() << "Failed to retrieve the current values: Current Priority:" << currentPriority << "Used Quantums:" << usedQuantums;
-                usedQuantums = 0;
                 currentPriority = 1;
+                usedQuantums = 0;
             }
 
             auto priority = qint64(currentPriority / (0.5 * usedQuantums + 1));
@@ -578,6 +577,7 @@ void Coordinator::run()
                 {
                     qInfo() << "Inserting the task again into the ready queue...";
                     readyTasks->insertTask(task);
+
                     qInfo() << "Inserted successfully into the ready queue...";
                     logTask(task, result.previous, result.current);
                 }
@@ -608,37 +608,36 @@ void Coordinator::run()
                 readyTasks->removeBest();
                 logTask(task, tasks->getState(task), Task::State::Terminate);
 
+                qInfo() << "Checking if there are some new tasks...";
+                while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
+                {
+                    qInfo() << "Fetching new task from the limit tasks.";
+                    auto newTask = limitTasks->peekBest();
+
+                    qInfo() << "Found one size limit task:" << task.data(Task::NameRole).toString();
+                    {
+                        auto result = tasks->setState(newTask, Task::State::Ready);
+                        if (result.successful)
+                        {
+                            qInfo() << "Inserting into the ready tasks.";
+                            readyTasks->insertTask(newTask);
+
+                            qInfo() << "Removing from the size limit tasks.";
+                            limitTasks->removeBest();
+
+                            logTask(newTask, result.previous, result.current);
+                        }
+                        else
+                        {
+                            qDebug() << "Failed to change the state to ready.";
+                        }
+                    }
+                }
+
                 qInfo() << "Removing the task from the whole list...";
                 if(!tasks->removeTask(task))
                 {
                     qDebug() << "Failed to remove the task.";
-                }
-                else
-                {
-                    qInfo() << "Checking if there are some new tasks...";
-                    while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
-                    {
-                        qInfo() << "Fetching new task from the limit tasks.";
-                        auto newTask = limitTasks->peekBest();
-                        qInfo() << "Found one size limit task:" << task.data(Task::NameRole).toString();
-                        {
-                            auto result = tasks->setState(newTask, Task::State::Ready);
-                            if (result.successful)
-                            {
-                                qInfo() << "Inserting into the ready tasks.";
-                                readyTasks->insertTask(newTask);
-
-                                qInfo() << "Removing from the size limit tasks.";
-                                limitTasks->removeBest();
-
-                                logTask(newTask, result.previous, result.current);
-                            }
-                            else
-                            {
-                                qDebug() << "Failed to change the state to ready.";
-                            }
-                        }
-                    }
                 }
             }
             else
