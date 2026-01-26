@@ -450,6 +450,11 @@ void Coordinator::run()
         qDebug() << "The kernel does not meet the requirements.";
         return;
     }
+    else if(tasks->rowCount() <= 0)
+    {
+        qDebug() << "No task is available to be finished.";
+        return;
+    }
 
     qInfo() << "Running the kernel";
     setState(Coordinator::RunningState);
