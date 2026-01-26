@@ -46,6 +46,8 @@ void MainPanel::setupViews()
 void MainPanel::setupLayout()
 {
     ui->logsDock->hide();
+    ui->actionAbort->setVisible(false);
+    ui->actionPause->setVisible(false);
     ui->actionReadyTasks->setChecked(true);
     ui->actionSizeLimitTasks->setChecked(true);
     ui->actionAvailableTasks->setChecked(true);
@@ -124,6 +126,7 @@ void MainPanel::setupStatusBar()
         unused->setText(QString("Unused Quantums: %1").arg(quantum));
         utilization->setText(QString("Utilization Rate: %1%").arg(kernel->getUtilizationRate() * 100));
     });
+
     state->hide();
     statusBar()->addPermanentWidget(unused);
     statusBar()->addPermanentWidget(utilization);
@@ -176,6 +179,14 @@ void MainPanel::setupConnections()
         ui->agentDependencyView->selectionModel()->clear();
     });
     connect(kernel, &Coordinator::lockStateChanged, editionActions, &QActionGroup::setDisabled);
+    connect(kernel, &QThread::started, this, [this]() {
+        ui->actionAbort->setVisible(true);
+    });
+    connect(kernel, &QThread::finished, this, [this]() {
+        ui->actionAbort->setVisible(false);
+        ui->actionPause->setVisible(false);
+        ui->actionRun->setVisible(true);
+    });
 }
 
 
@@ -245,7 +256,9 @@ void MainPanel::startKernel()
 {
     if (!kernel->isRunning())
     {
-        kernel->start(QThread::LowPriority);
+        kernel->setState(Coordinator::RunningState);
+        ui->actionPause->setVisible(true);
+        ui->actionRun->setVisible(false);
     }
     else
     {
@@ -255,12 +268,23 @@ void MainPanel::startKernel()
 
 void MainPanel::pauseKernel()
 {
-    kernel->pause();
+    if (kernel->isRunning())
+    {
+        kernel->setState(Coordinator::PausedState);
+        ui->actionPause->setVisible(false);
+        ui->actionRun->setVisible(true);
+    }
+    else
+    {
+        qDebug() << "The scheduler is not running.";
+    }
 }
 
 void MainPanel::abortKernel()
 {
-    kernel->abort();
+    kernel->setState(Coordinator::StoppedState);
+    ui->actionPause->setVisible(false);
+    ui->actionRun->setVisible(false);
 }
 
 void MainPanel::updateViews()

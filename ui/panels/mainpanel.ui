@@ -426,7 +426,8 @@
     <property name="title">
      <string>&amp;Run</string>
     </property>
-    <addaction name="actionPlay"/>
+    <addaction name="actionRun"/>
+    <addaction name="actionPause"/>
     <addaction name="actionAbort"/>
    </widget>
    <addaction name="menuGeneral"/>
@@ -457,7 +458,8 @@
    <addaction name="actionRemoveAgent"/>
    <addaction name="actionShutdown"/>
    <addaction name="separator"/>
-   <addaction name="actionPlay"/>
+   <addaction name="actionRun"/>
+   <addaction name="actionPause"/>
    <addaction name="actionAbort"/>
   </widget>
   <widget class="QDockWidget" name="logsDock">
@@ -711,7 +713,7 @@
     <string>F6</string>
    </property>
   </action>
-  <action name="actionPlay">
+  <action name="actionRun">
    <property name="icon">
     <iconset resource="../../resources.qrc">
      <normaloff>:/icons/run/play.png</normaloff>:/icons/run/play.png</iconset>
@@ -733,6 +735,21 @@
    </property>
    <property name="shortcut">
     <string>Esc</string>
+   </property>
+  </action>
+  <action name="actionPause">
+   <property name="icon">
+    <iconset resource="../../resources.qrc">
+     <normaloff>:/icons/run/pause.png</normaloff>:/icons/run/pause.png</iconset>
+   </property>
+   <property name="text">
+    <string>Pause</string>
+   </property>
+   <property name="toolTip">
+    <string>Pause</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
    </property>
   </action>
  </widget>
@@ -965,7 +982,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionPlay</sender>
+   <sender>actionRun</sender>
    <signal>triggered()</signal>
    <receiver>MainPanel</receiver>
    <slot>startKernel()</slot>
@@ -977,6 +994,38 @@
     <hint type="destinationlabel">
      <x>577</x>
      <y>436</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionAbort</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>abortKernel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>516</x>
+     <y>478</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPause</sender>
+   <signal>triggered()</signal>
+   <receiver>MainPanel</receiver>
+   <slot>pauseKernel()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>516</x>
+     <y>478</y>
     </hint>
    </hints>
   </connection>
