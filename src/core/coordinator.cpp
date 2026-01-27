@@ -467,13 +467,6 @@ bool Coordinator::hasReqiurements() const
     return agents && tasks && logs && limitTasks && agentTasks;
 }
 
-void Coordinator::setElapsedQuantums(qint64 value)
-{
-    QMutexLocker locker(&mutex);
-    elapsedQuantums = value;
-    emit quantumElapsed(value);
-}
-
 void Coordinator::run()
 {
     if (!hasReqiurements())
