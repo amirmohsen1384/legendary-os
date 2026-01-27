@@ -442,25 +442,42 @@ QModelIndex TaskModel::insertTask(const TaskInfo &info, const QModelIndex &paren
     return createIndex(row, 0, task);
 }
 
-bool TaskModel::removeTask(const QModelIndex &index)
+bool TaskModel::removeTask(const QModelIndex &task)
 {
-    if (!index.isValid())
+    if (!task.isValid())
     {
         clear();
         return true;
     }
 
-    QModelIndex parentIndex = index.parent();
-    Task* parent = parentIndex.isValid() ? static_cast<Task*>(parentIndex.internalPointer()) : root.get();
+    for (auto i = rowCount(task) - 1; i >= 0; --i)
+    {
+        if(!removeTask(index(i, 0, task)))
+        {
+            return false;
+        }
+    }
 
-    const int row = index.row();
+    QModelIndex major = task.parent();
+    const int row = task.row();
 
-    if (row < 0 || row >= parent->childCount()) {
+    if (row < 0 || row >= rowCount(major))
+    {
         return false;
     }
 
-    beginRemoveRows(parentIndex, row, row);
-    parent->removeChild(row);
+    Task* majorTask {};
+    if (major.isValid())
+    {
+        majorTask = static_cast<Task*>(major.internalPointer());
+    }
+    else
+    {
+        majorTask = root.get();
+    }
+
+    beginRemoveRows(major, row, row);
+    majorTask->removeChild(row);
     endRemoveRows();
 
     return true;
