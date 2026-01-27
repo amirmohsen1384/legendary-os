@@ -123,11 +123,7 @@ bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
             }
         }
     }
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
-    {
-        lock();
-    }
+    recordLock();
     return true;
 }
 
@@ -142,12 +138,7 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
     {
         return false;
     }
-    dispatch(index);
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
-    {
-        lock();
-    }
+    recordLock();
     return true;
 }
 
@@ -194,11 +185,7 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
             agentTasks->insertTask(index);
         }
     }
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
-    {
-        lock();
-    }
+    recordLock();
     return agents->removeAgent(agent);
 }
 
@@ -208,7 +195,8 @@ bool Coordinator::removeTask(const QModelIndex &task)
     {
         return false;
     }
-    for (auto i = 0; i < tasks->rowCount(task); ++i)
+
+    for (auto i = tasks->rowCount(task) - 1; i >= 0; --i)
     {
         auto child = tasks->index(i, 0, task);
         if (!removeTask(child))
@@ -222,8 +210,10 @@ bool Coordinator::removeTask(const QModelIndex &task)
         auto current = readyTasks->toTask(readyTasks->index(i, 0));
         if (task == current)
         {
-            readyTasks->removeRow(i--);
-            return tasks->removeTask(task);
+            readyTasks->removeRow(i);
+            bool state = tasks->removeTask(task);
+            recordLock();
+            return state;
         }
     }
 
@@ -232,8 +222,10 @@ bool Coordinator::removeTask(const QModelIndex &task)
         auto current = limitTasks->toTask(limitTasks->index(i, 0));
         if (task == current)
         {
-            limitTasks->removeRow(i--);
-            return tasks->removeTask(task);
+            limitTasks->removeRow(i);
+            bool state = tasks->removeTask(task);
+            recordLock();
+            return state;
         }
     }
 
@@ -242,16 +234,9 @@ bool Coordinator::removeTask(const QModelIndex &task)
         auto current = agentTasks->toTask(agentTasks->index(i, 0));
         if (task == current)
         {
-            agentTasks->removeRow(i--);
-            return tasks->removeTask(task);
+            agentTasks->removeRow(i);
         }
     }
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
-    {
-        lock();
-    }
-    return tasks->removeTask(task);
 }
 
 void Coordinator::scheduleShutdown()
@@ -266,11 +251,7 @@ void Coordinator::scheduleShutdown()
         shudownSchedule = true;
         emit shutdownScheduled();
     }
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
-    {
-        lock();
-    }
+    recordLock();
 }
 
 void Coordinator::lock()
@@ -359,6 +340,22 @@ void Coordinator::cancel()
 {
     QMutexLocker locker(&mutex);
     abort = true;
+}
+
+void Coordinator::releaseLock()
+{
+    QMutexLocker locker(&mutex);
+    enteredCommands = 0;
+}
+
+void Coordinator::recordLock()
+{
+    QMutexLocker locker(&mutex);
+    enteredCommands++;
+    if (enteredCommands == settings.inputCommandLimit)
+    {
+        lock();
+    }
 }
 
 bool Coordinator::canContinue()
@@ -650,10 +647,8 @@ void Coordinator::run()
         agentTasks->clear();
         removeTask(QModelIndex());
     }
-
     qInfo() << "Finished a cycle of running the kernel.";
 
-    QMutexLocker locker(&mutex);
-    enteredCommands = 0;
+    releaseLock();
     qInfo() << "Reset the commands.";
 }
