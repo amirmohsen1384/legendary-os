@@ -481,10 +481,7 @@ void Coordinator::run()
         return;
     }
 
-    qInfo() << "Running the kernel";
-
     const auto unit = settings.quantumSize;
-    qInfo() << "The quantum size is" << unit;
 
     for (auto i = 0; i < settings.executionCycle; ++i)
     {
