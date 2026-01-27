@@ -204,7 +204,7 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
 
 bool Coordinator::removeTask(const QModelIndex &task)
 {
-    if (isRunning() || !hasReqiurements())
+    if (!hasReqiurements())
     {
         return false;
     }
@@ -602,6 +602,7 @@ void Coordinator::run()
                 qInfo() << "Removed the task from the ready qeueus.";
 
                 logTask(task, state, Task::State::Terminate);
+                removeTask(task);
 
                 qInfo() << "Checking if there are some new tasks...";
                 while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
