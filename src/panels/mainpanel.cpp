@@ -254,9 +254,16 @@ void MainPanel::showSettingsDialog()
 
 void MainPanel::startKernel()
 {
-    kernel->setState(Coordinator::RunningState);
-    ui->actionPause->setVisible(true);
-    ui->actionRun->setVisible(false);
+    if (tasks->rowCount() > 0)
+    {
+        kernel->setState(Coordinator::RunningState);
+        ui->actionPause->setVisible(true);
+        ui->actionRun->setVisible(false);
+    }
+    else
+    {
+        QMessageBox::warning(this, "No task found", "You have no task to be processed in the task tree.");
+    }
 }
 
 void MainPanel::pauseKernel()
