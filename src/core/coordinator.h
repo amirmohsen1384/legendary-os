@@ -18,12 +18,11 @@ class Coordinator : public QThread
     Q_OBJECT
     Q_PROPERTY(qint64 unusedQuantums READ getUnusedQuantums NOTIFY quantumUnused)
     Q_PROPERTY(qint64 elapsedQuantums READ getElapsedQuantums NOTIFY quantumElapsed)
+
 private slots:
     void cancel();
 
 private:
-    void removeLater(const QModelIndex &task);
-    void removeQueuedTasks();
     bool canContinue();
 
 private:
@@ -97,7 +96,6 @@ private:
     ReadyModel* readyTasks = nullptr;
     PriorityModel* limitTasks = nullptr;
     PriorityModel* agentTasks = nullptr;
-    QQueue<QPersistentModelIndex> removeAtEnd;
 };
 
 #endif // COORDINATOR_H

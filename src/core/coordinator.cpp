@@ -361,21 +361,6 @@ void Coordinator::cancel()
     abort = true;
 }
 
-void Coordinator::removeLater(const QModelIndex &task)
-{
-    removeAtEnd.enqueue(task);
-}
-
-void Coordinator::removeQueuedTasks()
-{
-    while (!removeAtEnd.isEmpty())
-    {
-        auto index = removeAtEnd.dequeue();
-        qDebug() << "Removing:" << index.data(Task::NameRole).toString();
-        tasks->removeTask(index);
-    }
-}
-
 bool Coordinator::canContinue()
 {
     QMutexLocker locker(&mutex);
@@ -649,9 +634,6 @@ void Coordinator::run()
                         qDebug() << "Failed to change the state to ready.";
                     }
                 }
-
-                qInfo() << "Scheduled for deletion:" << task.data(Task::NameRole).toString();
-                removeLater(task);
             }
             else
             {
@@ -673,11 +655,6 @@ void Coordinator::run()
         limitTasks->clear();
         agentTasks->clear();
         removeTask(QModelIndex());
-    }
-    else
-    {
-        qInfo() << "Removing all scheduled tasks at the end.";
-        removeQueuedTasks();
     }
 
     qInfo() << "Finished a cycle of running the kernel.";
