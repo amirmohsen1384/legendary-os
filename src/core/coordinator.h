@@ -23,9 +23,9 @@ private slots:
     void cancel();
 
 private:
+    void releaseLock();
+    void recordLock();
     bool canContinue();
-
-private:
     void dispatch(const QModelIndex &task);
     qint64 evaluatePriority(const QModelIndex &task);
     bool logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description = QString());

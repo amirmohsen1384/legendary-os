@@ -138,6 +138,7 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
     {
         return false;
     }
+    dispatch(index);
     recordLock();
     return true;
 }
