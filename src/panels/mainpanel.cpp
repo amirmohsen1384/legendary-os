@@ -257,10 +257,10 @@ void MainPanel::startKernel()
         }
         else if (!kernel->isRunning())
         {
-            ui->actionRun->setVisible(false);
-            ui->actionPause->setVisible(true);
             kernel->start(QThread::LowPriority);
         }
+        ui->actionRun->setVisible(false);
+        ui->actionPause->setVisible(true);
     }
     else
     {
