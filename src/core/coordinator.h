@@ -18,11 +18,13 @@ class Coordinator : public QThread
     Q_OBJECT
     Q_PROPERTY(qint64 unusedQuantums READ getUnusedQuantums NOTIFY quantumUnused)
     Q_PROPERTY(qint64 elapsedQuantums READ getElapsedQuantums NOTIFY quantumElapsed)
+private slots:
+    void cancel();
 
 private:
     void removeLater(const QModelIndex &task);
     void removeQueuedTasks();
-    void checkForPause();
+    bool canContinue();
 
 private:
     void dispatch(const QModelIndex &task);
@@ -42,6 +44,7 @@ public:
     qint64 getElapsedQuantums();
     qint64 getUnusedQuantums();
     qreal getUtilizationRate();
+    bool isPaused();
     bool isLocked();
 
     TaskModel* getTasks();
@@ -57,13 +60,11 @@ public slots:
     bool removeAgent(const QModelIndex &agent);
     bool removeTask(const QModelIndex &task);
     void scheduleShutdown();
-    void resume();
-    void abort();
-    void pause();
 
     void lock();
     void unlock();
     void setLocked(bool state);
+    void setPaused(bool state);
 
     void setTasks(TaskModel *model);
     void setAgents(AgentModel *model);
@@ -76,13 +77,16 @@ signals:
     void quantumElapsed(qint64 quantum);
     void quantumUnused(qint64 quantum);
     void lockStateChanged(bool state);
+    void pausedChanged(bool state);
     void shutdownScheduled();
 
 private:
     QMutex mutex;
+    bool pause = false;
+    bool abort = false;
     bool locked = false;
     Settings::Info settings;
-    QWaitCondition condition;
+    QWaitCondition canProcess;
     qint64 unusedQuantums = 0;
     qint64 enteredCommands = 0;
     qint64 elapsedQuantums = 0;

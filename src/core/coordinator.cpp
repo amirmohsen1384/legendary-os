@@ -19,7 +19,7 @@ Coordinator::~Coordinator()
 {
     if (isRunning())
     {
-        setState(Coordinator::StoppedState);
+        cancel();
         wait();
     }
 }
@@ -40,6 +40,12 @@ qreal Coordinator::getUtilizationRate()
 {
     QMutexLocker locker(&mutex);
     return elapsedQuantums > 0 ? 1 - unusedQuantums / elapsedQuantums : 0;
+}
+
+bool Coordinator::isPaused()
+{
+    QMutexLocker locker(&mutex);
+    return pause;
 }
 
 bool Coordinator::isLocked()
@@ -284,6 +290,17 @@ void Coordinator::setLocked(bool state)
     emit lockStateChanged(state);
 }
 
+void Coordinator::setPaused(bool state)
+{
+    QMutexLocker locker(&mutex);
+    pause = state;
+    if (!pause)
+    {
+        canProcess.wakeOne();
+    }
+    emit pausedChanged(state);
+}
+
 void Coordinator::setTasks(TaskModel *model)
 {
     if (isRunning())
@@ -338,6 +355,12 @@ void Coordinator::setAgentTasks(PriorityModel *model)
     agentTasks = model;
 }
 
+void Coordinator::cancel()
+{
+    QMutexLocker locker(&mutex);
+    abort = true;
+}
+
 void Coordinator::removeLater(const QModelIndex &task)
 {
     removeAtEnd.enqueue(task);
@@ -353,23 +376,22 @@ void Coordinator::removeQueuedTasks()
     }
 }
 
-void Coordinator::checkForPause()
+bool Coordinator::canContinue()
 {
-    auto state = getState();
-    if (state == State::PausedState)
+    QMutexLocker locker(&mutex);
+    if (abort)
     {
-        qInfo() << "Pausing the kernel...";
-        QMutexLocker locker(&mutex);
-        condition.wait(&mutex);
+        return false;
     }
+    else if(pause)
+    {
+        canProcess.wait(&mutex);
+    }
+    return true;
 }
 
 void Coordinator::dispatch(const QModelIndex &task)
 {
-    if (isRunning() || !hasReqiurements())
-    {
-        return;
-    }
     auto executable = task.data(Task::ExecutableRole).toBool();
     if (executable)
     {
@@ -481,7 +503,6 @@ void Coordinator::run()
     }
 
     qInfo() << "Running the kernel";
-    setState(Coordinator::RunningState);
 
     const auto unit = settings.quantumSize;
     qInfo() << "The quantum size is" << unit;
@@ -500,7 +521,10 @@ void Coordinator::run()
             continue;
         }
 
-        checkForPause();
+        if (!canContinue())
+        {
+            return;
+        }
 
         auto task = readyTasks->peekBest();
         qInfo() << "Found one ready task:" << task.data(Task::NameRole).toString();
@@ -513,20 +537,25 @@ void Coordinator::run()
         }
 
         QThread::msleep(settings.pause);
-        checkForPause();
+        if (!canContinue())
+        {
+            return;
+        }
 
         tasks->proceed(task, unit);
         qDebug() << "Done part of it. This task consumed" << tasks->data(task, Task::QuantumRole).toInt() << "quantums";;
 
         QThread::msleep(settings.pause);
-        checkForPause();
-
+        if (!canContinue())
         {
-            QMutexLocker locker(&mutex);
-            timestamp += unit;
-            elapsedQuantums = timestamp;
-            emit quantumElapsed(timestamp);
+            return;
         }
+
+        mutex.lock();
+        timestamp += unit;
+        elapsedQuantums = timestamp;
+        emit quantumElapsed(timestamp);
+        mutex.unlock();
 
         {
             qDebug() << "Finishing the task...";
@@ -538,7 +567,10 @@ void Coordinator::run()
         }
 
         QThread::msleep(settings.pause);
-        checkForPause();
+        if (!canContinue())
+        {
+            return;
+        }
 
         auto state = tasks->getState(task);
         qInfo() << "The current task state is " << Task::text(state);
@@ -648,7 +680,6 @@ void Coordinator::run()
         removeQueuedTasks();
     }
 
-    setState(Coordinator::StoppedState);
     qInfo() << "Finished a cycle of running the kernel.";
 
     QMutexLocker locker(&mutex);
