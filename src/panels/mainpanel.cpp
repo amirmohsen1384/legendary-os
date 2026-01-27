@@ -233,7 +233,7 @@ void MainPanel::showAboutQt()
 void MainPanel::openGitHubPage()
 {
     qDebug() << "Showing GitHub Page";
-    if(!QDesktopServices::openUrl(QUrl("https://github.com/UI-DS-2025/LegendaryOS.git")))
+    if(!QDesktopServices::openUrl(QUrl("https://github.com/UI-DS-2025/LegendaryOS")))
     {
         qDebug() << "Failed to open the GitHub Page.";
     }
