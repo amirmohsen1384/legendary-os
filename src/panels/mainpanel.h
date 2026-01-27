@@ -58,7 +58,6 @@ private slots:
     void showSettingsDialog();
 
     void startKernel();
-    void abortKernel();
     void pauseKernel();
 
 private slots:

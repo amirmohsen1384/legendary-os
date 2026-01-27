@@ -46,7 +46,6 @@ void MainPanel::setupViews()
 void MainPanel::setupLayout()
 {
     ui->logsDock->hide();
-    ui->actionAbort->setVisible(false);
     ui->actionPause->setVisible(false);
     ui->actionReadyTasks->setChecked(true);
     ui->actionSizeLimitTasks->setChecked(true);
@@ -179,11 +178,7 @@ void MainPanel::setupConnections()
         ui->agentDependencyView->selectionModel()->clear();
     });
     connect(kernel, &Coordinator::lockStateChanged, editionActions, &QActionGroup::setDisabled);
-    connect(kernel, &QThread::started, this, [this]() {
-        ui->actionAbort->setVisible(true);
-    });
     connect(kernel, &QThread::finished, this, [this]() {
-        ui->actionAbort->setVisible(false);
         ui->actionPause->setVisible(false);
         ui->actionRun->setVisible(true);
     });
@@ -256,9 +251,16 @@ void MainPanel::startKernel()
 {
     if (tasks->rowCount() > 0)
     {
-        kernel->setState(Coordinator::RunningState);
-        ui->actionPause->setVisible(true);
-        ui->actionRun->setVisible(false);
+        if (kernel->isPaused())
+        {
+            kernel->setPaused(false);
+        }
+        else if (!kernel->isRunning())
+        {
+            ui->actionRun->setVisible(false);
+            ui->actionPause->setVisible(true);
+            kernel->start(QThread::LowPriority);
+        }
     }
     else
     {
@@ -268,26 +270,22 @@ void MainPanel::startKernel()
 
 void MainPanel::pauseKernel()
 {
-    kernel->setState(Coordinator::PausedState);
-    ui->actionPause->setVisible(false);
-    ui->actionRun->setVisible(true);
-}
-
-void MainPanel::abortKernel()
-{
-    kernel->setState(Coordinator::StoppedState);
-    ui->actionPause->setVisible(false);
-    ui->actionRun->setVisible(false);
+    if (kernel->isRunning())
+    {
+        kernel->setPaused(true);
+        ui->actionRun->setVisible(true);
+        ui->actionPause->setVisible(false);
+    }
 }
 
 void MainPanel::updateViews()
 {
+    updateLogView();
     updateTaskView();
     updateAgentView();
     updateReadyTaskView();
     updateSizeLimitView();
     updateAgentDependencyView();
-    updateLogView();
 }
 
 void MainPanel::updateLogView()

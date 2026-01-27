@@ -428,7 +428,6 @@
     </property>
     <addaction name="actionRun"/>
     <addaction name="actionPause"/>
-    <addaction name="actionAbort"/>
    </widget>
    <addaction name="menuGeneral"/>
    <addaction name="menu_Run"/>
@@ -460,7 +459,6 @@
    <addaction name="separator"/>
    <addaction name="actionRun"/>
    <addaction name="actionPause"/>
-   <addaction name="actionAbort"/>
   </widget>
   <widget class="QDockWidget" name="logsDock">
    <property name="allowedAreas">
@@ -725,18 +723,6 @@
     <string>Space</string>
    </property>
   </action>
-  <action name="actionAbort">
-   <property name="icon">
-    <iconset resource="../../resources.qrc">
-     <normaloff>:/icons/run/stop.png</normaloff>:/icons/run/stop.png</iconset>
-   </property>
-   <property name="text">
-    <string>Abort</string>
-   </property>
-   <property name="shortcut">
-    <string>Esc</string>
-   </property>
-  </action>
   <action name="actionPause">
    <property name="icon">
     <iconset resource="../../resources.qrc">
@@ -994,22 +980,6 @@
     <hint type="destinationlabel">
      <x>577</x>
      <y>436</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionAbort</sender>
-   <signal>triggered()</signal>
-   <receiver>MainPanel</receiver>
-   <slot>abortKernel()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>516</x>
-     <y>478</y>
     </hint>
    </hints>
   </connection>
