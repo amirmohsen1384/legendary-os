@@ -90,12 +90,12 @@
         </property>
         <property name="font">
          <font>
-          <pointsize>16</pointsize>
-          <fontweight>Light</fontweight>
+          <pointsize>10</pointsize>
+          <bold>false</bold>
          </font>
         </property>
         <property name="text">
-         <string>No task is currently available.</string>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;No task is currently available.&lt;br/&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;The added task will have a root parent.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignmentFlag::AlignCenter</set>
