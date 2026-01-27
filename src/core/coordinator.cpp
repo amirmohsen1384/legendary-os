@@ -238,6 +238,9 @@ bool Coordinator::removeTask(const QModelIndex &task)
             agentTasks->removeRow(i);
         }
     }
+
+    recordLock();
+    return tasks->removeTask(task);
 }
 
 void Coordinator::scheduleShutdown()
