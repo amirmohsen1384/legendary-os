@@ -18,26 +18,24 @@ class Coordinator : public QThread
     Q_OBJECT
     Q_PROPERTY(qint64 unusedQuantums READ getUnusedQuantums NOTIFY quantumUnused)
     Q_PROPERTY(qint64 elapsedQuantums READ getElapsedQuantums NOTIFY quantumElapsed)
-    Q_PROPERTY(Coordinator::State state READ getState WRITE setState NOTIFY runningStateChanged)
+
 private:
     void removeLater(const QModelIndex &task);
     void removeQueuedTasks();
+    void checkForPause();
 
 private:
     void dispatch(const QModelIndex &task);
-    qint64 reevaluatePriority(const QModelIndex &task);
+    qint64 evaluatePriority(const QModelIndex &task);
     bool logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description = QString());
 
 protected:
     bool hasReqiurements() const;
-    void setElapsedQuantums(qint64 value);
 
 protected:
     virtual void run() override;
 
 public:
-    enum State {StoppedState, RunningState, PausedState};
-
     Coordinator(const Settings::Info &info, QObject *parent = nullptr);
     ~Coordinator();
 
@@ -45,7 +43,6 @@ public:
     qint64 getUnusedQuantums();
     qreal getUtilizationRate();
     bool isLocked();
-    State getState();
 
     TaskModel* getTasks();
     AgentModel* getAgents();
@@ -74,10 +71,8 @@ public slots:
     void setReadyTasks(ReadyModel *model);
     void setLimitTasks(PriorityModel *model);
     void setAgentTasks(PriorityModel *model);
-    void setState(const Coordinator::State state);
 
 signals:
-    void runningStateChanged(Coordinator::State state);
     void quantumElapsed(qint64 quantum);
     void quantumUnused(qint64 quantum);
     void lockStateChanged(bool state);
@@ -96,7 +91,6 @@ private:
     LoggingModel* logs = nullptr;
     bool shudownSchedule = false;
     ReadyModel* readyTasks = nullptr;
-    State state = State::StoppedState;
     PriorityModel* limitTasks = nullptr;
     PriorityModel* agentTasks = nullptr;
     QQueue<QPersistentModelIndex> removeAtEnd;
