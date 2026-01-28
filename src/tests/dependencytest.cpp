@@ -7,7 +7,6 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QRandomGenerator>
-#include <QComboBox>
 
 DependencyTest::DependencyTest(MainPanel *window, QObject *parent)
     : panel(window) {}
@@ -47,7 +46,7 @@ void DependencyTest::run()
         auto nameEdit = agentEdit->findChild<QLineEdit*>("nameEdit");
         auto descEdit = agentEdit->findChild<QLineEdit*>("descriptionEdit");
         auto locationView = agentEdit->findChild<QTreeView*>("agentView");
-        auto buttons = agentEdit->findChild<QDialogButtonBox*>("controlButton");
+        auto buttons = agentEdit->findChild<QDialogButtonBox*>("control");
 
         QVERIFY(nameEdit);
         QVERIFY(descEdit);
@@ -98,7 +97,7 @@ void DependencyTest::run()
         auto burstEdit = taskEdit->findChild<QSpinBox*>("burstEdit");
         auto priorityEdit = taskEdit->findChild<QSpinBox*>("priorityEdit");
         auto locationView = taskEdit->findChild<QTreeView*>("locationView");
-        auto agentCombo = taskEdit->findChild<QComboBox*>("agentEdit");
+        auto agentEdit = taskEdit->findChild<QLineEdit*>("agentEdit");
         auto buttons = taskEdit->findChild<QDialogButtonBox*>("controlButton");
 
         QVERIFY(nameEdit);
@@ -121,11 +120,8 @@ void DependencyTest::run()
         }
 
         // Set agent dependency if specified
-        if (!agentPath.isEmpty() && agentCombo) {
-            int index = agentCombo->findText(agentPath);
-            if (index >= 0) {
-                agentCombo->setCurrentIndex(index);
-            }
+        if (!agentPath.isEmpty() && agentEdit) {
+            agentEdit->setText(agentPath);
         }
 
         QCoreApplication::processEvents();
