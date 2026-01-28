@@ -138,6 +138,21 @@ The test uses the `createTaskViaDialog` lambda which:
 5. Optionally selects a parent task in the tree
 6. Clicks OK to create the task
 
+### Handling Confirmation Dialogs (StressTest)
+The StressTest includes removal operations, which require handling confirmation dialogs:
+
+The test uses the `handleConfirmDialog` lambda which:
+1. Waits for a QMessageBox with objectName "confirmdialog" to appear
+2. Locates the "Yes" button in the confirmation dialog
+3. Clicks the "Yes" button to confirm the deletion
+4. Waits for the dialog to close
+
+This is essential because:
+- The `removeTask()` and `removeAgent()` actions in MainPanel show confirmation dialogs
+- Without clicking "Yes", the removal operations don't actually execute
+- The confirmation dialogs ask "Are you sure to delete this task/agent?"
+- This ensures the test actually performs the removals it intends to test
+
 ### Agent Path Format
 Agent dependencies are specified using a Unix-like path format:
 - `/System` - root level agent
