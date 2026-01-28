@@ -9,7 +9,7 @@
 #include <QRandomGenerator>
 
 DependencyTest::DependencyTest(MainPanel *window, QObject *parent)
-    : panel(window) {}
+    : QObject(parent), panel(window) {}
 
 void DependencyTest::run()
 {
@@ -104,6 +104,7 @@ void DependencyTest::run()
         QVERIFY(priorityEdit);
         QVERIFY(burstEdit);
         QVERIFY(locationView);
+        QVERIFY(agentEdit);
         QVERIFY(buttons);
 
         nameEdit->setText(name);
@@ -120,7 +121,7 @@ void DependencyTest::run()
         }
 
         // Set agent dependency if specified
-        if (!agentPath.isEmpty() && agentEdit) {
+        if (!agentPath.isEmpty()) {
             agentEdit->setText(agentPath);
         }
 
@@ -164,15 +165,21 @@ void DependencyTest::run()
 
     // Create child agents under System
     createAgentViaDialog("CPU", "CPU resources", rootAgentIndexes[0]);
+    QTest::qWait(100);
     createAgentViaDialog("Memory", "Memory resources", rootAgentIndexes[0]);
+    QTest::qWait(100);
 
     // Create child agents under Network
     createAgentViaDialog("Ethernet", "Ethernet interface", rootAgentIndexes[1]);
+    QTest::qWait(100);
     createAgentViaDialog("WiFi", "WiFi interface", rootAgentIndexes[1]);
+    QTest::qWait(100);
 
     // Create child agents under Storage
     createAgentViaDialog("Disk", "Hard disk storage", rootAgentIndexes[2]);
+    QTest::qWait(100);
     createAgentViaDialog("Cache", "Cache storage", rootAgentIndexes[2]);
+    QTest::qWait(100);
 
     // Now create tasks with agent dependencies
     auto tasksView = panel->findChild<QTreeView*>("tasksView");

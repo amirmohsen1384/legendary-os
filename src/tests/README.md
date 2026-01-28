@@ -65,7 +65,7 @@ Both tests use the Qt Test framework and follow a similar pattern:
 ## What DependencyTest Adds
 
 The DependencyTest was created to meet the requirement:
-> "create some tests which not only creates some tasks with some dependency to an agent, but also creates some agents in the agent tree model"
+> "create some tests which not only create some tasks with some dependency to an agent, but also create some agents in the agent tree model"
 
 This test demonstrates:
 - How to programmatically create agents in the agent tree
