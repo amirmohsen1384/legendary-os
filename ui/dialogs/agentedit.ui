@@ -69,7 +69,7 @@
    <item>
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Select the agent as the parent</string>
+      <string>Location</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -123,18 +123,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="infoGroup">
+    <widget class="QFrame" name="infoGroup">
      <property name="font">
       <font>
        <pointsize>8</pointsize>
        <bold>true</bold>
       </font>
-     </property>
-     <property name="title">
-      <string>Information</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
      </property>
      <layout class="QGridLayout" name="infoLayout">
       <property name="leftMargin">
@@ -149,8 +143,8 @@
       <property name="bottomMargin">
        <number>5</number>
       </property>
-      <item row="0" column="0">
-       <widget class="QLabel" name="nameLabel">
+      <item row="1" column="0">
+       <widget class="QLabel" name="descriptionLabel">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -158,7 +152,20 @@
          </font>
         </property>
         <property name="text">
-         <string>Name:</string>
+         <string>Description:</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="descriptionEdit">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+          <bold>true</bold>
+         </font>
         </property>
        </widget>
       </item>
@@ -172,8 +179,8 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="descriptionLabel">
+      <item row="0" column="0">
+       <widget class="QLabel" name="nameLabel">
         <property name="font">
          <font>
           <pointsize>8</pointsize>
@@ -181,20 +188,10 @@
          </font>
         </property>
         <property name="text">
-         <string>Description:</string>
+         <string>Name:</string>
         </property>
         <property name="alignment">
-         <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QLineEdit" name="descriptionEdit">
-        <property name="font">
-         <font>
-          <pointsize>8</pointsize>
-          <bold>true</bold>
-         </font>
+         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTop|Qt::AlignmentFlag::AlignTrailing</set>
         </property>
        </widget>
       </item>
@@ -213,6 +210,11 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>agentView</tabstop>
+  <tabstop>nameEdit</tabstop>
+  <tabstop>descriptionEdit</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
