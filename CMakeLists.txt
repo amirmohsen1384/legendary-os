@@ -50,6 +50,8 @@ qt_add_executable(LegendaryOS
     src/tests/simpletest.cpp
     src/tests/dependencytest.h
     src/tests/dependencytest.cpp
+    src/tests/stresstest.h
+    src/tests/stresstest.cpp
 )
 
 target_link_libraries(LegendaryOS
