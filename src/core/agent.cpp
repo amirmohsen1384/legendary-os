@@ -47,7 +47,7 @@ QString AgentInfo::getDescription() const
     return description;
 }
 
-qint64 Agent::getRow() const
+qint64 Agent::row() const
 {
     if (!parent)
     {

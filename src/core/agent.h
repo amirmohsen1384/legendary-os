@@ -39,7 +39,7 @@ public:
     qint64 columnCount() const;
 
     Agent* find(const QString &name);
-    qint64 getRow() const;
+    qint64 row() const;
     Agent* getParent();
 
 public:
