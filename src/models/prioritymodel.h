@@ -10,7 +10,7 @@ class PriorityModel : public QAbstractTableModel
     enum Header {PID, Name, Agent, Priority};
 
 protected:
-    virtual bool betterThan(const QModelIndex &one, const QModelIndex &two) const;
+    virtual bool betterThan(const QPersistentModelIndex &one, const QPersistentModelIndex &two) const;
 
 protected:
     void upheap(qint64 node);
@@ -38,15 +38,15 @@ public:
     virtual bool removeRows(int row, int count, const QModelIndex &parent = QModelIndex()) override;
 
 public:
-    virtual QModelIndex peekBest() const;
+    virtual QPersistentModelIndex peekBest() const;
 
 public slots:
     virtual void clear();
     virtual void removeBest();
-    virtual bool insertTask(const QModelIndex &index);
+    virtual bool insertTask(const QPersistentModelIndex &index);
 
 public:
-    QModelIndex toTask(const QModelIndex &index) const;
+    QPersistentModelIndex toTask(const QPersistentModelIndex &index) const;
 
 protected:
     QList<QPersistentModelIndex> container;

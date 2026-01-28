@@ -19,7 +19,7 @@ public:
     qsizetype maximumSize() const;
 
 public slots:
-    virtual bool insertTask(const QModelIndex &index) override;
+    virtual bool insertTask(const QPersistentModelIndex &index) override;
     void setMaximumSize(qsizetype size);
 
 private:

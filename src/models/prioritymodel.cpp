@@ -110,7 +110,7 @@ QVariant PriorityModel::data(const QModelIndex &index, int role) const
     }
 }
 
-bool PriorityModel::betterThan(const QModelIndex &one, const QModelIndex &two) const
+bool PriorityModel::betterThan(const QPersistentModelIndex &one, const QPersistentModelIndex &two) const
 {
     auto first = one.data(Task::PriorityRole).toLongLong();
     auto second = two.data(Task::PriorityRole).toLongLong();
@@ -157,7 +157,7 @@ void PriorityModel::downheap(qint64 node)
     }
 }
 
-bool PriorityModel::insertTask(const QModelIndex &index)
+bool PriorityModel::insertTask(const QPersistentModelIndex &index)
 {
     if (!index.isValid())
     {
@@ -171,7 +171,7 @@ bool PriorityModel::insertTask(const QModelIndex &index)
     return true;
 }
 
-QModelIndex PriorityModel::toTask(const QModelIndex &index) const
+QPersistentModelIndex PriorityModel::toTask(const QPersistentModelIndex &index) const
 {
     if (!index.isValid())
     {
@@ -185,7 +185,7 @@ void PriorityModel::removeBest()
     removeRow(0);
 }
 
-QModelIndex PriorityModel::peekBest() const
+QPersistentModelIndex PriorityModel::peekBest() const
 {
     if (container.isEmpty())
     {

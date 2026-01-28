@@ -91,7 +91,7 @@ qsizetype ReadyModel::maximumSize() const
     return maximum;
 }
 
-bool ReadyModel::insertTask(const QModelIndex &index)
+bool ReadyModel::insertTask(const QPersistentModelIndex &index)
 {
     if (!hasCapacity()) {
         return false;
