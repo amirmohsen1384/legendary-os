@@ -206,15 +206,18 @@ bool Coordinator::removeTask(const QModelIndex &task)
         }
     }
 
+    qDebug() << "Deletion:" << "Target:" << task.data(Task::NameRole).toString();
+
     for (auto i = 0; i < readyTasks->rowCount(); ++i)
     {
         auto current = readyTasks->toTask(readyTasks->index(i, 0));
         if (task == current)
         {
+            qDebug() << "Deletion:" << "Removing from the ready task.";
             readyTasks->removeRow(i);
-            bool state = tasks->removeTask(task);
-            recordLock();
-            return state;
+
+            qDebug() << "Deletion:" << "Removing from the whole task queue.";
+            return tasks->removeTask(task);
         }
     }
 
@@ -223,10 +226,11 @@ bool Coordinator::removeTask(const QModelIndex &task)
         auto current = limitTasks->toTask(limitTasks->index(i, 0));
         if (task == current)
         {
+            qDebug() << "Deletion:" << "Removing from the size limit queue.";
             limitTasks->removeRow(i);
-            bool state = tasks->removeTask(task);
-            recordLock();
-            return state;
+
+            qDebug() << "Deletion:" << "Removing from the whole task tree.";
+            return tasks->removeTask(task);
         }
     }
 
@@ -235,14 +239,14 @@ bool Coordinator::removeTask(const QModelIndex &task)
         auto current = agentTasks->toTask(agentTasks->index(i, 0));
         if (task == current)
         {
+            qDebug() << "Deletion:" << "Removing from the agent dependency queue.";
             agentTasks->removeRow(i);
-            bool state = tasks->removeTask(task);
-            recordLock();
-            return state;
+
+            qDebug() << "Deletion:" << "Removing from the whole task tree.";
+            return tasks->removeTask(task);
         }
     }
 
-    recordLock();
     return tasks->removeTask(task);
 }
 
@@ -484,6 +488,8 @@ void Coordinator::run()
         return;
     }
 
+    qDebug() << "Performing a new cycle";
+
     const auto unit = settings.quantumSize;
 
     for (auto i = 0; i < settings.executionCycle; ++i)
@@ -598,12 +604,7 @@ void Coordinator::run()
             if (time == 0)
             {
                 qInfo() << "Task has been finished.";
-
-                readyTasks->removeBest();
-                qInfo() << "Removed the task from the ready qeueus.";
-
-                logTask(task, state, Task::State::Terminate);
-                removeTask(task);
+                this->removeTask(task);
 
                 qInfo() << "Checking if there are some new tasks...";
                 while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
