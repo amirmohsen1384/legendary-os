@@ -28,7 +28,7 @@ public:
     virtual bool setData(const QModelIndex &index, const QVariant &value, int role) override;
 
     virtual QModelIndex insertAgent(const AgentInfo &info, const QModelIndex &parent);
-    virtual bool removeAgent(const QModelIndex &index);
+    virtual bool removeAgent(const QModelIndex &agent);
 
 public:
     QString toString(const QModelIndex &index);

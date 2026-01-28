@@ -19,7 +19,7 @@ Agent* AgentModel::createAgent(const AgentInfo &info, Agent* parent)
 AgentModel::AgentModel(QObject *parent) : QAbstractItemModel(parent)
 {
     root = std::make_unique<Agent>();
-    root->setName("Main Root");
+    root->setName("Root");
 }
 
 QModelIndex AgentModel::index(int row, int column, const QModelIndex &parent) const
@@ -33,8 +33,8 @@ QModelIndex AgentModel::index(int row, int column, const QModelIndex &parent) co
     {
         ancestor = root.get();
     }
-    auto item = ancestor->getChild(row);
-    return !item ? QModelIndex() : createIndex(row, column, item);
+    auto result = ancestor->getChild(row);
+    return !result ? QModelIndex() : createIndex(row, column, result);
 }
 
 QModelIndex AgentModel::index(const QString &path) const
@@ -60,7 +60,7 @@ QModelIndex AgentModel::index(const QString &path) const
         }
         target = result;
     }
-    return createIndex(target->getRow(), 0, target);
+    return createIndex(target->row(), 0, target);
 }
 
 QModelIndex AgentModel::parent(const QModelIndex &index) const
@@ -79,10 +79,7 @@ QModelIndex AgentModel::parent(const QModelIndex &index) const
     {
         return {};
     }
-    else
-    {
-        return createIndex(parent->getRow(), 0, parent);
-    }
+    return createIndex(parent->row(), 0, parent);
 }
 
 int AgentModel::rowCount(const QModelIndex &parent) const
@@ -246,7 +243,7 @@ QModelIndex AgentModel::insertAgent(const AgentInfo &info, const QModelIndex &pa
     auto ancestor = !parent.isValid() ? root.get() : static_cast<Agent*>(parent.internalPointer());
     if(!ancestor)
     {
-        return QModelIndex();
+        return {};
     }
     auto row = ancestor->childCount();
 
@@ -257,27 +254,45 @@ QModelIndex AgentModel::insertAgent(const AgentInfo &info, const QModelIndex &pa
     return createIndex(row, 0, agent);
 }
 
-bool AgentModel::removeAgent(const QModelIndex &index)
+bool AgentModel::removeAgent(const QModelIndex &agent)
 {
-    if (!index.isValid())
+    if (!agent.isValid())
     {
         clear();
         return true;
     }
 
-    const auto row = index.row();
-    auto parentIndex = index.parent();
-    auto parent = parentIndex.isValid() ? static_cast<Agent*>(parentIndex.internalPointer()) : root.get();
+    for (auto i = rowCount(agent) - 1; i >= 0; --i)
+    {
+        if(!removeAgent(index(i, 0, agent)))
+        {
+            return false;
+        }
+    }
 
-    if (row < 0 || row >= parent->childCount()) {
+    QModelIndex major = agent.parent();
+    const int row = agent.row();
+
+    if (row < 0 || row >= rowCount(major))
+    {
         return false;
     }
 
-    beginRemoveRows(parentIndex, row, row);
-    auto result = parent->removeChild(row);
+    Agent* majorAgent {};
+    if (major.isValid())
+    {
+        majorAgent = static_cast<Agent*>(major.internalPointer());
+    }
+    else
+    {
+        majorAgent = root.get();
+    }
+
+    beginRemoveRows(major, row, row);
+    majorAgent->removeChild(row);
     endRemoveRows();
 
-    return result;
+    return true;
 }
 
 void AgentModel::clear()
@@ -285,7 +300,7 @@ void AgentModel::clear()
     beginResetModel();
     root.reset(nullptr);
     root = std::make_unique<Agent>(nullptr);
-    root->setName("Main Root");
+    root->setName("Root");
     endResetModel();
 }
 
