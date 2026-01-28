@@ -236,6 +236,9 @@ bool Coordinator::removeTask(const QModelIndex &task)
         if (task == current)
         {
             agentTasks->removeRow(i);
+            bool state = tasks->removeTask(task);
+            recordLock();
+            return state;
         }
     }
 
@@ -607,6 +610,10 @@ void Coordinator::run()
                 {
                     qInfo() << "Fetching new task from the limit tasks.";
                     auto newTask = limitTasks->peekBest();
+                    if (!newTask.isValid())
+                    {
+                        break;
+                    }
 
                     qInfo() << "Found one size limit task:" << task.data(Task::NameRole).toString();
 
