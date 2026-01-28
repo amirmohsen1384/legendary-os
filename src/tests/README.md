@@ -24,6 +24,27 @@ An advanced GUI test that:
   - Storage Task → depends on /Storage/Disk
 - Creates child tasks with their own agent dependencies
 
+### StressTest
+A comprehensive stress and edge-case test that:
+- **Exercises task and agent lifecycle management** under extreme conditions
+- **Tests bulk operations**: Multiple agents/tasks created and removed in succession
+- **Edge case testing**: Removes agents while tasks depend on them
+- **Cascade operations**: Removes parent agents/tasks to verify children are properly handled
+- **System recovery**: Creates new entities after bulk removals to verify system integrity
+- **Dependency integrity**: Tests complex dependency chains and their invalidation
+- **Verification**: Ensures the program remains functional after all stress scenarios
+
+The test is structured in 9 distinct phases:
+1. **Bulk Agent Creation**: Creates multiple root agents with nested hierarchies
+2. **Bulk Task Creation**: Creates tasks with various agent dependencies
+3. **Edge Case - Remove Agent with Dependencies**: Removes agents that have active dependent tasks
+4. **Edge Case - Cascade Agent Removal**: Removes parent agents with nested children
+5. **Edge Case - Cascade Task Removal**: Removes parent tasks with active children
+6. **Bulk Removal Operations**: Sequential removal of multiple entities
+7. **System Recovery**: Creates new agents and tasks after removals
+8. **Dependency Integrity**: Tests complex dependency chains and their invalidation
+9. **Final Validation**: Verifies system functionality and consistency
+
 ## Running Tests
 
 To run a test, you need to:
@@ -37,6 +58,7 @@ Example:
 #include "src/panels/mainpanel.h"
 #include "src/tests/simpletest.h"
 #include "src/tests/dependencytest.h"
+#include "src/tests/stresstest.h"
 
 // Setup Qt application...
 auto settings = Settings::load();
@@ -49,6 +71,10 @@ simpleTest.run();
 // Or run DependencyTest
 DependencyTest depTest(&panel);
 depTest.run();
+
+// Or run StressTest
+StressTest stressTest(&panel);
+stressTest.run();
 ```
 
 ## Test Structure
@@ -72,6 +98,26 @@ This test demonstrates:
 - How to create hierarchical agent structures (parent-child relationships)
 - How to create tasks that depend on specific agents
 - How to set the agent path for a task using the format "/Parent/Child"
+
+## What StressTest Adds
+
+The StressTest was created to meet the requirement:
+> "Create a new stress and edge-case test that extends the same testing philosophy, just like DependencyTest or SimpleTest."
+
+This test demonstrates:
+- **Stress testing**: Bulk additions and removals of tasks and agents
+- **Edge case handling**: Removing entities with active dependencies
+- **Cascade operations**: Parent removal triggering child cleanup
+- **State transitions**: Tasks moving between states (Ready → WaitingForAgent)
+- **System resilience**: Recovery and continued functionality after invalidation
+- **Deterministic behavior**: All operations are predictable and reproducible
+- **Loud failures**: Uses QVERIFY assertions that fail immediately if invariants break
+
+Key differences from other tests:
+- More aggressive testing with bulk operations
+- Explicit edge case scenarios (removal during active dependencies)
+- System recovery validation
+- Focus on lifecycle management rather than just creation
 
 ## Implementation Details
 
