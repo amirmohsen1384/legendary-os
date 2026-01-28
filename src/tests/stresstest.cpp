@@ -7,6 +7,7 @@
 #include <QPushButton>
 #include <QDialogButtonBox>
 #include <QRandomGenerator>
+#include <QMessageBox>
 
 StressTest::StressTest(MainPanel *window, QObject *parent)
     : QObject(parent), panel(window) {}
@@ -151,6 +152,32 @@ void StressTest::run()
     auto taskModel = tasksView->model();
     QVERIFY(taskModel);
 
+    // Lambda to handle confirmation dialogs
+    auto handleConfirmDialog = [&]()
+    {
+        QPointer<QMessageBox> confirmDialog;
+        
+        QVERIFY(QTest::qWaitFor([&] {
+            auto dialogs = panel->findChildren<QMessageBox*>("confirmdialog");
+            if (dialogs.isEmpty())
+                return false;
+            
+            confirmDialog = dialogs.last();
+            return confirmDialog && confirmDialog->isVisible();
+        }, 1000));
+        
+        QVERIFY(confirmDialog);
+        
+        // Click "Yes" button
+        auto yesButton = confirmDialog->button(QMessageBox::Yes);
+        QVERIFY(yesButton);
+        QTest::mouseClick(yesButton, Qt::LeftButton);
+        
+        QVERIFY(QTest::qWaitFor([&] {
+            return confirmDialog.isNull() || !confirmDialog->isVisible();
+        }, 1000));
+    };
+
     auto generator = QRandomGenerator::global();
 
     // ===================================================================
@@ -275,6 +302,9 @@ void StressTest::run()
     
     // Trigger removal
     removeAgentAction->trigger();
+    
+    // Handle confirmation dialog
+    handleConfirmDialog();
     QTest::qWait(200);
     
     // The tasks depending on SubA1 should now be in WaitingForAgent state
@@ -294,6 +324,9 @@ void StressTest::run()
     QCoreApplication::processEvents();
     
     removeAgentAction->trigger();
+    
+    // Handle confirmation dialog
+    handleConfirmDialog();
     QTest::qWait(200);
     
     // All children agents (SubB1, SubB2) should be removed
@@ -312,6 +345,9 @@ void StressTest::run()
     QCoreApplication::processEvents();
     
     removeTaskAction->trigger();
+    
+    // Handle confirmation dialog
+    handleConfirmDialog();
     QTest::qWait(200);
     
     // All child tasks should be removed with parent
@@ -328,6 +364,7 @@ void StressTest::run()
             tasksView->setCurrentIndex(taskToRemove);
             QCoreApplication::processEvents();
             removeTaskAction->trigger();
+            handleConfirmDialog();
             QTest::qWait(100);
         }
     }
@@ -338,6 +375,7 @@ void StressTest::run()
             tasksView->setCurrentIndex(taskToRemove);
             QCoreApplication::processEvents();
             removeTaskAction->trigger();
+            handleConfirmDialog();
             QTest::qWait(100);
         }
     }
@@ -407,6 +445,9 @@ void StressTest::run()
     agentsView->setCurrentIndex(chainAgent1Index);
     QCoreApplication::processEvents();
     removeAgentAction->trigger();
+    
+    // Handle confirmation dialog
+    handleConfirmDialog();
     QTest::qWait(200);
 
     // ===================================================================
