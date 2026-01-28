@@ -82,3 +82,6 @@ CMakeLists.txt.user*
 /build*/
 /logs*/
 /issues*/
+
+# CodeSQL scan file
+*_codeql_detected_source_root*
