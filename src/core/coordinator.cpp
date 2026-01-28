@@ -147,43 +147,60 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
 {
     if (isRunning() || !hasReqiurements())
     {
+        qDebug() << "Agent removal cannot be performed due to a running state or lack of requirements.";
         return false;
     }
+
     for (auto i = 0; i < agents->rowCount(agent); ++i)
     {
         auto child = agents->index(i, 0, agent);
         if (!removeAgent(child))
         {
+            qDebug() << "Failed to remove the agent.";
             return false;
         }
     }
+
     auto path = agents->toString(agent);
+    qDebug() << "The returned path:" << path;
+
+    qDebug() << "Checking in the ready tasks.";
     for (auto i = 0; i < readyTasks->rowCount(); ++i)
     {
         auto index = readyTasks->toTask(readyTasks->index(i, 0));
-        auto current = agent.data(Task::AgentRole).toString();
+        auto current = index.data(Task::AgentRole).toString();
         if(current.isEmpty())
         {
+            qDebug() << "No path is available. Seems to be independent.";
             continue;
         }
-        else if (path == current)
+        qDebug() << "Path:" << path;
+        qDebug() << "Current:" << current;
+        if (path == current)
         {
             readyTasks->removeRow(i--);
             agentTasks->insertTask(index);
+            tasks->setState(index, Task::State::WaitingForAgent);
         }
     }
+
+    qDebug() << "Checking in the limit tasks.";
     for (auto i = 0; i < limitTasks->rowCount(); ++i)
     {
         auto index = limitTasks->toTask(limitTasks->index(i, 0));
         auto current = agent.data(Task::AgentRole).toString();
         if(current.isEmpty())
         {
+            qDebug() << "No path is available. Seems to be independent.";
             continue;
         }
-        else if (path == current)
+        qDebug() << "Path:" << path;
+        qDebug() << "Current:" << current;
+        if (path == current)
         {
             limitTasks->removeRow(i--);
             agentTasks->insertTask(index);
+            tasks->setState(index, Task::State::WaitingForAgent);
         }
     }
     recordLock();
