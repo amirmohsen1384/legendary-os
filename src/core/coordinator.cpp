@@ -273,10 +273,10 @@ void Coordinator::scheduleShutdown()
     {
         return;
     }
-    if (!shudownSchedule)
+    if (!shutdownSchedule)
     {
         QMutexLocker locker(&mutex);
-        shudownSchedule = true;
+        shutdownSchedule = true;
         emit shutdownScheduled();
     }
     recordLock();
@@ -662,16 +662,16 @@ void Coordinator::run()
 
     qDebug() << "Checking shutdown scheduler.";
     mutex.lock();
-    auto state = shudownSchedule;
+    auto state = shutdownSchedule;
     mutex.unlock();
 
     if (state)
     {
         qInfo() << "Scheduled for a shutdown. Removing everything...";
-        readyTasks->clear();
-        limitTasks->clear();
-        agentTasks->clear();
         removeTask(QModelIndex());
+        mutex.lock();
+        shutdownSchedule = false;
+        mutex.unlock();
     }
     qInfo() << "Finished a cycle of running the kernel.";
 

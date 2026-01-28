@@ -92,7 +92,7 @@ private:
     TaskModel* tasks = nullptr;
     AgentModel* agents = nullptr;
     LoggingModel* logs = nullptr;
-    bool shudownSchedule = false;
+    bool shutdownSchedule = false;
     ReadyModel* readyTasks = nullptr;
     PriorityModel* limitTasks = nullptr;
     PriorityModel* agentTasks = nullptr;
