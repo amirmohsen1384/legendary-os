@@ -616,7 +616,7 @@ void Coordinator::run()
                         break;
                     }
 
-                    qInfo() << "Found one size limit task:" << task.data(Task::NameRole).toString();
+                    qInfo() << "Found one size limit task:" << newTask.data(Task::NameRole).toString();
 
                     auto result = tasks->setState(newTask, Task::State::Ready);
                     if (result.successful)
