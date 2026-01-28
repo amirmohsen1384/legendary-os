@@ -39,7 +39,14 @@ qint64 Coordinator::getUnusedQuantums()
 qreal Coordinator::getUtilizationRate()
 {
     QMutexLocker locker(&mutex);
-    return elapsedQuantums > 0 ? 1 - unusedQuantums / elapsedQuantums : 0;
+    if (elapsedQuantums > 0)
+    {
+        return 1 - (unusedQuantums / elapsedQuantums);
+    }
+    else
+    {
+        return 0;
+    }
 }
 
 bool Coordinator::isPaused()
@@ -519,7 +526,10 @@ void Coordinator::run()
             qWarning() << "No ready task is available to run. Forwading the current quantum.";
             QMutexLocker locker(&mutex);
             unusedQuantums += unit;
+            elapsedQuantums += unit;
             emit quantumUnused(unusedQuantums);
+            emit quantumElapsed(elapsedQuantums);
+            emit utilizationRateChanged(1 - qreal(unusedQuantums) / qreal(elapsedQuantums));
             continue;
         }
 
