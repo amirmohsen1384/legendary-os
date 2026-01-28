@@ -98,20 +98,17 @@ QModelIndex TaskModel::parent(const QModelIndex &index) const
     {
         return {};
     }
-    else
+    auto item = static_cast<Task*>(index.internalPointer());
+    if (!item)
     {
-        auto item = static_cast<Task*>(index.internalPointer());
-        if (!item)
-        {
-            item = root.get();
-        }
-        auto parent = item->getParent();
-        if (parent == nullptr || parent == root.get())
-        {
-            return {};
-        }
-        return createIndex(parent->row(), 0, parent);
+        item = root.get();
     }
+    auto parent = item->getParent();
+    if (parent == nullptr || parent == root.get())
+    {
+        return {};
+    }
+    return createIndex(parent->row(), 0, parent);
 }
 
 int TaskModel::rowCount(const QModelIndex &parent) const
