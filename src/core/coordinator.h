@@ -73,6 +73,7 @@ public slots:
     void setAgentTasks(PriorityModel *model);
 
 signals:
+    void utilizationRateChanged(qreal value);
     void quantumElapsed(qint64 quantum);
     void quantumUnused(qint64 quantum);
     void lockStateChanged(bool state);
