@@ -151,8 +151,7 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
         {
             if (item->depends())
             {
-                const auto &agent = item->getAgent();
-                return agent.size() <= 16 ? agent : QString("%1...").arg(agent.first(16));
+                return item->getAgent();
             }
             else
             {
