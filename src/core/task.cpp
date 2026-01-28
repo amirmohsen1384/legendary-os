@@ -115,7 +115,7 @@ bool Task::endToProceed(qint64 timestamp)
     else if (finished())
     {
         finishTime = timestamp;
-        state = State::Ready;
+        state = State::Terminate;
     }
     else
     {
