@@ -734,6 +734,9 @@
    <property name="toolTip">
     <string>Pause</string>
    </property>
+   <property name="shortcut">
+    <string>Space</string>
+   </property>
    <property name="menuRole">
     <enum>QAction::MenuRole::NoRole</enum>
    </property>
