@@ -107,27 +107,28 @@ void MainPanel::setupStatusBar()
         state->setValue(quantum % state->maximum());
     });
     statusBar()->addWidget(state);
+    state->hide();
 
     connect(kernel, &QThread::started, state, &QProgressBar::show);
     connect(kernel, &QThread::finished, state, &QProgressBar::hide);
 
-    auto utilization = new QLabel("Utilization Rate: 0%", this);
-
     auto elapsed = new QLabel("Elapsed Quantums: 0", this);
-    connect(kernel, &Coordinator::quantumElapsed, this, [this, elapsed, utilization](int quantum) {
+
+    connect(kernel, &Coordinator::quantumElapsed, this, [this, elapsed](int quantum) {
         elapsed->setText(QString("Elapsed Quantums: %1").arg(quantum));
-        utilization->setText(QString("Utilization Rate: %1%").arg(kernel->getUtilizationRate() * 100));
     });
     statusBar()->addPermanentWidget(elapsed);
 
     auto unused = new QLabel("Unused Quantums: 0", this);
-    connect(kernel, &Coordinator::quantumUnused, this, [this, unused, utilization](int quantum) {
+    connect(kernel, &Coordinator::quantumUnused, this, [this, unused](int quantum) {
         unused->setText(QString("Unused Quantums: %1").arg(quantum));
-        utilization->setText(QString("Utilization Rate: %1%").arg(kernel->getUtilizationRate() * 100));
     });
-
-    state->hide();
     statusBar()->addPermanentWidget(unused);
+
+    auto utilization = new QLabel("Utilization Rate: 0%", this);
+    connect(kernel, &Coordinator::utilizationRateChanged, this, [this, utilization](qreal ratio) {
+        utilization->setText(QString("Utilization Rate: %1%").arg(ratio * 100));
+    });
     statusBar()->addPermanentWidget(utilization);
 }
 
