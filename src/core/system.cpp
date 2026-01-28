@@ -13,7 +13,7 @@ const auto cycle = "executionQuantumsPerCycle";
 
 void Settings::initialize(QApplication &app)
 {
-    app.setWindowIcon(QIcon(":/icon.png"));
+    app.setWindowIcon(QIcon(":/main.ico"));
     app.setOrganizationName("Legend");
     app.setApplicationName("Legendary OS");
     app.setOrganizationDomain("legend.com");

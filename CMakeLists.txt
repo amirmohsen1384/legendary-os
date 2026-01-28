@@ -12,6 +12,8 @@ set(CMAKE_AUTORCC ON)
 
 qt_standard_project_setup()
 
+set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/main.rc")
+
 qt_add_executable(LegendaryOS
     WIN32 MACOSX_BUNDLE
     main.cpp
@@ -52,6 +54,7 @@ qt_add_executable(LegendaryOS
     src/tests/dependencytest.cpp
     src/tests/stresstest.h
     src/tests/stresstest.cpp
+    ${APP_ICON_RESOURCE_WINDOWS}
 )
 
 target_link_libraries(LegendaryOS

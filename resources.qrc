@@ -19,7 +19,8 @@
         <file>icons/general/remove-agent.png</file>
         <file>icons/general/remove-task.png</file>
         <file>icons/general/shutdown.png</file>
-        <file>icon.png</file>
         <file>icons/empty.png</file>
+        <file>main.ico</file>
+        <file>main.rc</file>
     </qresource>
 </RCC>

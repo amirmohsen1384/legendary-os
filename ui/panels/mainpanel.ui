@@ -65,6 +65,10 @@
   <property name="windowTitle">
    <string>Legendary OS</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../resources.qrc">
+    <normaloff>:/main.ico</normaloff>:/main.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
