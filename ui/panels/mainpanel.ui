@@ -523,7 +523,7 @@
      <normaloff>:/icons/view/logs.png</normaloff>:/icons/view/logs.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show logs</string>
+    <string>Show &amp;logs</string>
    </property>
    <property name="shortcut">
     <string>F7</string>
@@ -541,7 +541,7 @@
      <normaloff>:/icons/view/ready-tasks.png</normaloff>:/icons/view/ready-tasks.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show ready tasks</string>
+    <string>Show &amp;ready tasks</string>
    </property>
    <property name="shortcut">
     <string>F4</string>
@@ -559,7 +559,7 @@
      <normaloff>:/icons/view/limit.png</normaloff>:/icons/view/limit.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show size limit tasks</string>
+    <string>Show si&amp;ze limit tasks</string>
    </property>
    <property name="shortcut">
     <string>F5</string>
@@ -577,7 +577,7 @@
      <normaloff>:/icons/view/agents.png</normaloff>:/icons/view/agents.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show available agents</string>
+    <string>Show available a&amp;gents</string>
    </property>
    <property name="shortcut">
     <string>F3</string>
@@ -595,7 +595,7 @@
      <normaloff>:/icons/view/tasks.png</normaloff>:/icons/view/tasks.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show available tasks</string>
+    <string>Show available &amp;tasks</string>
    </property>
    <property name="shortcut">
     <string>F2</string>
@@ -616,7 +616,7 @@
      <normaloff>:/icons/about/about-qt.png</normaloff>:/icons/about/about-qt.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;About Qt</string>
+    <string>About &amp;Qt</string>
    </property>
   </action>
   <action name="actionInsertTask">
@@ -640,7 +640,7 @@
      <normaloff>:/icons/general/remove-task.png</normaloff>:/icons/general/remove-task.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Remove Task</string>
+    <string>Re&amp;move Task</string>
    </property>
    <property name="shortcut">
     <string>Alt+Del</string>
@@ -652,7 +652,7 @@
      <normaloff>:/icons/general/add-agent.png</normaloff>:/icons/general/add-agent.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Insert Agent</string>
+    <string>Insert &amp;Agent</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+I</string>
@@ -667,7 +667,7 @@
      <normaloff>:/icons/general/remove-agent.png</normaloff>:/icons/general/remove-agent.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Remove Agent</string>
+    <string>Remo&amp;ve Agent</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Del</string>
@@ -709,7 +709,7 @@
      <normaloff>:/icons/view/dependency.png</normaloff>:/icons/view/dependency.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Show agent dependency tasks</string>
+    <string>Show agent &amp;dependency tasks</string>
    </property>
    <property name="shortcut">
     <string>F6</string>
@@ -733,10 +733,10 @@
      <normaloff>:/icons/run/pause.png</normaloff>:/icons/run/pause.png</iconset>
    </property>
    <property name="text">
-    <string>&amp;Pause</string>
+    <string>Pa&amp;use</string>
    </property>
    <property name="toolTip">
-    <string>&amp;Pause</string>
+    <string>Pause</string>
    </property>
    <property name="shortcut">
     <string>Space</string>
