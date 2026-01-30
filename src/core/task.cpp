@@ -146,6 +146,11 @@ qint64 Task::getStartTime() const
     return startTime;
 }
 
+qint64 Task::getIdleTime() const
+{
+    return idleTime;
+}
+
 qint64 Task::getQuantum() const
 {
     return quantum;
@@ -217,6 +222,11 @@ void Task::addChild(std::unique_ptr<Task> item)
         item->setParent(this);
         children.push_back(std::move(item));
     }
+}
+
+void Task::setIdleTime(qint64 value)
+{
+    idleTime = value;
 }
 
 bool Task::removeChild(int row)

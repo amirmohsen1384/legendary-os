@@ -16,6 +16,7 @@ public:
         PriorityRole = Qt::UserRole + 1,
         BurstTimeRole = Qt::UserRole + 2,
         StartTimeRole = Qt::UserRole + 6,
+        IdleTimeRole = Qt::UserRole + 11,
         FinishTimeRole = Qt::UserRole + 7,
         ExecutableRole = Qt::UserRole + 10,
         RemainingTimeRole = Qt::UserRole + 8
@@ -67,6 +68,7 @@ public:
     qint64 getRemainingTime() const;
     qint64 getFinishTime() const;
     qint64 getStartTime() const;
+    qint64 getIdleTime() const;
     qint64 getQuantum() const;
 
     qint64 getIdentifier() const;
@@ -88,6 +90,9 @@ public:
     void setState(State value);
     void setParent(Task *value);
     void addChild(std::unique_ptr<Task> item);
+
+public:
+    void setIdleTime(qint64 value);
     virtual void setBurstTime(qint64 value) override;
 
 public:
@@ -98,6 +103,7 @@ public:
 private:
     qint64 identifier;
     qint64 quantum = 0;
+    qint64 idleTime = 0;
     qint64 startTime = -1;
     qint64 finishTime = -1;
     Task *parent = nullptr;
