@@ -1,19 +1,7 @@
 #include "coordinator.h"
 #include <QMutexLocker>
 
-Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info)
-{
-    connect(this, &QThread::started, [this]() {
-        if (!this->isLocked()) {
-            lock();
-        }
-    });
-    connect(this, &QThread::finished, [this]() {
-        if (this->isLocked()) {
-            unlock();
-        }
-    });
-}
+Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info) {}
 
 Coordinator::~Coordinator()
 {
@@ -130,7 +118,6 @@ bool Coordinator::insertAgent(const AgentInfo &info, const QModelIndex &parent)
             }
         }
     }
-    recordLock();
     return true;
 }
 
@@ -146,7 +133,6 @@ bool Coordinator::insertTask(const TaskInfo &info, const QModelIndex &parent)
         return false;
     }
     dispatch(index);
-    recordLock();
     return true;
 }
 
@@ -210,7 +196,6 @@ bool Coordinator::removeAgent(const QModelIndex &agent)
             tasks->setState(index, Task::State::WaitingForAgent);
         }
     }
-    recordLock();
     return agents->removeAgent(agent);
 }
 
@@ -286,7 +271,6 @@ void Coordinator::scheduleShutdown()
         shutdownSchedule = true;
         emit shutdownScheduled();
     }
-    recordLock();
 }
 
 void Coordinator::lock()
@@ -381,13 +365,15 @@ void Coordinator::releaseLock()
 {
     QMutexLocker locker(&mutex);
     enteredCommands = 0;
+    if (this->isLocked()) {
+        unlock();
+    }
 }
 
 void Coordinator::recordLock()
 {
     QMutexLocker locker(&mutex);
-    enteredCommands++;
-    if (enteredCommands == settings.inputCommandLimit)
+    if (++enteredCommands == settings.inputCommandLimit)
     {
         lock();
     }
@@ -515,12 +501,23 @@ void Coordinator::run()
 
     qDebug() << "Performing a new cycle";
 
+    if (!isLocked()) {
+        lock();
+    }
+    qDebug() << "Locked the input";
+
     const auto unit = settings.quantumSize;
 
     for (auto i = 0; i < settings.executionCycle; ++i)
     {
         auto timestamp = getElapsedQuantums();
         qInfo() << "Current timestamp is" << timestamp;
+
+        QThread::msleep(settings.pause);
+        if (!canContinue())
+        {
+            return;
+        }
 
         if (readyTasks->rowCount() <= 0)
         {
@@ -532,11 +529,6 @@ void Coordinator::run()
             emit quantumElapsed(elapsedQuantums);
             emit utilizationRateChanged(1 - qreal(unusedQuantums) / qreal(elapsedQuantums));
             continue;
-        }
-
-        if (!canContinue())
-        {
-            return;
         }
 
         auto task = readyTasks->peekBest();
@@ -687,5 +679,5 @@ void Coordinator::run()
     qInfo() << "Finished a cycle of running the kernel.";
 
     releaseLock();
-    qInfo() << "Reset the commands.";
+    qInfo() << "Unlocked the input";
 }

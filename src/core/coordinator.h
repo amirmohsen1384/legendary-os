@@ -24,7 +24,6 @@ private slots:
 
 private:
     void releaseLock();
-    void recordLock();
     bool canContinue();
     void dispatch(const QModelIndex &task);
     qint64 evaluatePriority(const QModelIndex &task);
@@ -62,6 +61,7 @@ public slots:
 
     void lock();
     void unlock();
+    void recordLock();
     void setLocked(bool state);
     void setPaused(bool state);
 

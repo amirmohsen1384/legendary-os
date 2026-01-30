@@ -391,7 +391,9 @@ void MainPanel::insertTask()
     editor->setAgentModel(agents);
     editor->setTaskModel(tasks);
     connect(editor, &QDialog::accepted, this, [this, editor]() {
-        kernel->insertTask(editor->getTaskInfo(), editor->getParent());
+        if(kernel->insertTask(editor->getTaskInfo(), editor->getParent())) {
+            kernel->recordLock();
+        }
     });
     connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
     editor->open();
@@ -407,7 +409,9 @@ void MainPanel::insertAgent()
         if (!info.isValid()) {
             return;
         }
-        kernel->insertAgent(info, editor->getParent());
+        if (kernel->insertAgent(info, editor->getParent())) {
+            kernel->recordLock();
+        }
     });
     connect(editor, &QDialog::finished, editor, &QObject::deleteLater);
     editor->open();
@@ -430,7 +434,9 @@ void MainPanel::removeTask()
             if (!result || !index.isValid()) {
                 return;
             }
-            kernel->removeTask(index);
+            if (kernel->removeTask(index)) {
+                kernel->recordLock();
+            }
         },
         "This will remove the task from all queues even if it still running."
     );
@@ -453,7 +459,9 @@ void MainPanel::removeAgent()
             if (!accepted || !index.isValid()) {
                 return;
             }
-            kernel->removeAgent(index);
+            if(kernel->removeAgent(index)) {
+                kernel->recordLock();
+            }
         },
         "This will revert depending tasks to the agent dependency queue if available."
     );
@@ -463,6 +471,7 @@ void MainPanel::removeAgent()
 void MainPanel::shutdown()
 {
     kernel->scheduleShutdown();
+    kernel->recordLock();
 }
 
 MainPanel::MainPanel(const Settings::Info &info, QWidget *parent) : QMainWindow(parent), settings(info), ui(new Ui::MainPanel)
