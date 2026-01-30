@@ -4,7 +4,7 @@
 #include "src/tests/simpletest.h"
 #include "src/tests/dependencytest.h"
 
-
+#define NORMAL_MODE
 
 int main(int argc, char *argv[])
 {
@@ -19,12 +19,12 @@ int main(int argc, char *argv[])
     test.run();
 #endif
 
-#ifdef SIMPE_TEST
+#ifdef SIMPLE_TEST
     SimpleTest test(&panel);
     test.run();
 #endif
 
-#ifdef DEPENDENCYTEST
+#ifdef DEPENDENCY_TEST
     DependencyTest test(&panel);
     test.run();
 #endif
