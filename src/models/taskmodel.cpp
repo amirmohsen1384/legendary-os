@@ -352,6 +352,10 @@ QVariant TaskModel::data(const QModelIndex &index, int role) const
     {
         return item->depends();
     }
+    case Task::IdleTimeRole:
+    {
+        return item->getIdleTime();
+    }
     default:
     {
         return {};
@@ -410,6 +414,15 @@ bool TaskModel::setData(const QModelIndex &index, const QVariant &value, int rol
         if (value.canConvert<Task::State>())
         {
             item->setState(qvariant_cast<Task::State>(value));
+            changed = true;
+        }
+        break;
+    }
+    case TaskInfo::IdleTimeRole:
+    {
+        if (value.canConvert<qint64>())
+        {
+            item->setIdleTime(qvariant_cast<qint64>(value));
             changed = true;
         }
         break;
