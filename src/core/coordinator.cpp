@@ -391,6 +391,7 @@ void Coordinator::recordLock()
     {
         lock();
     }
+    emit lockRecorded();
 }
 
 bool Coordinator::canContinue()

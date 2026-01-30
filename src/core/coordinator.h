@@ -79,6 +79,7 @@ signals:
     void lockStateChanged(bool state);
     void pausedChanged(bool state);
     void shutdownScheduled();
+    void lockRecorded();
 
 private:
     QMutex mutex;
