@@ -361,6 +361,24 @@ void Coordinator::cancel()
     abort = true;
 }
 
+bool Coordinator::updateIdleTimeExceptFor(const QModelIndex &parent, const QModelIndex &target, qint64 forwarded)
+{
+    for (auto i = 0; i < tasks->rowCount(parent); ++i)
+    {
+        auto index = tasks->index(i, 0, parent);
+        if (index == target)
+        {
+            if(!updateIdleTime(target, forwarded)) {
+                return false;
+            }
+        }
+        if(!updateIdleTimeExceptFor(index, target, forwarded)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Coordinator::releaseLock()
 {
     QMutexLocker locker(&mutex);
@@ -445,6 +463,19 @@ qint64 Coordinator::evaluatePriority(const QModelIndex &task)
         usedQuantums = 0;
     }
     return qint64(currentPriority / (0.5 * usedQuantums + 1));
+}
+
+bool Coordinator::updateIdleTime(const QModelIndex &task, qint64 forwarded)
+{
+    if (!task.isValid()) {
+        return false;
+    }
+    bool ok;
+    qint64 current = task.data(TaskInfo::IdleTimeRole).toInt(&ok);
+    if (!ok) {
+        return false;
+    }
+    return tasks->setData(task, current + forwarded, Task::IdleTimeRole);
 }
 
 bool Coordinator::logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description)
@@ -575,6 +606,16 @@ void Coordinator::run()
         if (!canContinue())
         {
             return;
+        }
+
+        qInfo() << "Updating the idle time for all other tasks";
+        if(updateIdleTimeExceptFor(QModelIndex(), task, unit))
+        {
+            qInfo() << "Successful to update the idle time";
+        }
+        else
+        {
+            qInfo() << "Failed to update the idle time.";
         }
 
         auto state = tasks->getState(task);

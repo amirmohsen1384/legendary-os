@@ -21,12 +21,14 @@ class Coordinator : public QThread
 
 private slots:
     void cancel();
+    bool updateIdleTimeExceptFor(const QModelIndex &parent, const QModelIndex &target, qint64 forwarded);
 
 private:
     void releaseLock();
     bool canContinue();
     void dispatch(const QModelIndex &task);
     qint64 evaluatePriority(const QModelIndex &task);
+    bool updateIdleTime(const QModelIndex &task, qint64 forwarded);
     bool logTask(const QModelIndex &task, const Task::State &previous, const Task::State &current, const QString &description = QString());
 
 protected:
