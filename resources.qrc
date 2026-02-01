@@ -21,6 +21,5 @@
         <file>icons/general/shutdown.png</file>
         <file>icons/empty.png</file>
         <file>main.ico</file>
-        <file>main.rc</file>
     </qresource>
 </RCC>
