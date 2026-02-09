@@ -393,8 +393,9 @@ void Coordinator::releaseLock()
 {
     QMutexLocker locker(&mutex);
     enteredCommands = 0;
-    if (this->isLocked()) {
-        unlock();
+    if (locked) {
+        locked = false;
+        emit lockStateChanged(false);
     }
 }
 
@@ -403,7 +404,8 @@ void Coordinator::recordLock()
     QMutexLocker locker(&mutex);
     if (++enteredCommands == settings.inputCommandLimit)
     {
-        lock();
+        locked = true;
+        emit lockStateChanged(true);
     }
     emit lockRecorded();
 }
@@ -519,6 +521,8 @@ void Coordinator::start()
     
     { QMutexLocker locker(&mutex); abort = false; running = true; }
     
+    emit started();
+    
     worker = new CoordinatorWorker(this);
     worker->moveToThread(&workerThread);
     
@@ -604,6 +608,9 @@ void CoordinatorWorker::process()
         QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            QMetaObject::invokeMethod(coord, [this]() {
+                coord->releaseLock();
+            }, Qt::BlockingQueuedConnection);
             emit finished();
             return;
         }
@@ -645,6 +652,9 @@ void CoordinatorWorker::process()
         QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            QMetaObject::invokeMethod(coord, [this]() {
+                coord->releaseLock();
+            }, Qt::BlockingQueuedConnection);
             emit finished();
             return;
         }
@@ -657,6 +667,9 @@ void CoordinatorWorker::process()
         QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            QMetaObject::invokeMethod(coord, [this]() {
+                coord->releaseLock();
+            }, Qt::BlockingQueuedConnection);
             emit finished();
             return;
         }
@@ -681,6 +694,9 @@ void CoordinatorWorker::process()
         QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            QMetaObject::invokeMethod(coord, [this]() {
+                coord->releaseLock();
+            }, Qt::BlockingQueuedConnection);
             emit finished();
             return;
         }
