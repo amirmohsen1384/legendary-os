@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+cebcacc08e0b6731553a1b264883077a CMakeFiles/LegendaryOS_autogen
+d37f5b9c069f669219655fcb89c00164 LegendaryOS_autogen/EWIEGA46WW/qrc_resources.cpp
+97382a280193e92d9dc1b791cf62c443 LegendaryOS_autogen/timestamp
