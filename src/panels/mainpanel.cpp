@@ -109,15 +109,8 @@ void MainPanel::setupStatusBar()
     statusBar()->addWidget(state);
     state->hide();
 
-    // Show progress bar when kernel starts (on first quantum elapsed) and hide when it finishes
-    QMetaObject::Connection* showConnection = new QMetaObject::Connection();
-    *showConnection = connect(kernel, &Coordinator::quantumElapsed, state, [state, showConnection]() {
-        if (!state->isVisible()) {
-            state->show();
-            QObject::disconnect(*showConnection);
-            delete showConnection;
-        }
-    });
+    // Show progress bar when kernel starts and hide when it finishes
+    connect(kernel, &Coordinator::started, state, &QProgressBar::show);
     connect(kernel, &Coordinator::finished, state, &QProgressBar::hide);
 
     auto elapsed = new QLabel("Elapsed Quantums: 0", this);
