@@ -13,7 +13,7 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
     ${CMAKE_CURRENT_SOURCE_DIR}/ui/panels
 )
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core Widgets Test)
+find_package(Qt6 6.4 REQUIRED COMPONENTS Core Widgets Test)
 
 set(PROJECT_SOURCES
     main.cpp
@@ -90,10 +90,6 @@ install(TARGETS LegendaryOS
 
 qt_finalize_executable(LegendaryOS)
 
-qt_generate_deploy_app_script(
-    TARGET LegendaryOS
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
+# Deploy script generation removed for Qt 6.4 compatibility
 
-install(SCRIPT ${deploy_script})
+# install(SCRIPT ${deploy_script})

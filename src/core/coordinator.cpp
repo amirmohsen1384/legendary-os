@@ -1,14 +1,17 @@
 #include "coordinator.h"
 #include <QMutexLocker>
+#include <QMetaObject>
+#include <QPersistentModelIndex>
 
-Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QThread(parent), settings(info) {}
+Coordinator::Coordinator(const Settings::Info &info, QObject *parent) : QObject(parent), settings(info) {}
 
 Coordinator::~Coordinator()
 {
     if (isRunning())
     {
         cancel();
-        wait();
+        workerThread.quit();
+        workerThread.wait();
     }
 }
 
@@ -46,6 +49,12 @@ bool Coordinator::isPaused()
 bool Coordinator::isLocked()
 {
     return locked;
+}
+
+bool Coordinator::isRunning() const
+{
+    QMutexLocker locker(const_cast<QMutex*>(&mutex));
+    return running;
 }
 
 TaskModel *Coordinator::getTasks()
@@ -359,6 +368,7 @@ void Coordinator::cancel()
 {
     QMutexLocker locker(&mutex);
     abort = true;
+    canProcess.wakeOne();
 }
 
 bool Coordinator::updateIdleTimeExceptFor(const QModelIndex &parent, const QModelIndex &target, qint64 forwarded)
@@ -396,20 +406,6 @@ void Coordinator::recordLock()
         lock();
     }
     emit lockRecorded();
-}
-
-bool Coordinator::canContinue()
-{
-    QMutexLocker locker(&mutex);
-    if (abort)
-    {
-        return false;
-    }
-    else if(pause)
-    {
-        canProcess.wait(&mutex);
-    }
-    return true;
 }
 
 void Coordinator::dispatch(const QModelIndex &task)
@@ -517,99 +513,185 @@ bool Coordinator::hasReqiurements() const
     return agents && tasks && logs && limitTasks && agentTasks;
 }
 
-void Coordinator::run()
+void Coordinator::start()
 {
-    if (!hasReqiurements())
+    if (isRunning()) return;
+    
+    { QMutexLocker locker(&mutex); abort = false; running = true; }
+    
+    worker = new CoordinatorWorker(this);
+    worker->moveToThread(&workerThread);
+    
+    connect(&workerThread, &QThread::started, worker, &CoordinatorWorker::process);
+    connect(worker, &CoordinatorWorker::finished, this, [this]() { workerThread.quit(); });
+    connect(&workerThread, &QThread::finished, this, [this]() {
+        worker->deleteLater();
+        worker = nullptr;
+        { QMutexLocker locker(&mutex); running = false; }
+        emit finished();
+    });
+    
+    workerThread.start();
+}
+
+// CoordinatorWorker implementation
+CoordinatorWorker::CoordinatorWorker(Coordinator* coord) : coord(coord) {}
+
+bool CoordinatorWorker::canContinue()
+{
+    QMutexLocker locker(&coord->mutex);
+    if (coord->abort)
+    {
+        return false;
+    }
+    else if(coord->pause)
+    {
+        coord->canProcess.wait(&coord->mutex);
+        if (coord->abort)
+        {
+            return false;
+        }
+    }
+    return true;
+}
+
+void CoordinatorWorker::process()
+{
+    bool hasReq = false;
+    int taskCount = 0;
+    
+    QMetaObject::invokeMethod(coord, [this, &hasReq, &taskCount]() {
+        hasReq = coord->hasReqiurements();
+        if (hasReq) {
+            taskCount = coord->tasks->rowCount();
+        }
+    }, Qt::BlockingQueuedConnection);
+    
+    if (!hasReq)
     {
         qDebug() << "The kernel does not meet the requirements.";
+        emit finished();
         return;
     }
-    else if(tasks->rowCount() <= 0)
+    else if(taskCount <= 0)
     {
         qDebug() << "No task is available to be finished.";
+        emit finished();
         return;
     }
 
     qDebug() << "Performing a new cycle";
 
-    if (!isLocked()) {
-        lock();
-    }
+    bool wasLocked = false;
+    QMetaObject::invokeMethod(coord, [this, &wasLocked]() {
+        wasLocked = coord->isLocked();
+        if (!wasLocked) {
+            coord->lock();
+        }
+    }, Qt::BlockingQueuedConnection);
     qDebug() << "Locked the input";
 
-    const auto unit = settings.quantumSize;
+    const auto unit = coord->settings.quantumSize;
 
-    for (auto i = 0; i < settings.executionCycle; ++i)
+    for (auto i = 0; i < coord->settings.executionCycle; ++i)
     {
-        auto timestamp = getElapsedQuantums();
+        qint64 timestamp = 0;
+        QMetaObject::invokeMethod(coord, [this, &timestamp]() {
+            timestamp = coord->getElapsedQuantums();
+        }, Qt::BlockingQueuedConnection);
         qInfo() << "Current timestamp is" << timestamp;
 
-        QThread::msleep(settings.pause);
+        QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            emit finished();
             return;
         }
 
-        if (readyTasks->rowCount() <= 0)
+        int readyCount = 0;
+        QMetaObject::invokeMethod(coord, [this, &readyCount]() {
+            readyCount = coord->readyTasks->rowCount();
+        }, Qt::BlockingQueuedConnection);
+        
+        if (readyCount <= 0)
         {
             qWarning() << "No ready task is available to run. Forwading the current quantum.";
-            QMutexLocker locker(&mutex);
-            unusedQuantums += unit;
-            elapsedQuantums += unit;
-            emit quantumUnused(unusedQuantums);
-            emit quantumElapsed(elapsedQuantums);
-            emit utilizationRateChanged(1 - qreal(unusedQuantums) / qreal(elapsedQuantums));
+            QMetaObject::invokeMethod(coord, [this, unit]() {
+                QMutexLocker locker(&coord->mutex);
+                coord->unusedQuantums += unit;
+                coord->elapsedQuantums += unit;
+                emit coord->quantumUnused(coord->unusedQuantums);
+                emit coord->quantumElapsed(coord->elapsedQuantums);
+                emit coord->utilizationRateChanged(1 - qreal(coord->unusedQuantums) / qreal(coord->elapsedQuantums));
+            }, Qt::BlockingQueuedConnection);
             continue;
         }
 
-        auto task = readyTasks->peekBest();
+        QPersistentModelIndex task;
+        QMetaObject::invokeMethod(coord, [this, &task]() {
+            task = coord->readyTasks->peekBest();
+        }, Qt::BlockingQueuedConnection);
+        
         qInfo() << "Found one ready task:" << task.data(Task::NameRole).toString();
-        {
-            auto before = tasks->getState(task);
-            tasks->beginToProceed(task, timestamp);
-            auto after = tasks->getState(task);
+        
+        QMetaObject::invokeMethod(coord, [this, &task, timestamp]() {
+            auto before = coord->tasks->getState(task);
+            coord->tasks->beginToProceed(task, timestamp);
+            auto after = coord->tasks->getState(task);
             qDebug() << "Started the task | Previous: " << Task::text(before) << "Current:" << Task::text(after);
-            logTask(task, before, after);
-        }
+            coord->logTask(task, before, after);
+        }, Qt::BlockingQueuedConnection);
 
-        QThread::msleep(settings.pause);
+        QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            emit finished();
             return;
         }
 
-        tasks->proceed(task, unit);
-        qDebug() << "Done part of it. This task consumed" << tasks->data(task, Task::QuantumRole).toInt() << "quantums";;
+        QMetaObject::invokeMethod(coord, [this, &task, unit]() {
+            coord->tasks->proceed(task, unit);
+            qDebug() << "Done part of it. This task consumed" << coord->tasks->data(task, Task::QuantumRole).toInt() << "quantums";
+        }, Qt::BlockingQueuedConnection);
 
-        QThread::msleep(settings.pause);
+        QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            emit finished();
             return;
         }
 
-        mutex.lock();
-        timestamp += unit;
-        elapsedQuantums = timestamp;
-        emit quantumElapsed(timestamp);
-        mutex.unlock();
+        QMetaObject::invokeMethod(coord, [this, &timestamp, unit]() {
+            coord->mutex.lock();
+            timestamp += unit;
+            coord->elapsedQuantums = timestamp;
+            emit coord->quantumElapsed(timestamp);
+            coord->mutex.unlock();
+        }, Qt::BlockingQueuedConnection);
 
-        {
+        QMetaObject::invokeMethod(coord, [this, &task, timestamp]() {
             qDebug() << "Finishing the task...";
-            auto before = tasks->getState(task);
-            tasks->endToProceed(task, timestamp);
-            auto after = tasks->getState(task);
+            auto before = coord->tasks->getState(task);
+            coord->tasks->endToProceed(task, timestamp);
+            auto after = coord->tasks->getState(task);
             qDebug() << "Previous State: " << Task::text(before) << "Current state:" << Task::text(after);
-            logTask(task, before, after);
-        }
+            coord->logTask(task, before, after);
+        }, Qt::BlockingQueuedConnection);
 
-        QThread::msleep(settings.pause);
+        QThread::msleep(coord->settings.pause);
         if (!canContinue())
         {
+            emit finished();
             return;
         }
 
         qInfo() << "Updating the idle time for all other tasks";
-        if(updateIdleTimeExceptFor(QModelIndex(), task, unit))
+        bool updateSuccess = false;
+        QMetaObject::invokeMethod(coord, [this, &task, unit, &updateSuccess]() {
+            updateSuccess = coord->updateIdleTimeExceptFor(QModelIndex(), task, unit);
+        }, Qt::BlockingQueuedConnection);
+        
+        if(updateSuccess)
         {
             qInfo() << "Successful to update the idle time";
         }
@@ -618,44 +700,53 @@ void Coordinator::run()
             qInfo() << "Failed to update the idle time.";
         }
 
-        auto state = tasks->getState(task);
+        Task::State state;
+        QMetaObject::invokeMethod(coord, [this, &task, &state]() {
+            state = coord->tasks->getState(task);
+        }, Qt::BlockingQueuedConnection);
         qInfo() << "The current task state is " << Task::text(state);
 
         if (state == Task::State::Timeout)
         {
             qInfo() << "Timeout happened. Removing the current ready task...";
-            readyTasks->removeBest();
+            QMetaObject::invokeMethod(coord, [this, &task]() {
+                coord->readyTasks->removeBest();
 
-            auto priority = evaluatePriority(task);
-            qWarning() << "The new priority is" << priority;
+                auto priority = coord->evaluatePriority(task);
+                qWarning() << "The new priority is" << priority;
 
-            if(tasks->setData(task, priority, Task::PriorityRole))
-            {
-                auto result = tasks->setState(task, Task::State::Ready);
-                if (result.successful)
+                if(coord->tasks->setData(task, priority, Task::PriorityRole))
                 {
-                    qInfo() << "Inserting the task again into the ready queue...";
-                    readyTasks->insertTask(task);
+                    auto result = coord->tasks->setState(task, Task::State::Ready);
+                    if (result.successful)
+                    {
+                        qInfo() << "Inserting the task again into the ready queue...";
+                        coord->readyTasks->insertTask(task);
 
-                    qInfo() << "Inserted successfully into the ready queue...";
-                    logTask(task, result.previous, result.current);
+                        qInfo() << "Inserted successfully into the ready queue...";
+                        coord->logTask(task, result.previous, result.current);
+                    }
+                    else
+                    {
+                        qWarning() << "Failed to set the new state...";
+                    }
                 }
                 else
                 {
-                    qWarning() << "Failed to set the new state...";
+                    qWarning() << "Failed to set the priority of the task:" << task.data(Task::NameRole).toString();
                 }
-            }
-            else
-            {
-                qWarning() << "Failed to set the priority of the task:" << task.data(Task::NameRole).toString();
-            }
+            }, Qt::BlockingQueuedConnection);
         }
         else
         {
             qInfo() << "No timeout happened. The current state of the task is" << Task::text(state);
-            auto ok = false;
-
-            auto time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
+            
+            qint64 time = 0;
+            bool ok = false;
+            QMetaObject::invokeMethod(coord, [&task, &time, &ok]() {
+                time = task.data(Task::RemainingTimeRole).toLongLong(&ok);
+            }, Qt::BlockingQueuedConnection);
+            
             qInfo() << "Remaining time is " << time;
             if (!ok)
             {
@@ -665,13 +756,29 @@ void Coordinator::run()
             if (time == 0)
             {
                 qInfo() << "Task has been finished.";
-                this->removeTask(task);
+                QMetaObject::invokeMethod(coord, [this, &task]() {
+                    coord->removeTask(task);
+                }, Qt::BlockingQueuedConnection);
 
                 qInfo() << "Checking if there are some new tasks...";
-                while (limitTasks->rowCount() > 0 && readyTasks->hasCapacity())
+                while (true)
                 {
+                    int limitCount = 0;
+                    bool hasCapacity = false;
+                    QMetaObject::invokeMethod(coord, [this, &limitCount, &hasCapacity]() {
+                        limitCount = coord->limitTasks->rowCount();
+                        hasCapacity = coord->readyTasks->hasCapacity();
+                    }, Qt::BlockingQueuedConnection);
+                    
+                    if (!(limitCount > 0 && hasCapacity))
+                        break;
+                    
                     qInfo() << "Fetching new task from the limit tasks.";
-                    auto newTask = limitTasks->peekBest();
+                    QPersistentModelIndex newTask;
+                    QMetaObject::invokeMethod(coord, [this, &newTask]() {
+                        newTask = coord->limitTasks->peekBest();
+                    }, Qt::BlockingQueuedConnection);
+                    
                     if (!newTask.isValid())
                     {
                         break;
@@ -679,46 +786,59 @@ void Coordinator::run()
 
                     qInfo() << "Found one size limit task:" << newTask.data(Task::NameRole).toString();
 
-                    auto result = tasks->setState(newTask, Task::State::Ready);
-                    if (result.successful)
-                    {
-                        qInfo() << "Inserting into the ready tasks.";
-                        readyTasks->insertTask(newTask);
+                    QMetaObject::invokeMethod(coord, [this, &newTask]() {
+                        auto result = coord->tasks->setState(newTask, Task::State::Ready);
+                        if (result.successful)
+                        {
+                            qInfo() << "Inserting into the ready tasks.";
+                            coord->readyTasks->insertTask(newTask);
 
-                        qInfo() << "Removing from the size limit tasks.";
-                        limitTasks->removeBest();
+                            qInfo() << "Removing from the size limit tasks.";
+                            coord->limitTasks->removeBest();
 
-                        logTask(newTask, result.previous, result.current);
-                    }
-                    else
-                    {
-                        qDebug() << "Failed to change the state to ready.";
-                    }
+                            coord->logTask(newTask, result.previous, result.current);
+                        }
+                        else
+                        {
+                            qDebug() << "Failed to change the state to ready.";
+                        }
+                    }, Qt::BlockingQueuedConnection);
                 }
             }
             else
             {
                 qInfo() << "Seems it just got executed. This is a pitfall in your code since it should have been timed out.";
-                logTask(task, tasks->getState(task), Task::State::Execute);
+                QMetaObject::invokeMethod(coord, [this, &task]() {
+                    coord->logTask(task, coord->tasks->getState(task), Task::State::Execute);
+                }, Qt::BlockingQueuedConnection);
             }
         }
     }
 
     qDebug() << "Checking shutdown scheduler.";
-    mutex.lock();
-    auto state = shutdownSchedule;
-    mutex.unlock();
+    bool shutdownState = false;
+    QMetaObject::invokeMethod(coord, [this, &shutdownState]() {
+        coord->mutex.lock();
+        shutdownState = coord->shutdownSchedule;
+        coord->mutex.unlock();
+    }, Qt::BlockingQueuedConnection);
 
-    if (state)
+    if (shutdownState)
     {
         qInfo() << "Scheduled for a shutdown. Removing everything...";
-        removeTask(QModelIndex());
-        mutex.lock();
-        shutdownSchedule = false;
-        mutex.unlock();
+        QMetaObject::invokeMethod(coord, [this]() {
+            coord->removeTask(QModelIndex());
+            coord->mutex.lock();
+            coord->shutdownSchedule = false;
+            coord->mutex.unlock();
+        }, Qt::BlockingQueuedConnection);
     }
     qInfo() << "Finished a cycle of running the kernel.";
 
-    releaseLock();
+    QMetaObject::invokeMethod(coord, [this]() {
+        coord->releaseLock();
+    }, Qt::BlockingQueuedConnection);
     qInfo() << "Unlocked the input";
+    
+    emit finished();
 }
