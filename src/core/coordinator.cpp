@@ -757,36 +757,22 @@ void CoordinatorWorker::process()
             {
                 qInfo() << "Task has been finished.";
                 QMetaObject::invokeMethod(coord, [this, &task]() {
-                    coord->removeTask(task);
-                }, Qt::BlockingQueuedConnection);
-
-                qInfo() << "Checking if there are some new tasks...";
-                while (true)
-                {
-                    int limitCount = 0;
-                    bool hasCapacity = false;
-                    QMetaObject::invokeMethod(coord, [this, &limitCount, &hasCapacity]() {
-                        limitCount = coord->limitTasks->rowCount();
-                        hasCapacity = coord->readyTasks->hasCapacity();
-                    }, Qt::BlockingQueuedConnection);
+                    coord->readyTasks->removeBest();  // Remove from ready queue FIRST
+                    coord->removeTask(task);          // Then remove from task tree
                     
-                    if (!(limitCount > 0 && hasCapacity))
-                        break;
-                    
-                    qInfo() << "Fetching new task from the limit tasks.";
-                    QPersistentModelIndex newTask;
-                    QMetaObject::invokeMethod(coord, [this, &newTask]() {
-                        newTask = coord->limitTasks->peekBest();
-                    }, Qt::BlockingQueuedConnection);
-                    
-                    if (!newTask.isValid())
+                    qInfo() << "Checking if there are some new tasks...";
+                    // Also promote tasks from limitTasks to readyTasks if capacity available
+                    while (coord->limitTasks->rowCount() > 0 && coord->readyTasks->hasCapacity())
                     {
-                        break;
-                    }
+                        qInfo() << "Fetching new task from the limit tasks.";
+                        auto newTask = coord->limitTasks->peekBest();
+                        if (!newTask.isValid())
+                        {
+                            break;
+                        }
 
-                    qInfo() << "Found one size limit task:" << newTask.data(Task::NameRole).toString();
-
-                    QMetaObject::invokeMethod(coord, [this, &newTask]() {
+                        qInfo() << "Found one size limit task:" << newTask.data(Task::NameRole).toString();
+                        
                         auto result = coord->tasks->setState(newTask, Task::State::Ready);
                         if (result.successful)
                         {
@@ -801,9 +787,10 @@ void CoordinatorWorker::process()
                         else
                         {
                             qDebug() << "Failed to change the state to ready.";
+                            break;
                         }
-                    }, Qt::BlockingQueuedConnection);
-                }
+                    }
+                }, Qt::BlockingQueuedConnection);
             }
             else
             {
