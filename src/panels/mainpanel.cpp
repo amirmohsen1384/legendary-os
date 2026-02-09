@@ -109,8 +109,9 @@ void MainPanel::setupStatusBar()
     statusBar()->addWidget(state);
     state->hide();
 
-    connect(kernel, &QThread::started, state, &QProgressBar::show);
-    connect(kernel, &QThread::finished, state, &QProgressBar::hide);
+    // Show progress bar when kernel starts and hide when it finishes
+    connect(kernel, &Coordinator::started, state, &QProgressBar::show);
+    connect(kernel, &Coordinator::finished, state, &QProgressBar::hide);
 
     auto elapsed = new QLabel("Elapsed Quantums: 0", this);
 
@@ -179,7 +180,7 @@ void MainPanel::setupConnections()
         ui->agentDependencyView->selectionModel()->clear();
     });
     connect(kernel, &Coordinator::lockStateChanged, editionActions, &QActionGroup::setDisabled);
-    connect(kernel, &QThread::finished, this, [this]() {
+    connect(kernel, &Coordinator::finished, this, [this]() {
         ui->actionPause->setVisible(false);
         ui->actionRun->setVisible(true);
     });
@@ -260,7 +261,7 @@ void MainPanel::startKernel()
         }
         else if (!kernel->isRunning())
         {
-            kernel->start(QThread::LowPriority);
+            kernel->start();
             ui->actionRun->setVisible(false);
             ui->actionPause->setVisible(true);
         }
