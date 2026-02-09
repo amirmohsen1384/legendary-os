@@ -85,3 +85,4 @@ CMakeLists.txt.user*
 
 # CodeSQL scan file
 *_codeql_detected_source_root*
+/_codeql_build_dir/
