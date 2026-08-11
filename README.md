@@ -2,7 +2,6 @@
 
 Course project for **Data Structures**, Faculty of Computer Engineering – University of Isfahan
 Winter 2025–2026
-Instructor: **Dr. Reza Ramezani**
 
 ## Project Introduction
 
